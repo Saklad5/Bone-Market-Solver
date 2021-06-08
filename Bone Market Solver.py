@@ -92,11 +92,14 @@ class Buyer(enum.Enum):
 
 # An action that affects a skeleton's qualities.
 class Action:
-    def __init__(self, name, cost, value = 0, skulls_needed = 0, limbs_needed = 0, tails_needed = 0, skulls = 0, arms = 0, legs = 0, tails = 0, wings = 0, fins = 0, tentacles = 0, amalgamy = 0, antiquity = 0, menace = 0, implausibility = 0, counter_church = 0, exhaustion = 0):
+    def __init__(self, name, cost, torso_style = None, value = 0, skulls_needed = 0, limbs_needed = 0, tails_needed = 0, skulls = 0, arms = 0, legs = 0, tails = 0, wings = 0, fins = 0, tentacles = 0, amalgamy = 0, antiquity = 0, menace = 0, implausibility = 0, counter_church = 0, exhaustion = 0):
         self.name = name
 
         # Cost in pennies of using this action, including the value of the actions spent
         self.cost = cost
+
+        # Skeleton: Torso Style
+        self.torso_style = torso_style
 
         # Approximate Value of Your Skeleton in Pennies
         self.value = value
@@ -152,13 +155,6 @@ class Action:
     def __str__(self):
         return str(self.name)
 
-# The base of a skeleton.
-class Torso(Action):
-    def __init__(self, name, torso_style, cost, value = 0, skulls_needed = 0, limbs_needed = 0, tails_needed = 0, skulls = 0, arms = 0, legs = 0, tails = 0, wings = 0, fins = 0, tentacles = 0, amalgamy = 0, antiquity = 0, menace = 0, implausibility = 0, counter_church = 0, exhaustion = 0):
-        super().__init__(name, cost, value, skulls_needed, limbs_needed, tails_needed, skulls, arms, legs, tails, wings, fins, tentacles, amalgamy, antiquity, menace, implausibility, counter_church, exhaustion)
-
-        # Skeleton: Torso Style
-        self.torso_style = torso_style
 
 # Which kind of skeleton is to be declared.
 class Declaration(enum.Enum):
@@ -194,26 +190,26 @@ def create_data_model():
     data['zoological_mania'] = Declaration.AMPHIBIAN
     
     data['actions'] = [
-            # Torso("Supply a skeleton of your own", cost = ACTION_VALUE, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2),
+            # Action("Supply a skeleton of your own", cost = ACTION_VALUE, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2),
             # Accumulated while trying to get other things
-            Torso("Reassemble your Headless Humanoid", torso_style = 10, cost = ACTION_VALUE, value = 250, skulls_needed = 1, arms = 2, legs = 2),
+            Action("Reassemble your Headless Humanoid", cost = ACTION_VALUE, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2),
             # Ealing Gardens
-            Torso("Build on the Human Ribcage", torso_style = 15, cost = ACTION_VALUE*2 + SURVEY_VALUE*15, value = 1250, skulls_needed = 1, limbs_needed = 4),
+            Action("Build on the Human Ribcage", cost = ACTION_VALUE*2 + SURVEY_VALUE*15, torso_style = 15, value = 1250, skulls_needed = 1, limbs_needed = 4),
             # Balmoral Woods, (also gives Doubled Skull)
-            Torso("Make something of your Thorned Ribcage", torso_style = 20, cost = 2000 + ACTION_VALUE*14, value = 1250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 1),
+            Action("Make something of your Thorned Ribcage", cost = 2000 + ACTION_VALUE*14, torso_style = 20, value = 1250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 1),
             # Combination of Human Ribcage and Thorned Ribcage
-            Torso("Build on the Flourishing Ribcage", torso_style = 40, cost = 2000 + ACTION_VALUE*16 + SURVEY_VALUE*15, value = 1250, skulls_needed = 2, limbs_needed = 6, tails_needed = 1, amalgamy = 2),
-            Torso("Build on the Skeleton with Seven Necks", torso_style = 30, cost = 1150 + ACTION_VALUE*18, value = 6250, skulls_needed = 7, limbs_needed = 2, legs = 2, amalgamy = 2, menace = 1),
+            Action("Build on the Flourishing Ribcage", cost = 2000 + ACTION_VALUE*16 + SURVEY_VALUE*15, torso_style = 40, value = 1250, skulls_needed = 2, limbs_needed = 6, tails_needed = 1, amalgamy = 2),
+            Action("Build on the Skeleton with Seven Necks", cost = 1150 + ACTION_VALUE*18, torso_style = 30, value = 6250, skulls_needed = 7, limbs_needed = 2, legs = 2, amalgamy = 2, menace = 1),
             # Human Ribcage and Betrayer of Measures
-            Torso("Build on the Mammoth Ribcage", torso_style = 50, cost = ACTION_VALUE*18 + SURVEY_VALUE*15, value = 6250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, antiquity = 2),
+            Action("Build on the Mammoth Ribcage", cost = ACTION_VALUE*18 + SURVEY_VALUE*15, torso_style = 50, value = 6250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, antiquity = 2),
             # Skeleton with Seven Necks, 2 x Severed Chimaerical Head of the Vake, 2 x Counterfeit Head of John the Baptist, Carved Ball of Stygian Ivory, 2 x Plated Skull, 2 x Albatross Wing
-            Torso("Build on the Leviathan Frame", cost = 22150 + ACTION_VALUE*33, torso_style = 70, value = 31250, skulls_needed = 1, limbs_needed = 2, tails = 1, antiquity = 1, menace = 1),
+            Action("Build on the Leviathan Frame", cost = 22150 + ACTION_VALUE*33, torso_style = 70, value = 31250, skulls_needed = 1, limbs_needed = 2, tails = 1, antiquity = 1, menace = 1),
             # Combination of Skeleton with Seven Necks and Thorned Ribcage
-            Torso("Build on the Ribcage with the Eight Spines", torso_style = 60, cost = 25650 + ACTION_VALUE*32, value = 31250, skulls_needed = 8, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 2),
+            Action("Build on the Ribcage with the Eight Spines", cost = 25650 + ACTION_VALUE*32, torso_style = 60, value = 31250, skulls_needed = 8, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 2),
             # Expedition
-            Torso("Build on the Prismatic Frame", torso_style = 80, cost = 29250 + ACTION_VALUE*5, value = 31250, skulls_needed = 3, limbs_needed = 3, tails_needed = 3, amalgamy = 2, antiquity = 2),
+            Action("Build on the Prismatic Frame", cost = 29250 + ACTION_VALUE*5, torso_style = 80, value = 31250, skulls_needed = 3, limbs_needed = 3, tails_needed = 3, amalgamy = 2, antiquity = 2),
             # Upwards
-            Torso("Build on the Five-Pointed Frame", torso_style = 100, cost = 31250 + ACTION_VALUE*10, value = 31250, skulls_needed = 5, limbs_needed = 5, amalgamy = 2, menace = 1),
+            Action("Build on the Five-Pointed Frame", cost = 31250 + ACTION_VALUE*10, torso_style = 100, value = 31250, skulls_needed = 5, limbs_needed = 5, amalgamy = 2, menace = 1),
 
 
             Action("Affix a Bright Brass Skull to your (Skeleton Type)", cost = 6450 + ACTION_VALUE, value = 6500, skulls_needed = -1, skulls = 1, implausibility = 2),
@@ -308,7 +304,7 @@ def Solve():
     torsos = {}
     actions = {}
     for action in data['actions']:
-        if isinstance(action, Torso):
+        if action.torso_style is not None:
             torsos[action] = model.NewBoolVar(action.name)
             actions[action] = torsos[action]
         else:
