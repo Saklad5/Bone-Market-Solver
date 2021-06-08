@@ -11,12 +11,6 @@ PROFIT_MARGIN_MULTIPLIER = 10000000
 # This is the highest number of attribute to calculate fractional exponents for.
 MAXIMUM_ATTRIBUTE = 100
 
-# The number of pennies that a single action (the game mechanic) is worth.
-ACTION_VALUE = 400
-
-# The number of pennies needed to produce a single Survey of the Neath's Bones.
-SURVEY_VALUE = (ACTION_VALUE * 6) / 25
-
 # This is a constant used to calculate difficulty checks. You almost certainly do not need to change this.
 DIFFICULTY_SCALER = 0.6
 
@@ -28,6 +22,16 @@ MAXIMUM_COST = cp_model.INT32_MAX
 
 # The maximum Exhaustion that this skeleton should generate.
 MAXIMUM_EXHAUSTION = 4
+
+
+# The number of pennies needed to produce a quality.
+class Value(enum.Enum):
+    # This is your baseline EPA: the pennies you could generate using an action for a generic grind.
+    ACTION = 400
+
+    # Survey of the Neath's Bones
+    # Laboratory Research
+    SURVEY = 6*ACTION/25
 
 
 # Adds a fully-reified implication using an intermediate Boolean variable.
@@ -159,37 +163,37 @@ class Action:
 # Actions that initiate a skeleton.
 class Torso(enum.Enum):
     # Licentiate
-    # LICENTIATE_SKELETON = Action("Supply a skeleton of your own", cost = ACTION_VALUE, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2)
+    # LICENTIATE_SKELETON = Action("Supply a skeleton of your own", cost = Value.ACTION.value, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2)
 
     # Accumulated while trying to get other things
-    HEADLESS_HUMANOID = Action("Reassemble your Headless Humanoid", cost = ACTION_VALUE, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2)
+    HEADLESS_HUMANOID = Action("Reassemble your Headless Humanoid", cost = Value.ACTION.value, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2)
 
     # Ealing Gardens
-    HUMAN_RIBCAGE = Action("Build on the Human Ribcage", cost = ACTION_VALUE*2 + SURVEY_VALUE*15, torso_style = 15, value = 1250, skulls_needed = 1, limbs_needed = 4)
+    HUMAN_RIBCAGE = Action("Build on the Human Ribcage", cost = Value.ACTION.value*2 + Value.SURVEY.value*15, torso_style = 15, value = 1250, skulls_needed = 1, limbs_needed = 4)
 
     # Balmoral Woods (also gives Doubled Skull)
-    THORNED_RIBCAGE = Action("Make something of your Thorned Ribcage", cost = 2000 + ACTION_VALUE*14, torso_style = 20, value = 1250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 1)
+    THORNED_RIBCAGE = Action("Make something of your Thorned Ribcage", cost = 2000 + Value.ACTION.value*14, torso_style = 20, value = 1250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 1)
 
     # Warbler Skeleton and Betrayer of Measures
-    SKELETON_WITH_SEVEN_NECKS = Action("Build on the Skeleton with Seven Necks", cost = 1150 + ACTION_VALUE*18, torso_style = 30, value = 6250, skulls_needed = 7, limbs_needed = 2, legs = 2, amalgamy = 2, menace = 1)
+    SKELETON_WITH_SEVEN_NECKS = Action("Build on the Skeleton with Seven Necks", cost = 1150 + Value.ACTION.value*18, torso_style = 30, value = 6250, skulls_needed = 7, limbs_needed = 2, legs = 2, amalgamy = 2, menace = 1)
 
     # Combination of Human Ribcage and Thorned Ribcage
-    FLOURISHING_RIBCAGE = Action("Build on the Flourishing Ribcage", cost = 2000 + ACTION_VALUE*16 + SURVEY_VALUE*15, torso_style = 40, value = 1250, skulls_needed = 2, limbs_needed = 6, tails_needed = 1, amalgamy = 2)
+    FLOURISHING_RIBCAGE = Action("Build on the Flourishing Ribcage", cost = 2000 + Value.ACTION.value*16 + Value.SURVEY.value*15, torso_style = 40, value = 1250, skulls_needed = 2, limbs_needed = 6, tails_needed = 1, amalgamy = 2)
 
     # Human Ribcage and Betrayer of Measures
-    MAMMOTH_RIBCAGE = Action("Build on the Mammoth Ribcage", cost = ACTION_VALUE*18 + SURVEY_VALUE*15, torso_style = 50, value = 6250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, antiquity = 2)
+    MAMMOTH_RIBCAGE = Action("Build on the Mammoth Ribcage", cost = Value.ACTION.value*18 + Value.SURVEY.value*15, torso_style = 50, value = 6250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, antiquity = 2)
 
     # Combination of Skeleton with Seven Necks and Thorned Ribcage
-    RIBCAGE_WITH_A_BOUQUET_OF_EIGHT_SPINES = Action("Build on the Ribcage with the Eight Spines", cost = 25650 + ACTION_VALUE*32, torso_style = 60, value = 31250, skulls_needed = 8, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 2)
+    RIBCAGE_WITH_A_BOUQUET_OF_EIGHT_SPINES = Action("Build on the Ribcage with the Eight Spines", cost = 25650 + Value.ACTION.value*32, torso_style = 60, value = 31250, skulls_needed = 8, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 2)
 
     # Skeleton with Seven Necks, 2 x Severed Chimaerical Head of the Vake, 2 x Counterfeit Head of John the Baptist, Carved Ball of Stygian Ivory, 2 x Plated Skull, 2 x Albatross Wing
-    LEVIATHAN_FRAME = Action("Build on the Leviathan Frame", cost = 22150 + ACTION_VALUE*33, torso_style = 70, value = 31250, skulls_needed = 1, limbs_needed = 2, tails = 1, antiquity = 1, menace = 1)
+    LEVIATHAN_FRAME = Action("Build on the Leviathan Frame", cost = 22150 + Value.ACTION.value*33, torso_style = 70, value = 31250, skulls_needed = 1, limbs_needed = 2, tails = 1, antiquity = 1, menace = 1)
 
     # Expedition at Station VII
-    PRISMATIC_FRAME = Action("Build on the Prismatic Frame", cost = 29250 + ACTION_VALUE*5, torso_style = 80, value = 31250, skulls_needed = 3, limbs_needed = 3, tails_needed = 3, amalgamy = 2, antiquity = 2)
+    PRISMATIC_FRAME = Action("Build on the Prismatic Frame", cost = 29250 + Value.ACTION.value*5, torso_style = 80, value = 31250, skulls_needed = 3, limbs_needed = 3, tails_needed = 3, amalgamy = 2, antiquity = 2)
 
     # Upwards
-    FIVE_POINTED_FRAME = Action("Build on the Five-Pointed Frame", cost = 31250 + ACTION_VALUE*10, torso_style = 100, value = 31250, skulls_needed = 5, limbs_needed = 5, amalgamy = 2, menace = 1)
+    FIVE_POINTED_FRAME = Action("Build on the Five-Pointed Frame", cost = 31250 + Value.ACTION.value*10, torso_style = 100, value = 31250, skulls_needed = 5, limbs_needed = 5, amalgamy = 2, menace = 1)
 
     def __str__(self):
         return str(self.value)
@@ -197,17 +201,17 @@ class Torso(enum.Enum):
 
 # Which kind of skeleton is to be declared.
 class Declaration(enum.Enum):
-    CHIMERA = Action("Declare your (Skeleton Type) a completed Chimera", cost = ACTION_VALUE, implausibility = 3)
-    HUMANOID = Action("Declare your (Skeleton Type) a completed Humanoid", cost = ACTION_VALUE)
-    APE = Action("Declare your (Skeleton Type) a completed Ape", cost = ACTION_VALUE)
-    MONKEY = Action("Declare your (Skeleton Type) a completed Monkey", cost = ACTION_VALUE)
-    BIRD = Action("Declare your (Skeleton Type) a completed Bird", cost = ACTION_VALUE)
-    CURATOR = Action("Declare your (Skeleton Type) a completed Curator", cost = ACTION_VALUE)
-    REPTILE = Action("Declare your (Skeleton Type) a completed Reptile", cost = ACTION_VALUE)
-    AMPHIBIAN = Action("Declare your (Skeleton Type) a completed Amphibian", cost = ACTION_VALUE)
-    FISH = Action("Declare your (Skeleton Type) a completed Fish", cost = ACTION_VALUE)
-    INSECT = Action("Declare your (Skeleton Type) a completed Insect", cost = ACTION_VALUE)
-    SPIDER = Action("Declare your (Skeleton Type) a completed Spider", cost = ACTION_VALUE)
+    CHIMERA = Action("Declare your (Skeleton Type) a completed Chimera", cost = Value.ACTION.value, implausibility = 3)
+    HUMANOID = Action("Declare your (Skeleton Type) a completed Humanoid", cost = Value.ACTION.value)
+    APE = Action("Declare your (Skeleton Type) a completed Ape", cost = Value.ACTION.value)
+    MONKEY = Action("Declare your (Skeleton Type) a completed Monkey", cost = Value.ACTION.value)
+    BIRD = Action("Declare your (Skeleton Type) a completed Bird", cost = Value.ACTION.value)
+    CURATOR = Action("Declare your (Skeleton Type) a completed Curator", cost = Value.ACTION.value)
+    REPTILE = Action("Declare your (Skeleton Type) a completed Reptile", cost = Value.ACTION.value)
+    AMPHIBIAN = Action("Declare your (Skeleton Type) a completed Amphibian", cost = Value.ACTION.value)
+    FISH = Action("Declare your (Skeleton Type) a completed Fish", cost = Value.ACTION.value)
+    INSECT = Action("Declare your (Skeleton Type) a completed Insect", cost = Value.ACTION.value)
+    SPIDER = Action("Declare your (Skeleton Type) a completed Spider", cost = Value.ACTION.value)
 
     def __str__(self):
         return str(self.value)
@@ -229,86 +233,86 @@ def create_data_model():
     data['zoological_mania'] = Declaration.AMPHIBIAN
     
     data['actions'] = [torso.value for torso in Torso] + [
-            Action("Affix a Bright Brass Skull to your (Skeleton Type)", cost = 6450 + ACTION_VALUE, value = 6500, skulls_needed = -1, skulls = 1, implausibility = 2),
+            Action("Affix a Bright Brass Skull to your (Skeleton Type)", cost = 6450 + Value.ACTION.value, value = 6500, skulls_needed = -1, skulls = 1, implausibility = 2),
             # No consistent source
             # Action("Affix an Eyeless Skull to your (Skeleton Type)", cost = cp_model.INT32_MAX, value = 3000, skulls_needed = -1, skulls = 1, menace = 2),
             # Feast of the Exceptional Rose, 200 Inklings of Identity, action to send and receive it
-            #Action("Affix a Custom-Engraved Skull to your (Skeleton Type)", cost = 2000 + ACTION_VALUE*2, value = 10000, skulls_needed = -1, skulls = 1, exhaustion = 2),
-            Action("Affix a Horned Skull to your (Skeleton Type)", cost = 1050 + ACTION_VALUE*2, value = 1250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 2),
-            Action("Affix a Sabre-toothed Skull to your (Skeleton Type)", cost = 6150 + ACTION_VALUE*2, value = 6250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 1),
+            #Action("Affix a Custom-Engraved Skull to your (Skeleton Type)", cost = 2000 + Value.ACTION.value*2, value = 10000, skulls_needed = -1, skulls = 1, exhaustion = 2),
+            Action("Affix a Horned Skull to your (Skeleton Type)", cost = 1050 + Value.ACTION.value*2, value = 1250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 2),
+            Action("Affix a Sabre-toothed Skull to your (Skeleton Type)", cost = 6150 + Value.ACTION.value*2, value = 6250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 1),
             # Upwards
-            Action("Affix a Pentagrammic Skull to your (Skeleton Type)", cost = ACTION_VALUE*10, value = 1250, skulls_needed = -1, skulls = 1, amalgamy = 2, menace = 1),
-            Action("Affix a Plated Skull to your (Skeleton Type)", cost = 2250 + ACTION_VALUE*2, value = 2500, skulls_needed = -1, skulls = 1, menace = 2),
+            Action("Affix a Pentagrammic Skull to your (Skeleton Type)", cost = Value.ACTION.value*10, value = 1250, skulls_needed = -1, skulls = 1, amalgamy = 2, menace = 1),
+            Action("Affix a Plated Skull to your (Skeleton Type)", cost = 2250 + Value.ACTION.value*2, value = 2500, skulls_needed = -1, skulls = 1, menace = 2),
             # Flute Street, including travel due to quality cap
-            Action("Affix a Rubbery Skull to your (Skeleton Type)", cost = ACTION_VALUE*26, value = 600, skulls_needed = -1, skulls = 1, amalgamy = 1),
-            # Action("Duplicate your own skull and affix it here", cost = 1000 + ACTION_VALUE, value = -250, skulls_needed = -1, skulls = 1),
-            Action("Duplicate the skull of John the Baptist, if you can call that a skull", cost = 1000 + ACTION_VALUE, value = 1500, skulls_needed = -1, skulls = 1, counter_church = 2),
+            Action("Affix a Rubbery Skull to your (Skeleton Type)", cost = Value.ACTION.value*26, value = 600, skulls_needed = -1, skulls = 1, amalgamy = 1),
+            # Action("Duplicate your own skull and affix it here", cost = 1000 + Value.ACTION.value, value = -250, skulls_needed = -1, skulls = 1),
+            Action("Duplicate the skull of John the Baptist, if you can call that a skull", cost = 1000 + Value.ACTION.value, value = 1500, skulls_needed = -1, skulls = 1, counter_church = 2),
             # Persephone, 6 actions (Favours: the Docks) for 2 Esteem of the Guild
-            Action("Affix a Skull in Coral to your (Skeleton Type)", cost = ACTION_VALUE*25/3, value = 1750, skulls_needed = -1, skulls = 1, amalgamy = 2),
-            Action("Duplicate the Vake's skull and use it to decorate your (Skeleton Type)", cost = 6000 + ACTION_VALUE, value = 6500, skulls_needed = -1, skulls = 1, menace = 3),
-            # Action("Cap this with a victim’s skull", cost = ACTION_VALUE, value = 250, skulls_needed = -1, skulls = 1),
+            Action("Affix a Skull in Coral to your (Skeleton Type)", cost = Value.ACTION.value*25/3, value = 1750, skulls_needed = -1, skulls = 1, amalgamy = 2),
+            Action("Duplicate the Vake's skull and use it to decorate your (Skeleton Type)", cost = 6000 + Value.ACTION.value, value = 6500, skulls_needed = -1, skulls = 1, menace = 3),
+            # Action("Cap this with a victim’s skull", cost = Value.ACTION.value, value = 250, skulls_needed = -1, skulls = 1),
             # Balmoral Woods (also gives Thorned Ribcage)
-            Action("Affix a Doubled Skull to your (Skeleton Type)", cost = 2000 + ACTION_VALUE*14, value = 6250, skulls_needed = -1, skulls = 2, amalgamy = 1, antiquity = 2),
-            Action("Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)", cost = 250 + ACTION_VALUE, value = 250, skulls_needed = -1),
+            Action("Affix a Doubled Skull to your (Skeleton Type)", cost = 2000 + Value.ACTION.value*14, value = 6250, skulls_needed = -1, skulls = 2, amalgamy = 1, antiquity = 2),
+            Action("Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)", cost = 250 + Value.ACTION.value, value = 250, skulls_needed = -1),
 
             # 2 pincers at once
-            Action("Apply a Crustacean Pincer to your (Skeleton Type)", cost = 25 + ACTION_VALUE*1.5, limbs_needed = -1, arms = 1, menace = 1),
+            Action("Apply a Crustacean Pincer to your (Skeleton Type)", cost = 25 + Value.ACTION.value*1.5, limbs_needed = -1, arms = 1, menace = 1),
             # Accumulated while trying to get other things
-            Action("Apply a Knotted Humerus to your (Skeleton Type)", cost = ACTION_VALUE, value = 150, limbs_needed = -1, arms = 1, amalgamy = 1),
+            Action("Apply a Knotted Humerus to your (Skeleton Type)", cost = Value.ACTION.value, value = 150, limbs_needed = -1, arms = 1, amalgamy = 1),
             # Ealing Gardens, 5 actions (Favours: Bohemians) for 2
-            Action("Apply an Ivory Humerus to your (Skeleton Type)", cost = ACTION_VALUE*3.5, value = 1500, limbs_needed = -1, arms = 1),
+            Action("Apply an Ivory Humerus to your (Skeleton Type)", cost = Value.ACTION.value*3.5, value = 1500, limbs_needed = -1, arms = 1),
             # Accumulated while trying to get other things
-            Action("Join a Human Arm to your (Skeleton Type)", cost = ACTION_VALUE, value = 250, limbs_needed = -1, arms = 1, menace = -1),
+            Action("Join a Human Arm to your (Skeleton Type)", cost = Value.ACTION.value, value = 250, limbs_needed = -1, arms = 1, menace = -1),
             # Anning and Daughters
-            Action("Apply a Fossilised Forelimb to your (Skeleton Type)", cost = 2500 + ACTION_VALUE, value = 2750, limbs_needed = -1, arms = 1, antiquity = 2),
+            Action("Apply a Fossilised Forelimb to your (Skeleton Type)", cost = 2500 + Value.ACTION.value, value = 2750, limbs_needed = -1, arms = 1, antiquity = 2),
 
             # 2 wings at once
-            Action("Add the Wing of a Young Terror Bird to your (Skeleton Type)", cost = 175 + ACTION_VALUE*1.5, value = 250, limbs_needed = -1, wings = 1, antiquity = 1, menace = 1),
+            Action("Add the Wing of a Young Terror Bird to your (Skeleton Type)", cost = 175 + Value.ACTION.value*1.5, value = 250, limbs_needed = -1, wings = 1, antiquity = 1, menace = 1),
             # 2 wings at once
-            Action("Put an Albatross Wing on your (Skeleton Type)", cost = 1125 + ACTION_VALUE*1.5, value = 1250, limbs_needed = -1, wings = 1, amalgamy = 1),
+            Action("Put an Albatross Wing on your (Skeleton Type)", cost = 1125 + Value.ACTION.value*1.5, value = 1250, limbs_needed = -1, wings = 1, amalgamy = 1),
             # 2 wings at once
-            Action("Add a Bat Wing to your (Skeleton Type)", cost = 60 + ACTION_VALUE*1.5, value = 1, limbs_needed = -1, wings = 1, menace = -1),
+            Action("Add a Bat Wing to your (Skeleton Type)", cost = 60 + Value.ACTION.value*1.5, value = 1, limbs_needed = -1, wings = 1, menace = -1),
 
             # Dumbwaiter of Balmoral, 25 at a time
-            Action("Apply the Femur of a Surface Deer to your (Skeleton Type)", cost = ACTION_VALUE*1.04, value = 10, limbs_needed = -1, legs = 1, menace = -1),
+            Action("Apply the Femur of a Surface Deer to your (Skeleton Type)", cost = Value.ACTION.value*1.04, value = 10, limbs_needed = -1, legs = 1, menace = -1),
             # Accumulated while trying to get other things
-            Action("Apply an Unidentified Thigh Bone to your (Skeleton Type)", cost = ACTION_VALUE, value = 100, limbs_needed = -1, legs = 1),
+            Action("Apply an Unidentified Thigh Bone to your (Skeleton Type)", cost = Value.ACTION.value, value = 100, limbs_needed = -1, legs = 1),
             # Brawling, 12 at a time
-            Action("Apply a Jurassic Thigh Bone to your (Skeleton Type)", cost = ACTION_VALUE*(11/6), value = 300, limbs_needed = -1, legs = 1, antiquity = 1),
+            Action("Apply a Jurassic Thigh Bone to your (Skeleton Type)", cost = Value.ACTION.value*(11/6), value = 300, limbs_needed = -1, legs = 1, antiquity = 1),
             # Jericho Locks, 5 actions (Favours: the Church) for 2
             # Counter-Church theology from this scales with torso style and is implemented separately
-            Action("Affix Saint Fiacre's Thigh Relic to your (Skeleton Type)", cost = ACTION_VALUE*3.5, value = 1250, limbs_needed = -1, legs = 1),
+            Action("Affix Saint Fiacre's Thigh Relic to your (Skeleton Type)", cost = Value.ACTION.value*3.5, value = 1250, limbs_needed = -1, legs = 1),
             # Palaeontological Discoveries, Plain of Thirsty Grasses
-            Action("Affix the Helical Thighbone to your (Skeleton Type)", cost = ACTION_VALUE + SURVEY_VALUE*(70/9), value = 300, limbs_needed = -1, legs = 1, amalgamy = 2),
+            Action("Affix the Helical Thighbone to your (Skeleton Type)", cost = Value.ACTION.value + Value.SURVEY.value*(70/9), value = 300, limbs_needed = -1, legs = 1, amalgamy = 2),
             # Parabolan Orange-Apples, Hedonist, 3cp/action
-            Action("Apply an Ivory Femur to your (Skeleton Type)", cost = 900 + ACTION_VALUE*15.5, value = 6500, limbs_needed = -1, legs = 1),
+            Action("Apply an Ivory Femur to your (Skeleton Type)", cost = 900 + Value.ACTION.value*15.5, value = 6500, limbs_needed = -1, legs = 1),
 
             # Hunt and dissect Pinewood Shark, 40 at a time
-            Action("Put Fins on your (Skeleton Type)", cost = ACTION_VALUE*(51/40), value = 50, limbs_needed = -1, fins = 1),
+            Action("Put Fins on your (Skeleton Type)", cost = Value.ACTION.value*(51/40), value = 50, limbs_needed = -1, fins = 1),
             # Combination of 10 Fins
-            Action("Attach the Amber-Crusted Fin to your (Skeleton Type)", cost = ACTION_VALUE*(15/4), value = 1500, limbs_needed = -1, fins = 1, amalgamy = 1, menace = 1),
+            Action("Attach the Amber-Crusted Fin to your (Skeleton Type)", cost = Value.ACTION.value*(15/4), value = 1500, limbs_needed = -1, fins = 1, amalgamy = 1, menace = 1),
 
             # Helicon House, 3 at a time
-            Action("Put a Withered Tentacle on your (Skeleton Type)", cost = 50/3 + ACTION_VALUE*4/3, value = 250, limbs_needed = -1, tentacles = 1, antiquity = -1),
+            Action("Put a Withered Tentacle on your (Skeleton Type)", cost = 50/3 + Value.ACTION.value*4/3, value = 250, limbs_needed = -1, tentacles = 1, antiquity = -1),
 
             # Carpenter's Granddaughter, 2 at a time
-            Action("Apply Plaster Tail Bones to your (Skeleton Type)", cost = ACTION_VALUE*1.5 + SURVEY_VALUE*5, value = 250, tails_needed = -1, tails = 1, implausibility = 1),
-            Action("Apply a Tomb-Lion's Tail to your (Skeleton Type)", cost = 220 + ACTION_VALUE*2, value = 250, tails_needed = -1, tails = 1, antiquity = 1),
+            Action("Apply Plaster Tail Bones to your (Skeleton Type)", cost = Value.ACTION.value*1.5 + Value.SURVEY.value*5, value = 250, tails_needed = -1, tails = 1, implausibility = 1),
+            Action("Apply a Tomb-Lion's Tail to your (Skeleton Type)", cost = 220 + Value.ACTION.value*2, value = 250, tails_needed = -1, tails = 1, antiquity = 1),
             # Geology of Winewound
-            Action("Apply a Jet Black Stinger to your (Skeleton Type)", cost = ACTION_VALUE*2 + SURVEY_VALUE, value = 50, tails_needed = -1, tails = 1, menace = 2),
+            Action("Apply a Jet Black Stinger to your (Skeleton Type)", cost = Value.ACTION.value*2 + Value.SURVEY.value, value = 50, tails_needed = -1, tails = 1, menace = 2),
             # No consistent source
             # Action("Apply an Obsidian Chitin Tail to your (Skeleton Type)", cost = cp_model.INT32_MAX, value = 500, tails_needed = -1, tails = 1, amalgamy = 1),
             # Helicon House, 3 at a time
-            Action("Apply a Withered Tentacle as a tail on your (Skeleton Type)", cost = 50/3 + ACTION_VALUE*4/3, value = 250, tails_needed = -1, tails = 1, antiquity = -1),
+            Action("Apply a Withered Tentacle as a tail on your (Skeleton Type)", cost = 50/3 + Value.ACTION.value*4/3, value = 250, tails_needed = -1, tails = 1, antiquity = -1),
             # This actually sets Skeleton: Tails Needed to 0
-            Action("Decide your Tailless Animal needs no tail", cost = ACTION_VALUE, tails_needed = -1),
-            Action("Remove the tail from your (Skeleton Type)", cost = ACTION_VALUE, tails = -1),
+            Action("Decide your Tailless Animal needs no tail", cost = Value.ACTION.value, tails_needed = -1),
+            Action("Remove the tail from your (Skeleton Type)", cost = Value.ACTION.value, tails = -1),
 
             # Cost from this scales with limbs and is partially implemented separately
-            Action("Add four more joints to your skeleton", cost = 1250 + ACTION_VALUE, limbs_needed = 4, amalgamy = 2),
-            Action("Make your skeleton less dreadful", cost = ACTION_VALUE, menace = -2),
-            Action("Disguise the amalgamy of this piece", cost = 25 + ACTION_VALUE, amalgamy = -2),
-            Action("Carve away some evidence of age", cost = ACTION_VALUE, antiquity = -2)
+            Action("Add four more joints to your skeleton", cost = 1250 + Value.ACTION.value, limbs_needed = 4, amalgamy = 2),
+            Action("Make your skeleton less dreadful", cost = Value.ACTION.value, menace = -2),
+            Action("Disguise the amalgamy of this piece", cost = 25 + Value.ACTION.value, amalgamy = -2),
+            Action("Carve away some evidence of age", cost = Value.ACTION.value, antiquity = -2)
     ]
 
     return data
@@ -430,11 +434,11 @@ def Solve():
     model.AddMaxEquality(non_zero_difficulty_level, [difficulty_level, 1])
 
     sale_actions_times_action_value = model.NewIntVar(0, cp_model.INT32_MAX, 'sale actions times action value')
-    model.AddDivisionEquality(sale_actions_times_action_value, model.NewConstant(round(DIFFICULTY_SCALER*SHADOWY_LEVEL*ACTION_VALUE)), non_zero_difficulty_level)
+    model.AddDivisionEquality(sale_actions_times_action_value, model.NewConstant(round(DIFFICULTY_SCALER*SHADOWY_LEVEL*Value.ACTION.value)), non_zero_difficulty_level)
     abstract_sale_cost = model.NewIntVar(0, cp_model.INT32_MAX, 'abstract sale cost')
-    model.AddDivisionEquality(abstract_sale_cost, ACTION_VALUE**2, sale_actions_times_action_value)
+    model.AddDivisionEquality(abstract_sale_cost, Value.ACTION.value**2, sale_actions_times_action_value)
     sale_cost = model.NewIntVar(0, cp_model.INT32_MAX, 'sale cost')
-    model.AddMaxEquality(sale_cost, [abstract_sale_cost, ACTION_VALUE])
+    model.AddMaxEquality(sale_cost, [abstract_sale_cost, Value.ACTION.value])
 
     del non_zero_difficulty_level, sale_actions_times_action_value, abstract_sale_cost
 
