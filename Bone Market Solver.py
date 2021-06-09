@@ -29,9 +29,106 @@ class Value(enum.Enum):
     # This is your baseline EPA: the pennies you could generate using an action for a generic grind.
     ACTION = 400
 
+    # Antique Mystery
+    ANTIQUE_MYSTERY = 1250
+
+    # Bone Fragment
+    BONE_FRAGMENT = 1
+
+    # Cartographer's Hoard
+    CARTOGRAPHERS_HOARD = 31250
+
+    # Collection Note: There's a 'Package' in London
+    # Station VIII Lab
+    COLLECTION_NOTE = ACTION
+
+    # Volume of Collated Research
+    COLLATED_RESEARCH = 250
+
+    # Five-Pointed Ribcage
+    # Upwards
+    FIVE_POINTED_RIBCAGE = 9*ACTION + CARTOGRAPHERS_HOARD
+
+    # Headless Skeleton
+    # These are accumulated while acquiring other qualities.
+    HEADLESS_SKELETON = 0
+
+    # Nevercold Brass Sliver
+    NEVERCOLD_BRASS = 1
+
+    # Knob of Scintillack
+    SCINTILLACK = 250
+
+    # Searing Enigma
+    SEARING_ENIGMA = 6250
+
+    # Preserved Surface Blooms
+    SURFACE_BLOOMS = 250
+
+    # Consignment of Scintillack Snuff
+    # Laboratory Manufacturing
+    SCINTILLACK_SNUFF = (ACTION + 8*SCINTILLACK + SURFACE_BLOOMS)/2
+
+    # Elation at Feline Oration
+    # Pinnock
+    ELATION_AT_FELINE_ORATION = ACTION + 2*ANTIQUE_MYSTERY + COLLECTION_NOTE + 2*SCINTILLACK_SNUFF
+
+    # Oil of Companionship
+    # Station VIII Lab
+    OIL_OF_COMPANIONSHIP = ACTION + ELATION_AT_FELINE_ORATION
+
     # Survey of the Neath's Bones
     # Laboratory Research
     SURVEY = 6*ACTION/25
+
+    # Human Ribcage
+    # Ealing Gardens
+    HUMAN_RIBCAGE = ACTION + 15*SURVEY
+
+    # Mammoth Ribcage
+    # Laboratory Research
+    MAMMOTH_RIBCAGE = 16*ACTION + HUMAN_RIBCAGE
+
+    # Palaeontological Discovery
+    # Plain of Thirsty Grasses
+    PALAEONTOLOGICAL_DISCOVERY = (ACTION + 140*SURVEY)/6
+
+    # Leviathan Frame
+    # Results of Excavation
+    LEVIATHAN_FRAME = 25*PALAEONTOLOGICAL_DISCOVERY
+
+    # Thorned Ribcage
+    # Iron-Toothed Terror Bird
+    THORNED_RIBCAGE = 6*ACTION
+
+    # Flourishing Ribcage
+    # Helicon House
+    FLOURISHING_RIBCAGE = ACTION + HUMAN_RIBCAGE + THORNED_RIBCAGE
+
+    # Nodule of Trembling Amber
+    TREMBLING_AMBER = 1250
+
+    # Ribcage with a Bouquet of Eight Spines
+    # Helicon House
+    RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + THORNED_RIBCAGE + 3*TREMBLING_AMBER
+
+    # Rumour of the Upper River
+    RUMOUR_OF_THE_UPPER_RIVER = 250
+
+    # Prismatic Frame
+    # Expedition at Station VIII
+    PRISMATIC_FRAME = ACTION + OIL_OF_COMPANIONSHIP + 98*RUMOUR_OF_THE_UPPER_RIVER
+
+    # Nodule of Warm Amber
+    WARM_AMBER = 10
+
+    # Warbler Skeleton
+    # Ealing Gardens Butcher
+    WARBLER_SKELETON = ACTION + 130*BONE_FRAGMENT + 2*WARM_AMBER
+
+    # Skeleton with Seven Necks
+    # Laboratory Research
+    SKELETON_WITH_SEVEN_NECKS = 16*ACTION + 1000*NEVERCOLD_BRASS + WARBLER_SKELETON
 
 
 # Adds a fully-reified implication using an intermediate Boolean variable.
@@ -162,38 +259,127 @@ class Action:
 
 # Actions that initiate a skeleton.
 class Torso(enum.Enum):
+    HEADLESS_HUMANOID = Action(
+            "Reassemble your Headless Humanoid",
+            cost = Value.ACTION.value + Value.HEADLESS_SKELETON.value,
+            torso_style = 10,
+            value = 250,
+            skulls_needed = 1,
+            arms = 2,
+            legs = 2
+            )
+
     # Licentiate
-    # LICENTIATE_SKELETON = Action("Supply a skeleton of your own", cost = Value.ACTION.value, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2)
+    # LICENTIATE_SKELETON = Action(
+    #        "Supply a skeleton of your own",
+    #        cost = Value.ACTION.value,
+    #        torso_style = 10,
+    #        value = 250,
+    #        skulls_needed = 1,
+    #        arms = 2,
+    #        legs = 2
+    #        )
 
-    # Accumulated while trying to get other things
-    HEADLESS_HUMANOID = Action("Reassemble your Headless Humanoid", cost = Value.ACTION.value, torso_style = 10, value = 250, skulls_needed = 1, arms = 2, legs = 2)
+    HUMAN_RIBCAGE = Action(
+            "Build on the Human Ribcage",
+            cost = Value.ACTION.value + Value.HUMAN_RIBCAGE.value,
+            torso_style = 15,
+            value = 1250,
+            skulls_needed = 1,
+            limbs_needed = 4
+            )
 
-    # Ealing Gardens
-    HUMAN_RIBCAGE = Action("Build on the Human Ribcage", cost = Value.ACTION.value*2 + Value.SURVEY.value*15, torso_style = 15, value = 1250, skulls_needed = 1, limbs_needed = 4)
+    THORNED_RIBCAGE = Action(
+            "Make something of your Thorned Ribcage",
+            cost = Value.ACTION.value + Value.THORNED_RIBCAGE.value,
+            torso_style = 20,
+            value = 1250,
+            skulls_needed = 1,
+            limbs_needed = 4,
+            tails_needed = 1,
+            amalgamy = 1,
+            menace = 1
+            )
 
-    # Balmoral Woods (also gives Doubled Skull)
-    THORNED_RIBCAGE = Action("Make something of your Thorned Ribcage", cost = 2000 + Value.ACTION.value*14, torso_style = 20, value = 1250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 1)
+    SKELETON_WITH_SEVEN_NECKS = Action(
+            "Build on the Skeleton with Seven Necks",
+            cost = Value.ACTION.value + Value.SKELETON_WITH_SEVEN_NECKS.value,
+            torso_style = 30,
+            value = 6250,
+            skulls_needed = 7,
+            limbs_needed = 2,
+            legs = 2,
+            amalgamy = 2,
+            menace = 1
+            )
 
-    # Warbler Skeleton and Betrayer of Measures
-    SKELETON_WITH_SEVEN_NECKS = Action("Build on the Skeleton with Seven Necks", cost = 1150 + Value.ACTION.value*18, torso_style = 30, value = 6250, skulls_needed = 7, limbs_needed = 2, legs = 2, amalgamy = 2, menace = 1)
+    FLOURISHING_RIBCAGE = Action(
+            "Build on the Flourishing Ribcage",
+            cost = Value.ACTION.value + Value.FLOURISHING_RIBCAGE.value,
+            torso_style = 40,
+            value = 1250,
+            skulls_needed = 2,
+            limbs_needed = 6,
+            tails_needed = 1,
+            amalgamy = 2
+            )
 
-    # Combination of Human Ribcage and Thorned Ribcage
-    FLOURISHING_RIBCAGE = Action("Build on the Flourishing Ribcage", cost = 2000 + Value.ACTION.value*16 + Value.SURVEY.value*15, torso_style = 40, value = 1250, skulls_needed = 2, limbs_needed = 6, tails_needed = 1, amalgamy = 2)
+    MAMMOTH_RIBCAGE = Action(
+            "Build on the Mammoth Ribcage",
+            cost = Value.ACTION.value + Value.MAMMOTH_RIBCAGE.value,
+            torso_style = 50,
+            value = 6250,
+            skulls_needed = 1,
+            limbs_needed = 4,
+            tails_needed = 1,
+            antiquity = 2
+            )
 
-    # Human Ribcage and Betrayer of Measures
-    MAMMOTH_RIBCAGE = Action("Build on the Mammoth Ribcage", cost = Value.ACTION.value*18 + Value.SURVEY.value*15, torso_style = 50, value = 6250, skulls_needed = 1, limbs_needed = 4, tails_needed = 1, antiquity = 2)
+    RIBCAGE_WITH_A_BOUQUET_OF_EIGHT_SPINES = Action(
+            "Build on the Ribcage with the Eight Spines",
+            cost = Value.ACTION.value + Value.RIBCAGE_WITH_EIGHT_SPINES.value,
+            torso_style = 60,
+            value = 31250,
+            skulls_needed = 8,
+            limbs_needed = 4,
+            tails_needed = 1,
+            amalgamy = 1,
+            menace = 2
+            )
 
-    # Combination of Skeleton with Seven Necks and Thorned Ribcage
-    RIBCAGE_WITH_A_BOUQUET_OF_EIGHT_SPINES = Action("Build on the Ribcage with the Eight Spines", cost = 25650 + Value.ACTION.value*32, torso_style = 60, value = 31250, skulls_needed = 8, limbs_needed = 4, tails_needed = 1, amalgamy = 1, menace = 2)
+    LEVIATHAN_FRAME = Action("Build on the Leviathan Frame",
+            cost = Value.ACTION.value + Value.LEVIATHAN_FRAME.value,
+            torso_style = 70,
+            value = 31250,
+            skulls_needed = 1,
+            limbs_needed = 2,
+            tails = 1,
+            antiquity = 1,
+            menace = 1
+            )
 
-    # Skeleton with Seven Necks, 2 x Severed Chimaerical Head of the Vake, 2 x Counterfeit Head of John the Baptist, Carved Ball of Stygian Ivory, 2 x Plated Skull, 2 x Albatross Wing
-    LEVIATHAN_FRAME = Action("Build on the Leviathan Frame", cost = 22150 + Value.ACTION.value*33, torso_style = 70, value = 31250, skulls_needed = 1, limbs_needed = 2, tails = 1, antiquity = 1, menace = 1)
+    PRISMATIC_FRAME = Action(
+            "Build on the Prismatic Frame",
+            cost = Value.ACTION.value + Value.PRISMATIC_FRAME.value,
+            torso_style = 80,
+            value = 31250,
+            skulls_needed = 3,
+            limbs_needed = 3,
+            tails_needed = 3,
+            amalgamy = 2,
+            antiquity = 2
+            )
 
-    # Expedition at Station VII
-    PRISMATIC_FRAME = Action("Build on the Prismatic Frame", cost = 29250 + Value.ACTION.value*5, torso_style = 80, value = 31250, skulls_needed = 3, limbs_needed = 3, tails_needed = 3, amalgamy = 2, antiquity = 2)
-
-    # Upwards
-    FIVE_POINTED_FRAME = Action("Build on the Five-Pointed Frame", cost = 31250 + Value.ACTION.value*10, torso_style = 100, value = 31250, skulls_needed = 5, limbs_needed = 5, amalgamy = 2, menace = 1)
+    FIVE_POINTED_FRAME = Action(
+            "Build on the Five-Pointed Frame",
+            cost = Value.ACTION.value + Value.FIVE_POINTED_RIBCAGE.value,
+            torso_style = 100,
+            value = 31250,
+            skulls_needed = 5,
+            limbs_needed = 5,
+            amalgamy = 2,
+            menace = 1
+            )
 
     def __str__(self):
         return str(self.value)
