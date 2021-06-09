@@ -270,7 +270,7 @@ class Torso(enum.Enum):
             )
 
     # Licentiate
-    # LICENTIATE_SKELETON = Action(
+    # VICTIM_SKELETON = Action(
     #        "Supply a skeleton of your own",
     #        cost = Value.ACTION.value,
     #        torso_style = 10,
@@ -385,6 +385,48 @@ class Torso(enum.Enum):
         return str(self.value)
 
 
+# Actions that are taken immediately after starting a skeleton.
+class Skull(enum.Enum):
+    BRASS_SKULL = Action("Affix a Bright Brass Skull to your (Skeleton Type)", cost = 6450 + Value.ACTION.value, value = 6500, skulls_needed = -1, skulls = 1, implausibility = 2)
+
+    # No consistent source
+    # EYELESS_SKULL = Action("Affix an Eyeless Skull to your (Skeleton Type)", cost = cp_model.INT32_MAX, value = 3000, skulls_needed = -1, skulls = 1, menace = 2)
+
+    # Feast of the Exceptional Rose, 200 Inklings of Identity, action to send and receive it
+    # ENGRAVED_SKULL = Action("Affix a Custom-Engraved Skull to your (Skeleton Type)", cost = 2000 + Value.ACTION.value*2, value = 10000, skulls_needed = -1, skulls = 1, exhaustion = 2)
+
+    HORNED_SKULL = Action("Affix a Horned Skull to your (Skeleton Type)", cost = 1050 + Value.ACTION.value*2, value = 1250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 2)
+
+    SABRE_TOOTHED_SKULL = Action("Affix a Sabre-toothed Skull to your (Skeleton Type)", cost = 6150 + Value.ACTION.value*2, value = 6250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 1)
+
+    # Upwards
+    PENTAGRAMMIC_SKULL = Action("Affix a Pentagrammic Skull to your (Skeleton Type)", cost = Value.ACTION.value*10, value = 1250, skulls_needed = -1, skulls = 1, amalgamy = 2, menace = 1)
+
+    PLATED_SKULL = Action("Affix a Plated Skull to your (Skeleton Type)", cost = 2250 + Value.ACTION.value*2, value = 2500, skulls_needed = -1, skulls = 1, menace = 2)
+
+    # Flute Street, including travel due to quality cap
+    RUBBERY_SKULL = Action("Affix a Rubbery Skull to your (Skeleton Type)", cost = Value.ACTION.value*26, value = 600, skulls_needed = -1, skulls = 1, amalgamy = 1)
+
+    # OWN_SKULL = Action("Duplicate your own skull and affix it here", cost = 1000 + Value.ACTION.value, value = -250, skulls_needed = -1, skulls = 1)
+
+    BAPTIST_SKULL = Action("Duplicate the skull of John the Baptist, if you can call that a skull", cost = 1000 + Value.ACTION.value, value = 1500, skulls_needed = -1, skulls = 1, counter_church = 2)
+
+    # Persephone, 6 actions (Favours: the Docks) for 2 Esteem of the Guild
+    CORAL_SKULL = Action("Affix a Skull in Coral to your (Skeleton Type)", cost = Value.ACTION.value*25/3, value = 1750, skulls_needed = -1, skulls = 1, amalgamy = 2)
+
+    VAKE_SKULL = Action("Duplicate the Vake's skull and use it to decorate your (Skeleton Type)", cost = 6000 + Value.ACTION.value, value = 6500, skulls_needed = -1, skulls = 1, menace = 3)
+
+    # VICTIM_SKULL = Action("Cap this with a victim’s skull", cost = Value.ACTION.value, value = 250, skulls_needed = -1, skulls = 1)
+
+    # Balmoral Woods (also gives Thorned Ribcage)
+    DOUBLED_SKULL = Action("Affix a Doubled Skull to your (Skeleton Type)", cost = 2000 + Value.ACTION.value*14, value = 6250, skulls_needed = -1, skulls = 2, amalgamy = 1, antiquity = 2)
+
+    STYGIAN_IVORY = Action("Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)", cost = 250 + Value.ACTION.value, value = 250, skulls_needed = -1)
+
+    def __str__(self):
+        return str(self.value)
+
+
 # Which kind of skeleton is to be declared.
 class Declaration(enum.Enum):
     CHIMERA = Action("Declare your (Skeleton Type) a completed Chimera", cost = Value.ACTION.value, implausibility = 3)
@@ -418,29 +460,7 @@ def create_data_model():
     # The current value of Zoological Mania, which grants a 10% bonus to value for a certain declaration.
     data['zoological_mania'] = Declaration.AMPHIBIAN
     
-    data['actions'] = [torso.value for torso in Torso] + [
-            Action("Affix a Bright Brass Skull to your (Skeleton Type)", cost = 6450 + Value.ACTION.value, value = 6500, skulls_needed = -1, skulls = 1, implausibility = 2),
-            # No consistent source
-            # Action("Affix an Eyeless Skull to your (Skeleton Type)", cost = cp_model.INT32_MAX, value = 3000, skulls_needed = -1, skulls = 1, menace = 2),
-            # Feast of the Exceptional Rose, 200 Inklings of Identity, action to send and receive it
-            #Action("Affix a Custom-Engraved Skull to your (Skeleton Type)", cost = 2000 + Value.ACTION.value*2, value = 10000, skulls_needed = -1, skulls = 1, exhaustion = 2),
-            Action("Affix a Horned Skull to your (Skeleton Type)", cost = 1050 + Value.ACTION.value*2, value = 1250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 2),
-            Action("Affix a Sabre-toothed Skull to your (Skeleton Type)", cost = 6150 + Value.ACTION.value*2, value = 6250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 1),
-            # Upwards
-            Action("Affix a Pentagrammic Skull to your (Skeleton Type)", cost = Value.ACTION.value*10, value = 1250, skulls_needed = -1, skulls = 1, amalgamy = 2, menace = 1),
-            Action("Affix a Plated Skull to your (Skeleton Type)", cost = 2250 + Value.ACTION.value*2, value = 2500, skulls_needed = -1, skulls = 1, menace = 2),
-            # Flute Street, including travel due to quality cap
-            Action("Affix a Rubbery Skull to your (Skeleton Type)", cost = Value.ACTION.value*26, value = 600, skulls_needed = -1, skulls = 1, amalgamy = 1),
-            # Action("Duplicate your own skull and affix it here", cost = 1000 + Value.ACTION.value, value = -250, skulls_needed = -1, skulls = 1),
-            Action("Duplicate the skull of John the Baptist, if you can call that a skull", cost = 1000 + Value.ACTION.value, value = 1500, skulls_needed = -1, skulls = 1, counter_church = 2),
-            # Persephone, 6 actions (Favours: the Docks) for 2 Esteem of the Guild
-            Action("Affix a Skull in Coral to your (Skeleton Type)", cost = Value.ACTION.value*25/3, value = 1750, skulls_needed = -1, skulls = 1, amalgamy = 2),
-            Action("Duplicate the Vake's skull and use it to decorate your (Skeleton Type)", cost = 6000 + Value.ACTION.value, value = 6500, skulls_needed = -1, skulls = 1, menace = 3),
-            # Action("Cap this with a victim’s skull", cost = Value.ACTION.value, value = 250, skulls_needed = -1, skulls = 1),
-            # Balmoral Woods (also gives Thorned Ribcage)
-            Action("Affix a Doubled Skull to your (Skeleton Type)", cost = 2000 + Value.ACTION.value*14, value = 6250, skulls_needed = -1, skulls = 2, amalgamy = 1, antiquity = 2),
-            Action("Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)", cost = 250 + Value.ACTION.value, value = 250, skulls_needed = -1),
-
+    data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [
             # 2 pincers at once
             Action("Apply a Crustacean Pincer to your (Skeleton Type)", cost = 25 + Value.ACTION.value*1.5, limbs_needed = -1, arms = 1, menace = 1),
             # Accumulated while trying to get other things
