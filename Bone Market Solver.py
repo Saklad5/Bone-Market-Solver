@@ -35,6 +35,10 @@ class Value(enum.Enum):
     # Bone Fragment
     BONE_FRAGMENT = 1
 
+    # Bright Brass Skull
+    # Merrigans Exchange
+    BRASS_SKULL = 6250
+
     # Cartographer's Hoard
     CARTOGRAPHERS_HOARD = 31250
 
@@ -45,22 +49,61 @@ class Value(enum.Enum):
     # Volume of Collated Research
     COLLATED_RESEARCH = 250
 
+    # Favours: The Docks
+    # Various opportunity cards
+    DOCK_FAVOURS = ACTION
+
+    # Eyeless Skull
+    # No consistent source
+    EYELESS_SKULL = cp_model.INT32_MAX
+
     # Five-Pointed Ribcage
     # Upwards
     FIVE_POINTED_RIBCAGE = 9*ACTION + CARTOGRAPHERS_HOARD
+
+    # Esteem of the Guild
+    # Jericho Parade, 2 at a time
+    GUILD_ESTEEM = (ACTION + 5*DOCK_FAVOURS)/2
+
+    # Skull in Coral
+    # Persephone, 1-2 at a time
+    CORAL_SKULL = 1.5*(2*ACTION + 3*GUILD_ESTEEM)
 
     # Headless Skeleton
     # These are accumulated while acquiring other qualities.
     HEADLESS_SKELETON = 0
 
+    # Hinterland Scrip
+    HINTERLAND_SCRIP = 50
+
+    # Crate of Incorruptible Biscuits
+    INCORRUPTIBLE_BISCUITS = 250
+
+    # Inkling of Identity
+    INKLING_OF_IDENTITY = 10
+
+    # A Custom-Engraved Skull
+    # Feast of the Exceptional Rose, sent by one player and accepted by another
+    ENGRAVED_SKULL = 2*ACTION + 200*INKLING_OF_IDENTITY
+
     # Nevercold Brass Sliver
     NEVERCOLD_BRASS = 1
+
+    # Pentagrammic Skull
+    # Upwards
+    PENTAGRAMMIC_SKULL = 9*ACTION
+
+    # Hand-picked Peppercaps
+    PEPPERCAPS = HINTERLAND_SCRIP
 
     # Knob of Scintillack
     SCINTILLACK = 250
 
     # Searing Enigma
     SEARING_ENIGMA = 6250
+
+    # Carved Ball of Stygian Ivory
+    STYGIAN_IVORY = 250
 
     # Preserved Surface Blooms
     SURFACE_BLOOMS = 250
@@ -105,12 +148,28 @@ class Value(enum.Enum):
     # Helicon House
     FLOURISHING_RIBCAGE = ACTION + HUMAN_RIBCAGE + THORNED_RIBCAGE
 
+    # Time Remaining in the Woods
+    # Compel Ghillie, 5 at a time
+    TIME_REMAINING_IN_THE_WOODS = (ACTION + 4*COLLATED_RESEARCH)/5
+
+    # Observation: Fox
+    # Balmoral Woods
+    FOX_OBSERVATION = 10*ACTION + 8*TIME_REMAINING_IN_THE_WOODS
+
+    # Doubled Skull
+    # Keeper of the Marigold Menagerie
+    DOUBLED_SKULL = ACTION + FOX_OBSERVATION
+
     # Nodule of Trembling Amber
     TREMBLING_AMBER = 1250
 
     # Ribcage with a Bouquet of Eight Spines
     # Helicon House
     RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + THORNED_RIBCAGE + 3*TREMBLING_AMBER
+
+    # Rubbery Skull
+    # Flute Street, including travel due to quality cap
+    RUBBERY_SKULL = 25*ACTION
 
     # Rumour of the Upper River
     RUMOUR_OF_THE_UPPER_RIVER = 250
@@ -121,6 +180,18 @@ class Value(enum.Enum):
 
     # Nodule of Warm Amber
     WARM_AMBER = 10
+
+    # Horned Skull
+    # Ealing Gardens Butcher
+    HORNED_SKULL = ACTION + 1000*BONE_FRAGMENT + 5*WARM_AMBER
+
+    # Plated Skull
+    # Ealing Gardens Butcher
+    PLATED_SKULL = ACTION + 1750*BONE_FRAGMENT + INCORRUPTIBLE_BISCUITS + 25*WARM_AMBER
+
+    # Sabre-toothed Skull
+    # Ealing Gardens Butcher
+    SABRE_TOOTHED_SKULL = ACTION + 4900*BONE_FRAGMENT + 125*WARM_AMBER
 
     # Warbler Skeleton
     # Ealing Gardens Butcher
@@ -387,41 +458,143 @@ class Torso(enum.Enum):
 
 # Actions that are taken immediately after starting a skeleton.
 class Skull(enum.Enum):
-    BRASS_SKULL = Action("Affix a Bright Brass Skull to your (Skeleton Type)", cost = 6450 + Value.ACTION.value, value = 6500, skulls_needed = -1, skulls = 1, implausibility = 2)
+    BAPTIST_SKULL = Action(
+            "Duplicate the skull of John the Baptist, if you can call that a skull",
+            cost = Value.ACTION.value + 500*Value.BONE_FRAGMENT.value + 10*Value.PEPPERCAPS.value,
+            value = 1500,
+            skulls_needed = -1,
+            skulls = 1,
+            counter_church = 2
+            )
 
-    # No consistent source
-    # EYELESS_SKULL = Action("Affix an Eyeless Skull to your (Skeleton Type)", cost = cp_model.INT32_MAX, value = 3000, skulls_needed = -1, skulls = 1, menace = 2)
+    BRASS_SKULL = Action(
+            "Affix a Bright Brass Skull to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.BRASS_SKULL.value + 200*Value.NEVERCOLD_BRASS.value,
+            value = 6500,
+            skulls_needed = -1,
+            skulls = 1,
+            implausibility = 2
+            )
 
-    # Feast of the Exceptional Rose, 200 Inklings of Identity, action to send and receive it
-    # ENGRAVED_SKULL = Action("Affix a Custom-Engraved Skull to your (Skeleton Type)", cost = 2000 + Value.ACTION.value*2, value = 10000, skulls_needed = -1, skulls = 1, exhaustion = 2)
+    CORAL_SKULL = Action(
+            "Affix a Skull in Coral to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.CORAL_SKULL.value + Value.SCINTILLACK.value,
+            value = 1750,
+            skulls_needed = -1,
+            skulls = 1,
+            amalgamy = 2
+            )
 
-    HORNED_SKULL = Action("Affix a Horned Skull to your (Skeleton Type)", cost = 1050 + Value.ACTION.value*2, value = 1250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 2)
+    DOUBLED_SKULL = Action(
+            "Affix a Doubled Skull to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.DOUBLED_SKULL.value,
+            value = 6250,
+            skulls_needed = -1,
+            skulls = 2,
+            amalgamy = 1,
+            antiquity = 2
+            )
 
-    SABRE_TOOTHED_SKULL = Action("Affix a Sabre-toothed Skull to your (Skeleton Type)", cost = 6150 + Value.ACTION.value*2, value = 6250, skulls_needed = -1, skulls = 1, antiquity = 1, menace = 1)
+    # Adds Exhaustion
+    # ENGRAVED_SKULL = Action(
+    #         "Affix a Custom-Engraved Skull to your (Skeleton Type)",
+    #         cost = Value.ACTION.value + Value.ENGRAVED_SKULL.value,
+    #         value = 10000,
+    #         skulls_needed = -1,
+    #         skulls = 1,
+    #         exhaustion = 2
+    #         )
 
-    # Upwards
-    PENTAGRAMMIC_SKULL = Action("Affix a Pentagrammic Skull to your (Skeleton Type)", cost = Value.ACTION.value*10, value = 1250, skulls_needed = -1, skulls = 1, amalgamy = 2, menace = 1)
+    EYELESS_SKULL = Action(
+            "Affix an Eyeless Skull to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.EYELESS_SKULL.value,
+            value = 3000,
+            skulls_needed = -1,
+            skulls = 1,
+            menace = 2
+            )
 
-    PLATED_SKULL = Action("Affix a Plated Skull to your (Skeleton Type)", cost = 2250 + Value.ACTION.value*2, value = 2500, skulls_needed = -1, skulls = 1, menace = 2)
+    HORNED_SKULL = Action(
+            "Affix a Horned Skull to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.HORNED_SKULL.value,
+            value = 1250,
+            skulls_needed = -1,
+            skulls = 1,
+            antiquity = 1,
+            menace = 2
+            )
 
-    # Flute Street, including travel due to quality cap
-    RUBBERY_SKULL = Action("Affix a Rubbery Skull to your (Skeleton Type)", cost = Value.ACTION.value*26, value = 600, skulls_needed = -1, skulls = 1, amalgamy = 1)
+    # Seeking the Name of Mr. Eaten
+    # OWN_SKULL = Action(
+    #         "Duplicate your own skull and affix it here",
+    #         cost = Value.ACTION.value + 1000*Value.BONE_FRAGMENT.value,
+    #         value = -250,
+    #         skulls_needed = -1,
+    #         skulls = 1
+    #         )
 
-    # OWN_SKULL = Action("Duplicate your own skull and affix it here", cost = 1000 + Value.ACTION.value, value = -250, skulls_needed = -1, skulls = 1)
+    PENTAGRAMMIC_SKULL = Action(
+            "Affix a Pentagrammic Skull to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.PENTAGRAMMIC_SKULL.value,
+            value = 1250,
+            skulls_needed = -1,
+            skulls = 1,
+            amalgamy = 2,
+            menace = 1
+            )
 
-    BAPTIST_SKULL = Action("Duplicate the skull of John the Baptist, if you can call that a skull", cost = 1000 + Value.ACTION.value, value = 1500, skulls_needed = -1, skulls = 1, counter_church = 2)
+    PLATED_SKULL = Action(
+            "Affix a Plated Skull to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.PLATED_SKULL.value,
+            value = 2500,
+            skulls_needed = -1,
+            skulls = 1,
+            menace = 2
+            )
 
-    # Persephone, 6 actions (Favours: the Docks) for 2 Esteem of the Guild
-    CORAL_SKULL = Action("Affix a Skull in Coral to your (Skeleton Type)", cost = Value.ACTION.value*25/3, value = 1750, skulls_needed = -1, skulls = 1, amalgamy = 2)
+    RUBBERY_SKULL = Action(
+            "Affix a Rubbery Skull to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.RUBBERY_SKULL.value,
+            value = 600,
+            skulls_needed = -1,
+            skulls = 1,
+            amalgamy = 1
+            )
 
-    VAKE_SKULL = Action("Duplicate the Vake's skull and use it to decorate your (Skeleton Type)", cost = 6000 + Value.ACTION.value, value = 6500, skulls_needed = -1, skulls = 1, menace = 3)
+    SABRE_TOOTHED_SKULL = Action(
+            "Affix a Sabre-toothed Skull to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.SABRE_TOOTHED_SKULL.value,
+            value = 6250,
+            skulls_needed = -1,
+            skulls = 1,
+            antiquity = 1,
+            menace = 1
+            )
 
-    # VICTIM_SKULL = Action("Cap this with a victim’s skull", cost = Value.ACTION.value, value = 250, skulls_needed = -1, skulls = 1)
+    STYGIAN_IVORY = Action(
+            "Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.STYGIAN_IVORY.value,
+            value = 250,
+            skulls_needed = -1
+            )
 
-    # Balmoral Woods (also gives Thorned Ribcage)
-    DOUBLED_SKULL = Action("Affix a Doubled Skull to your (Skeleton Type)", cost = 2000 + Value.ACTION.value*14, value = 6250, skulls_needed = -1, skulls = 2, amalgamy = 1, antiquity = 2)
+    VAKE_SKULL = Action(
+            "Duplicate the Vake's skull and use it to decorate your (Skeleton Type)",
+            cost = Value.ACTION.value + 6000*Value.BONE_FRAGMENT.value,
+            value = 6500,
+            skulls_needed = -1,
+            skulls = 1,
+            menace = 3
+            )
 
-    STYGIAN_IVORY = Action("Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)", cost = 250 + Value.ACTION.value, value = 250, skulls_needed = -1)
+    # Licentiate
+    # VICTIM_SKULL = Action(
+    #         "Cap this with a victim’s skull",
+    #         cost = Value.ACTION.value,
+    #         value = 250,
+    #         skulls_needed = -1,
+    #         skulls = 1
+    #         )
 
     def __str__(self):
         return str(self.value)
