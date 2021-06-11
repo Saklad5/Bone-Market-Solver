@@ -32,6 +32,10 @@ class Value(enum.Enum):
     # Antique Mystery
     ANTIQUE_MYSTERY = 1250
 
+    # Favours: Bohemians
+    # Various opportunity cards
+    BOHEMIAN_FAVOURS = ACTION
+
     # Bone Fragment
     BONE_FRAGMENT = 1
 
@@ -48,6 +52,14 @@ class Value(enum.Enum):
 
     # Volume of Collated Research
     COLLATED_RESEARCH = 250
+
+    # Deep-Zee Catch
+    # Spear-fishing at the bottom of the Evenlode, 7 at a time
+    DEEP_ZEE_CATCH = ACTION/7
+
+    # Crustacean Pincer
+    # Ealing Gardens Butcher, 2 at a time
+    CRUSTACEAN_PINCER = (ACTION + DEEP_ZEE_CATCH)/2
 
     # Favours: The Docks
     # Various opportunity cards
@@ -76,6 +88,14 @@ class Value(enum.Enum):
     # Hinterland Scrip
     HINTERLAND_SCRIP = 50
 
+    # Fossilised Forelimb
+    # Anning and Daughters
+    FOSSILISED_FORELIMB = 50*HINTERLAND_SCRIP
+
+    # Human Arm
+    # These are accumulated while acquiring other qualities.
+    HUMAN_ARM = 0
+
     # Crate of Incorruptible Biscuits
     INCORRUPTIBLE_BISCUITS = 250
 
@@ -85,6 +105,14 @@ class Value(enum.Enum):
     # A Custom-Engraved Skull
     # Feast of the Exceptional Rose, sent by one player and accepted by another
     ENGRAVED_SKULL = 2*ACTION + 200*INKLING_OF_IDENTITY
+
+    # Ivory Humerus
+    # Ealing Gardens statue, 2 at a time
+    IVORY_HUMERUS = (ACTION + 4*BOHEMIAN_FAVOURS)/2
+
+    # Knotted Humerus
+    # These are accumulated while acquiring other qualities.
+    KNOTTED_HUMERUS = 0
 
     # Nevercold Brass Sliver
     NEVERCOLD_BRASS = 1
@@ -601,20 +629,48 @@ class Skull(enum.Enum):
 
 # Actions that are taken once all skulls are added to a skeleton.
 class Appendage(enum.Enum):
-    # 2 pincers at once
-    CRUSTACEAN_PINCER = Action("Apply a Crustacean Pincer to your (Skeleton Type)", cost = 25 + Value.ACTION.value*1.5, limbs_needed = -1, arms = 1, menace = 1)
+    CRUSTACEAN_PINCER = Action(
+            "Apply a Crustacean Pincer to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.CRUSTACEAN_PINCER.value,
+            limbs_needed = -1,
+            arms = 1,
+            menace = 1
+            )
 
-    # Accumulated while trying to get other things
-    KNOTTED_HUMERUS = Action("Apply a Knotted Humerus to your (Skeleton Type)", cost = Value.ACTION.value, value = 150, limbs_needed = -1, arms = 1, amalgamy = 1)
+    FOSSILISED_FORELIMB = Action(
+            "Apply a Fossilised Forelimb to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.FOSSILISED_FORELIMB.value,
+            value = 2750,
+            limbs_needed = -1,
+            arms = 1,
+            antiquity = 2
+            )
 
-    # Ealing Gardens, 5 actions (Favours: Bohemians) for 2
-    IVORY_HUMERUS = Action("Apply an Ivory Humerus to your (Skeleton Type)", cost = Value.ACTION.value*3.5, value = 1500, limbs_needed = -1, arms = 1)
+    HUMAN_ARM = Action(
+            "Join a Human Arm to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.HUMAN_ARM.value,
+            value = 250,
+            limbs_needed = -1,
+            arms = 1,
+            menace = -1
+            )
 
-    # Accumulated while trying to get other things
-    HUMAN_ARM = Action("Join a Human Arm to your (Skeleton Type)", cost = Value.ACTION.value, value = 250, limbs_needed = -1, arms = 1, menace = -1)
+    IVORY_HUMERUS = Action(
+            "Apply an Ivory Humerus to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.IVORY_HUMERUS.value,
+            value = 1500,
+            limbs_needed = -1,
+            arms = 1
+            )
 
-    # Anning and Daughters
-    FOSSILISED_FORELIMB = Action("Apply a Fossilised Forelimb to your (Skeleton Type)", cost = 2500 + Value.ACTION.value, value = 2750, limbs_needed = -1, arms = 1, antiquity = 2)
+    KNOTTED_HUMERUS = Action(
+            "Apply a Knotted Humerus to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.KNOTTED_HUMERUS.value,
+            value = 150,
+            limbs_needed = -1,
+            arms = 1,
+            amalgamy = 1
+            )
 
     def __str__(self):
         return str(self.value)
