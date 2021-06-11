@@ -672,6 +672,15 @@ class Appendage(enum.Enum):
             amalgamy = 1
             )
 
+    # 2 wings at once
+    TERROR_BIRD_WING = Action("Add the Wing of a Young Terror Bird to your (Skeleton Type)", cost = 175 + Value.ACTION.value*1.5, value = 250, limbs_needed = -1, wings = 1, antiquity = 1, menace = 1)
+
+    # 2 wings at once
+    ALBATROSS_WING = Action("Put an Albatross Wing on your (Skeleton Type)", cost = 1125 + Value.ACTION.value*1.5, value = 1250, limbs_needed = -1, wings = 1, amalgamy = 1)
+
+    # 2 wings at once
+    BAT_WING = Action("Add a Bat Wing to your (Skeleton Type)", cost = 60 + Value.ACTION.value*1.5, value = 1, limbs_needed = -1, wings = 1, menace = -1)
+
     def __str__(self):
         return str(self.value)
 
@@ -710,13 +719,6 @@ def create_data_model():
     data['zoological_mania'] = Declaration.AMPHIBIAN
     
     data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [appendage.value for appendage in Appendage] + [
-            # 2 wings at once
-            Action("Add the Wing of a Young Terror Bird to your (Skeleton Type)", cost = 175 + Value.ACTION.value*1.5, value = 250, limbs_needed = -1, wings = 1, antiquity = 1, menace = 1),
-            # 2 wings at once
-            Action("Put an Albatross Wing on your (Skeleton Type)", cost = 1125 + Value.ACTION.value*1.5, value = 1250, limbs_needed = -1, wings = 1, amalgamy = 1),
-            # 2 wings at once
-            Action("Add a Bat Wing to your (Skeleton Type)", cost = 60 + Value.ACTION.value*1.5, value = 1, limbs_needed = -1, wings = 1, menace = -1),
-
             # Dumbwaiter of Balmoral, 25 at a time
             Action("Apply the Femur of a Surface Deer to your (Skeleton Type)", cost = Value.ACTION.value*1.04, value = 10, limbs_needed = -1, legs = 1, menace = -1),
             # Accumulated while trying to get other things
