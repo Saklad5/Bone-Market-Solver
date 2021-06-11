@@ -209,6 +209,14 @@ class Value(enum.Enum):
     # Nodule of Warm Amber
     WARM_AMBER = 10
 
+    # Albatross Wing
+    # Ealing Gardens Butcher, 2 at a time
+    ALBATROSS_WING = (ACTION + 2000*BONE_FRAGMENT + 25*WARM_AMBER)/2
+
+    # Bat Wing
+    # Ealing Gardens Butcher, 2 at a time
+    BAT_WING = (ACTION + 100*BONE_FRAGMENT + 2*WARM_AMBER)/2
+
     # Horned Skull
     # Ealing Gardens Butcher
     HORNED_SKULL = ACTION + 1000*BONE_FRAGMENT + 5*WARM_AMBER
@@ -220,6 +228,10 @@ class Value(enum.Enum):
     # Sabre-toothed Skull
     # Ealing Gardens Butcher
     SABRE_TOOTHED_SKULL = ACTION + 4900*BONE_FRAGMENT + 125*WARM_AMBER
+
+    # Wing of a Young Terror Bird
+    # Ealing Gardens Butcher, 2 at a time
+    TERROR_BIRD_WING = (ACTION + 100*BONE_FRAGMENT + 25*WARM_AMBER)/2
 
     # Warbler Skeleton
     # Ealing Gardens Butcher
@@ -629,6 +641,24 @@ class Skull(enum.Enum):
 
 # Actions that are taken once all skulls are added to a skeleton.
 class Appendage(enum.Enum):
+    ALBATROSS_WING = Action(
+            "Put an Albatross Wing on your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.ALBATROSS_WING.value,
+            value = 1250,
+            limbs_needed = -1,
+            wings = 1,
+            amalgamy = 1
+            )
+
+    BAT_WING = Action(
+            "Add a Bat Wing to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.BAT_WING.value,
+            value = 1,
+            limbs_needed = -1,
+            wings = 1,
+            menace = -1
+            )
+
     CRUSTACEAN_PINCER = Action(
             "Apply a Crustacean Pincer to your (Skeleton Type)",
             cost = Value.ACTION.value + Value.CRUSTACEAN_PINCER.value,
@@ -672,14 +702,15 @@ class Appendage(enum.Enum):
             amalgamy = 1
             )
 
-    # 2 wings at once
-    TERROR_BIRD_WING = Action("Add the Wing of a Young Terror Bird to your (Skeleton Type)", cost = 175 + Value.ACTION.value*1.5, value = 250, limbs_needed = -1, wings = 1, antiquity = 1, menace = 1)
-
-    # 2 wings at once
-    ALBATROSS_WING = Action("Put an Albatross Wing on your (Skeleton Type)", cost = 1125 + Value.ACTION.value*1.5, value = 1250, limbs_needed = -1, wings = 1, amalgamy = 1)
-
-    # 2 wings at once
-    BAT_WING = Action("Add a Bat Wing to your (Skeleton Type)", cost = 60 + Value.ACTION.value*1.5, value = 1, limbs_needed = -1, wings = 1, menace = -1)
+    TERROR_BIRD_WING = Action(
+            "Add the Wing of a Young Terror Bird to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.TERROR_BIRD_WING.value,
+            value = 250,
+            limbs_needed = -1,
+            wings = 1,
+            antiquity = 1,
+            menace = 1
+            )
 
     def __str__(self):
         return str(self.value)
