@@ -46,6 +46,10 @@ class Value(enum.Enum):
     # Cartographer's Hoard
     CARTOGRAPHERS_HOARD = 31250
 
+    # Favours: The Church
+    # Various opportunity cards
+    CHURCH_FAVOURS = ACTION
+
     # Collection Note: There's a 'Package' in London
     # Station VIII Lab
     COLLECTION_NOTE = ACTION
@@ -61,6 +65,10 @@ class Value(enum.Enum):
     # Ealing Gardens Butcher, 2 at a time
     CRUSTACEAN_PINCER = (ACTION + DEEP_ZEE_CATCH)/2
 
+    # Femur of a Surface Deer
+    # Dumbwaiter of Balmoral, 25 at a time
+    DEER_FEMUR = ACTION/25
+
     # Favours: The Docks
     # Various opportunity cards
     DOCK_FAVOURS = ACTION
@@ -68,6 +76,18 @@ class Value(enum.Enum):
     # Eyeless Skull
     # No consistent source
     EYELESS_SKULL = cp_model.INT32_MAX
+
+    # Holy Relic of the Thigh of Saint Fiacre
+    # Jericho Locks statue, 2 at a time
+    FIACRE_THIGH = (ACTION + 4*CHURCH_FAVOURS)/2
+
+    # Fin Bones, Collected
+    # Hunt and dissect Pinewood Shark, 40 at a time
+    FIN_BONES = (11*ACTION)/40
+
+    # Amber-Crusted Fin
+    # Helicon House
+    AMBER_FIN = ACTION + 10*FIN_BONES
 
     # Five-Pointed Ribcage
     # Upwards
@@ -92,6 +112,10 @@ class Value(enum.Enum):
     # Anning and Daughters
     FOSSILISED_FORELIMB = 50*HINTERLAND_SCRIP
 
+    # Hedonist
+    # Handsome Townhouse, 3cp at a time
+    HEDONIST_CP = ACTION/3
+
     # Human Arm
     # These are accumulated while acquiring other qualities.
     HUMAN_ARM = 0
@@ -110,12 +134,24 @@ class Value(enum.Enum):
     # Ealing Gardens statue, 2 at a time
     IVORY_HUMERUS = (ACTION + 4*BOHEMIAN_FAVOURS)/2
 
+    # Femur of a Jurassic Beast
+    # Brawling for yourself, large Bone Market crate, 12 at a time
+    JURASSIC_FEMUR = (10*ACTION)/12
+
     # Knotted Humerus
     # These are accumulated while acquiring other qualities.
     KNOTTED_HUMERUS = 0
 
     # Nevercold Brass Sliver
     NEVERCOLD_BRASS = 1
+
+    # Parabolan Orange-apple
+    # Parabolan Base-camp, electricity and hedonism, 2 at a time
+    ORANGE_APPLE = (2*ACTION + 100*BONE_FRAGMENT + 21*HEDONIST_CP)/2
+
+    # Ivory Femur
+    # Bohemian Sculptress
+    IVORY_FEMUR = ACTION + 750*BONE_FRAGMENT + 3*ORANGE_APPLE
 
     # Pentagrammic Skull
     # Upwards
@@ -164,6 +200,10 @@ class Value(enum.Enum):
     # Plain of Thirsty Grasses
     PALAEONTOLOGICAL_DISCOVERY = (ACTION + 140*SURVEY)/6
 
+    # Helical Thighbone
+    # Results of Excavation, 6 at a time
+    HELICAL_THIGH = (2*PALAEONTOLOGICAL_DISCOVERY)/6
+
     # Leviathan Frame
     # Results of Excavation
     LEVIATHAN_FRAME = 25*PALAEONTOLOGICAL_DISCOVERY
@@ -206,6 +246,10 @@ class Value(enum.Enum):
     # Expedition at Station VIII
     PRISMATIC_FRAME = ACTION + OIL_OF_COMPANIONSHIP + 98*RUMOUR_OF_THE_UPPER_RIVER
 
+    # Unidentified Thigh Bone
+    # These are accumulated while acquiring other qualities.
+    UNIDENTIFIED_THIGH = 0
+
     # Nodule of Warm Amber
     WARM_AMBER = 10
 
@@ -240,6 +284,10 @@ class Value(enum.Enum):
     # Skeleton with Seven Necks
     # Laboratory Research
     SKELETON_WITH_SEVEN_NECKS = 16*ACTION + 1000*NEVERCOLD_BRASS + WARBLER_SKELETON
+
+    # Withered Tentacle
+    # Helicon House, 3 at a time
+    WITHERED_TENTACLE = (ACTION + 5*WARM_AMBER)/3
 
 
 # Adds a fully-reified implication using an intermediate Boolean variable.
@@ -650,6 +698,16 @@ class Appendage(enum.Enum):
             amalgamy = 1
             )
 
+    AMBER_FIN = Action(
+            "Attach the Amber-Crusted Fin to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.AMBER_FIN.value,
+            value = 1500,
+            limbs_needed = -1,
+            fins = 1,
+            amalgamy = 1,
+            menace = 1
+            )
+
     BAT_WING = Action(
             "Add a Bat Wing to your (Skeleton Type)",
             cost = Value.ACTION.value + Value.BAT_WING.value,
@@ -667,6 +725,32 @@ class Appendage(enum.Enum):
             menace = 1
             )
 
+    DEER_FEMUR = Action(
+            "Apply the Femur of a Surface Deer to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.DEER_FEMUR.value,
+            value = 10,
+            limbs_needed = -1,
+            legs = 1,
+            menace = -1
+            )
+
+    # Counter-Church theology from this scales with torso style and is implemented separately
+    FIACRE_THIGH = Action(
+            "Affix Saint Fiacre's Thigh Relic to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.FIACRE_THIGH.value,
+            value = 1250,
+            limbs_needed = -1,
+            legs = 1
+            )
+
+    FIN_BONES = Action(
+            "Put Fins on your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.FIN_BONES.value,
+            value = 50,
+            limbs_needed = -1,
+            fins = 1
+            )
+
     FOSSILISED_FORELIMB = Action(
             "Apply a Fossilised Forelimb to your (Skeleton Type)",
             cost = Value.ACTION.value + Value.FOSSILISED_FORELIMB.value,
@@ -674,6 +758,15 @@ class Appendage(enum.Enum):
             limbs_needed = -1,
             arms = 1,
             antiquity = 2
+            )
+
+    HELICAL_THIGH = Action(
+            "Affix the Helical Thighbone to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.HELICAL_THIGH.value,
+            value = 300,
+            limbs_needed = -1,
+            legs = 1,
+            amalgamy = 2
             )
 
     HUMAN_ARM = Action(
@@ -685,12 +778,29 @@ class Appendage(enum.Enum):
             menace = -1
             )
 
+    IVORY_FEMUR = Action(
+            "Apply an Ivory Femur to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.IVORY_FEMUR.value,
+            value = 6500,
+            limbs_needed = -1,
+            legs = 1
+            )
+
     IVORY_HUMERUS = Action(
             "Apply an Ivory Humerus to your (Skeleton Type)",
             cost = Value.ACTION.value + Value.IVORY_HUMERUS.value,
             value = 1500,
             limbs_needed = -1,
             arms = 1
+            )
+
+    JURASSIC_THIGH = Action(
+            "Apply a Jurassic Thigh Bone to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.JURASSIC_FEMUR.value,
+            value = 300,
+            limbs_needed = -1,
+            legs = 1,
+            antiquity = 1
             )
 
     KNOTTED_HUMERUS = Action(
@@ -710,6 +820,23 @@ class Appendage(enum.Enum):
             wings = 1,
             antiquity = 1,
             menace = 1
+            )
+
+    UNIDENTIFIED_THIGH = Action(
+            "Apply an Unidentified Thigh Bone to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.UNIDENTIFIED_THIGH.value,
+            value = 100,
+            limbs_needed = -1,
+            legs = 1
+            )
+
+    WITHERED_TENTACLE = Action(
+            "Put a Withered Tentacle on your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.WITHERED_TENTACLE.value,
+            value = 250,
+            limbs_needed = -1,
+            tentacles = 1,
+            antiquity = -1
             )
 
     def __str__(self):
@@ -750,28 +877,6 @@ def create_data_model():
     data['zoological_mania'] = Declaration.AMPHIBIAN
     
     data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [appendage.value for appendage in Appendage] + [
-            # Dumbwaiter of Balmoral, 25 at a time
-            Action("Apply the Femur of a Surface Deer to your (Skeleton Type)", cost = Value.ACTION.value*1.04, value = 10, limbs_needed = -1, legs = 1, menace = -1),
-            # Accumulated while trying to get other things
-            Action("Apply an Unidentified Thigh Bone to your (Skeleton Type)", cost = Value.ACTION.value, value = 100, limbs_needed = -1, legs = 1),
-            # Brawling, 12 at a time
-            Action("Apply a Jurassic Thigh Bone to your (Skeleton Type)", cost = Value.ACTION.value*(11/6), value = 300, limbs_needed = -1, legs = 1, antiquity = 1),
-            # Jericho Locks, 5 actions (Favours: the Church) for 2
-            # Counter-Church theology from this scales with torso style and is implemented separately
-            Action("Affix Saint Fiacre's Thigh Relic to your (Skeleton Type)", cost = Value.ACTION.value*3.5, value = 1250, limbs_needed = -1, legs = 1),
-            # Palaeontological Discoveries, Plain of Thirsty Grasses
-            Action("Affix the Helical Thighbone to your (Skeleton Type)", cost = Value.ACTION.value + Value.SURVEY.value*(70/9), value = 300, limbs_needed = -1, legs = 1, amalgamy = 2),
-            # Parabolan Orange-Apples, Hedonist, 3cp/action
-            Action("Apply an Ivory Femur to your (Skeleton Type)", cost = 900 + Value.ACTION.value*15.5, value = 6500, limbs_needed = -1, legs = 1),
-
-            # Hunt and dissect Pinewood Shark, 40 at a time
-            Action("Put Fins on your (Skeleton Type)", cost = Value.ACTION.value*(51/40), value = 50, limbs_needed = -1, fins = 1),
-            # Combination of 10 Fins
-            Action("Attach the Amber-Crusted Fin to your (Skeleton Type)", cost = Value.ACTION.value*(15/4), value = 1500, limbs_needed = -1, fins = 1, amalgamy = 1, menace = 1),
-
-            # Helicon House, 3 at a time
-            Action("Put a Withered Tentacle on your (Skeleton Type)", cost = 50/3 + Value.ACTION.value*4/3, value = 250, limbs_needed = -1, tentacles = 1, antiquity = -1),
-
             # Carpenter's Granddaughter, 2 at a time
             Action("Apply Plaster Tail Bones to your (Skeleton Type)", cost = Value.ACTION.value*1.5 + Value.SURVEY.value*5, value = 250, tails_needed = -1, tails = 1, implausibility = 1),
             Action("Apply a Tomb-Lion's Tail to your (Skeleton Type)", cost = 220 + Value.ACTION.value*2, value = 250, tails_needed = -1, tails = 1, antiquity = 1),
