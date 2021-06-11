@@ -599,6 +599,26 @@ class Skull(enum.Enum):
     def __str__(self):
         return str(self.value)
 
+# Actions that are taken once all skulls are added to a skeleton.
+class Appendage(enum.Enum):
+    # 2 pincers at once
+    CRUSTACEAN_PINCER = Action("Apply a Crustacean Pincer to your (Skeleton Type)", cost = 25 + Value.ACTION.value*1.5, limbs_needed = -1, arms = 1, menace = 1)
+
+    # Accumulated while trying to get other things
+    KNOTTED_HUMERUS = Action("Apply a Knotted Humerus to your (Skeleton Type)", cost = Value.ACTION.value, value = 150, limbs_needed = -1, arms = 1, amalgamy = 1)
+
+    # Ealing Gardens, 5 actions (Favours: Bohemians) for 2
+    IVORY_HUMERUS = Action("Apply an Ivory Humerus to your (Skeleton Type)", cost = Value.ACTION.value*3.5, value = 1500, limbs_needed = -1, arms = 1)
+
+    # Accumulated while trying to get other things
+    HUMAN_ARM = Action("Join a Human Arm to your (Skeleton Type)", cost = Value.ACTION.value, value = 250, limbs_needed = -1, arms = 1, menace = -1)
+
+    # Anning and Daughters
+    FOSSILISED_FORELIMB = Action("Apply a Fossilised Forelimb to your (Skeleton Type)", cost = 2500 + Value.ACTION.value, value = 2750, limbs_needed = -1, arms = 1, antiquity = 2)
+
+    def __str__(self):
+        return str(self.value)
+
 
 # Which kind of skeleton is to be declared.
 class Declaration(enum.Enum):
@@ -633,18 +653,7 @@ def create_data_model():
     # The current value of Zoological Mania, which grants a 10% bonus to value for a certain declaration.
     data['zoological_mania'] = Declaration.AMPHIBIAN
     
-    data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [
-            # 2 pincers at once
-            Action("Apply a Crustacean Pincer to your (Skeleton Type)", cost = 25 + Value.ACTION.value*1.5, limbs_needed = -1, arms = 1, menace = 1),
-            # Accumulated while trying to get other things
-            Action("Apply a Knotted Humerus to your (Skeleton Type)", cost = Value.ACTION.value, value = 150, limbs_needed = -1, arms = 1, amalgamy = 1),
-            # Ealing Gardens, 5 actions (Favours: Bohemians) for 2
-            Action("Apply an Ivory Humerus to your (Skeleton Type)", cost = Value.ACTION.value*3.5, value = 1500, limbs_needed = -1, arms = 1),
-            # Accumulated while trying to get other things
-            Action("Join a Human Arm to your (Skeleton Type)", cost = Value.ACTION.value, value = 250, limbs_needed = -1, arms = 1, menace = -1),
-            # Anning and Daughters
-            Action("Apply a Fossilised Forelimb to your (Skeleton Type)", cost = 2500 + Value.ACTION.value, value = 2750, limbs_needed = -1, arms = 1, antiquity = 2),
-
+    data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [appendage.value for appendage in Appendage] + [
             # 2 wings at once
             Action("Add the Wing of a Young Terror Bird to your (Skeleton Type)", cost = 175 + Value.ACTION.value*1.5, value = 250, limbs_needed = -1, wings = 1, antiquity = 1, menace = 1),
             # 2 wings at once
