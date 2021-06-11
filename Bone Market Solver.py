@@ -689,6 +689,14 @@ class Skull(enum.Enum):
 
 # Actions that are taken once all skulls are added to a skeleton.
 class Appendage(enum.Enum):
+    # Cost from this scales with limbs and is partially implemented separately
+    ADD_JOINTS = Action(
+            "Add four more joints to your skeleton",
+            cost = Value.ACTION.value + Value.TREMBLING_AMBER.value,
+            limbs_needed = 4,
+            amalgamy = 2
+            )
+
     ALBATROSS_WING = Action(
             "Put an Albatross Wing on your (Skeleton Type)",
             cost = Value.ACTION.value + Value.ALBATROSS_WING.value,
@@ -890,8 +898,6 @@ def create_data_model():
             Action("Decide your Tailless Animal needs no tail", cost = Value.ACTION.value, tails_needed = -1),
             Action("Remove the tail from your (Skeleton Type)", cost = Value.ACTION.value, tails = -1),
 
-            # Cost from this scales with limbs and is partially implemented separately
-            Action("Add four more joints to your skeleton", cost = 1250 + Value.ACTION.value, limbs_needed = 4, amalgamy = 2),
             Action("Make your skeleton less dreadful", cost = Value.ACTION.value, menace = -2),
             Action("Disguise the amalgamy of this piece", cost = 25 + Value.ACTION.value, amalgamy = -2),
             Action("Carve away some evidence of age", cost = Value.ACTION.value, antiquity = -2)
@@ -1037,30 +1043,30 @@ def Solve():
     add_joints_amber_cost_multiple = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple')
 
     add_joints_amber_cost_multiple_first_term = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple first term')
-    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_first_term, 250, base_joints, base_joints, add_joints)
+    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_first_term, 25, base_joints, base_joints, add_joints)
 
     add_joints_amber_cost_multiple_second_term = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple second term')
-    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_second_term, 1000, base_joints, add_joints, add_joints)
+    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_second_term, 100, base_joints, add_joints, add_joints)
 
     add_joints_amber_cost_multiple_third_term = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple third term')
-    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_third_term, 1000, base_joints, add_joints)
+    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_third_term, 100, base_joints, add_joints)
 
     add_joints_amber_cost_multiple_fourth_term = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple fourth term')
     add_joints_amber_cost_multiple_fourth_term_numerator = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple fourth term numerator')
     add_joints_amber_cost_multiple_fourth_term_numerator_first_term = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple fourth term numerator first term')
-    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_fourth_term_numerator_first_term, 4000, add_joints, add_joints, add_joints)
-    model.Add(add_joints_amber_cost_multiple_fourth_term_numerator == add_joints_amber_cost_multiple_fourth_term_numerator_first_term + 2000*add_joints)
+    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_fourth_term_numerator_first_term, 400, add_joints, add_joints, add_joints)
+    model.Add(add_joints_amber_cost_multiple_fourth_term_numerator == add_joints_amber_cost_multiple_fourth_term_numerator_first_term + 200*add_joints)
     model.AddDivisionEquality(add_joints_amber_cost_multiple_fourth_term, add_joints_amber_cost_multiple_fourth_term_numerator, 3)
     del add_joints_amber_cost_multiple_fourth_term_numerator, add_joints_amber_cost_multiple_fourth_term_numerator_first_term
 
     add_joints_amber_cost_multiple_fifth_term = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple fifth term')
-    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_fifth_term, 2000, add_joints, add_joints)
+    model.AddGeneralMultiplicationEquality(add_joints_amber_cost_multiple_fifth_term, 200, add_joints, add_joints)
 
     model.Add(add_joints_amber_cost_multiple == add_joints_amber_cost_multiple_first_term + add_joints_amber_cost_multiple_second_term - add_joints_amber_cost_multiple_third_term + add_joints_amber_cost_multiple_fourth_term - add_joints_amber_cost_multiple_fifth_term)
 
     del add_joints_amber_cost_multiple_first_term, add_joints_amber_cost_multiple_second_term, add_joints_amber_cost_multiple_third_term, add_joints_amber_cost_multiple_fourth_term, add_joints_amber_cost_multiple_fifth_term
 
-    model.AddMultiplicationEquality(add_joints_amber_cost, [add_joints, add_joints_amber_cost_multiple])
+    model.AddGeneralMultiplicationEquality(add_joints_amber_cost, add_joints, add_joints_amber_cost_multiple, Value.WARM_AMBER.value)
 
     del add_joints, add_joints_amber_cost_multiple
 
