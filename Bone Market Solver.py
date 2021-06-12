@@ -200,10 +200,6 @@ class Value(enum.Enum):
     # Ealing Gardens
     HUMAN_RIBCAGE = ACTION + 15*SURVEY
 
-    # Mammoth Ribcage
-    # Laboratory Research
-    MAMMOTH_RIBCAGE = 16*ACTION + HUMAN_RIBCAGE
-
     # Palaeontological Discovery
     # Plain of Thirsty Grasses
     PALAEONTOLOGICAL_DISCOVERY = (ACTION + 140*SURVEY)/6
@@ -228,6 +224,14 @@ class Value(enum.Enum):
     # Compel Ghillie, 5 at a time
     TIME_REMAINING_IN_THE_WOODS = (ACTION + 4*COLLATED_RESEARCH)/5
 
+    # Observation: Red Deer
+    # Balmoral Woods
+    DEER_OBSERVATION = 11*ACTION + 10*TIME_REMAINING_IN_THE_WOODS
+
+    # Mammoth Ribcage
+    # Keeper of the Marigold Menagerie
+    MAMMOTH_RIBCAGE = ACTION + DEER_OBSERVATION
+
     # Observation: Fox
     # Balmoral Woods
     FOX_OBSERVATION = 10*ACTION + 8*TIME_REMAINING_IN_THE_WOODS
@@ -235,6 +239,14 @@ class Value(enum.Enum):
     # Doubled Skull
     # Keeper of the Marigold Menagerie
     DOUBLED_SKULL = ACTION + FOX_OBSERVATION
+
+    # Observation: Grouse
+    # Balmoral Woods
+    GROUSE_OBSERVATION = 8*ACTION + 7*TIME_REMAINING_IN_THE_WOODS
+
+    # Skeleton with Seven Necks
+    # Keeper of the Marigold Menagerie
+    SKELETON_WITH_SEVEN_NECKS = ACTION + GROUSE_OBSERVATION
 
     # Nodule of Trembling Amber
     TREMBLING_AMBER = 1250
@@ -296,10 +308,6 @@ class Value(enum.Enum):
     # Warbler Skeleton
     # Ealing Gardens Butcher
     WARBLER_SKELETON = ACTION + 130*BONE_FRAGMENT + 2*WARM_AMBER
-
-    # Skeleton with Seven Necks
-    # Laboratory Research
-    SKELETON_WITH_SEVEN_NECKS = 16*ACTION + 1000*NEVERCOLD_BRASS + WARBLER_SKELETON
 
     # Withered Tentacle
     # Helicon House, 3 at a time
