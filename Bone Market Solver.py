@@ -75,7 +75,7 @@ class Value(enum.Enum):
 
     # Eyeless Skull
     # No consistent source
-    EYELESS_SKULL = cp_model.INT32_MAX
+    EYELESS_SKULL = cp_model.INT32_MAX/2
 
     # Holy Relic of the Thigh of Saint Fiacre
     # Jericho Locks statue, 2 at a time
@@ -145,6 +145,10 @@ class Value(enum.Enum):
     # Nevercold Brass Sliver
     NEVERCOLD_BRASS = 1
 
+    # Obsidian Chitin Tail
+    # No consistent source
+    OBSIDIAN_TAIL = cp_model.INT32_MAX/2
+
     # Parabolan Orange-apple
     # Parabolan Base-camp, electricity and hedonism, 2 at a time
     ORANGE_APPLE = (2*ACTION + 100*BONE_FRAGMENT + 21*HEDONIST_CP)/2
@@ -187,6 +191,10 @@ class Value(enum.Enum):
     # Survey of the Neath's Bones
     # Laboratory Research
     SURVEY = 6*ACTION/25
+
+    # Plaster Tail Bones
+    # Carpenter's Granddaughter, 2 at a time
+    PLASTER_TAIL_BONES = (ACTION + 10*SURVEY)/2
 
     # Human Ribcage
     # Ealing Gardens
@@ -242,6 +250,10 @@ class Value(enum.Enum):
     # Rumour of the Upper River
     RUMOUR_OF_THE_UPPER_RIVER = 250
 
+    # Jet Black Stinger
+    # Hunting with Sophia's, 5 at a time
+    BLACK_STINGER = (ACTION + 5*RUMOUR_OF_THE_UPPER_RIVER)/5
+
     # Prismatic Frame
     # Expedition at Station VIII
     PRISMATIC_FRAME = ACTION + OIL_OF_COMPANIONSHIP + 98*RUMOUR_OF_THE_UPPER_RIVER
@@ -276,6 +288,10 @@ class Value(enum.Enum):
     # Wing of a Young Terror Bird
     # Ealing Gardens Butcher, 2 at a time
     TERROR_BIRD_WING = (ACTION + 100*BONE_FRAGMENT + 25*WARM_AMBER)/2
+
+    # Tomb-Lion's Tail
+    # Ealing Gardens Butcher
+    TOMB_LION_TAIL = ACTION + 200*BONE_FRAGMENT + 2*WARM_AMBER
 
     # Warbler Skeleton
     # Ealing Gardens Butcher
@@ -725,6 +741,14 @@ class Appendage(enum.Enum):
             menace = -1
             )
 
+    BLACK_STINGER = Action("Apply a Jet Black Stinger to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.BLACK_STINGER.value,
+            value = 50,
+            tails_needed = -1,
+            tails = 1,
+            menace = 2
+            )
+
     CRUSTACEAN_PINCER = Action(
             "Apply a Crustacean Pincer to your (Skeleton Type)",
             cost = Value.ACTION.value + Value.CRUSTACEAN_PINCER.value,
@@ -820,6 +844,24 @@ class Appendage(enum.Enum):
             amalgamy = 1
             )
 
+    OBSIDIAN_TAIL = Action(
+            "Apply an Obsidian Chitin Tail to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.OBSIDIAN_TAIL.value,
+            value = 500,
+            tails_needed = -1,
+            tails = 1,
+            amalgamy = 1
+            )
+
+    PLASTER_TAIL_BONES = Action(
+            "Apply Plaster Tail Bones to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.PLASTER_TAIL_BONES.value,
+            value = 250,
+            tails_needed = -1,
+            tails = 1,
+            implausibility = 1
+            )
+
     TERROR_BIRD_WING = Action(
             "Add the Wing of a Young Terror Bird to your (Skeleton Type)",
             cost = Value.ACTION.value + Value.TERROR_BIRD_WING.value,
@@ -830,12 +872,30 @@ class Appendage(enum.Enum):
             menace = 1
             )
 
+    TOMB_LION_TAIL = Action(
+            "Apply a Tomb-Lion's Tail to your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.TOMB_LION_TAIL.value,
+            value = 250,
+            tails_needed = -1,
+            tails = 1,
+            antiquity = 1
+            )
+
     UNIDENTIFIED_THIGH = Action(
             "Apply an Unidentified Thigh Bone to your (Skeleton Type)",
             cost = Value.ACTION.value + Value.UNIDENTIFIED_THIGH.value,
             value = 100,
             limbs_needed = -1,
             legs = 1
+            )
+
+    WITHERED_TAIL = Action(
+            "Apply a Withered Tentacle as a tail on your (Skeleton Type)",
+            cost = Value.ACTION.value + Value.WITHERED_TENTACLE.value,
+            value = 250,
+            tails_needed = -1,
+            tails = 1,
+            antiquity = -1
             )
 
     WITHERED_TENTACLE = Action(
@@ -847,24 +907,18 @@ class Appendage(enum.Enum):
             antiquity = -1
             )
 
-    # Carpenter's Granddaughter, 2 at a time
-    PLASTER_TAIL = Action("Apply Plaster Tail Bones to your (Skeleton Type)", cost = Value.ACTION.value*1.5 + Value.SURVEY.value*5, value = 250, tails_needed = -1, tails = 1, implausibility = 1)
-
-    TOMB_LION_TAIL = Action("Apply a Tomb-Lion's Tail to your (Skeleton Type)", cost = 220 + Value.ACTION.value*2, value = 250, tails_needed = -1, tails = 1, antiquity = 1)
-
-    # Geology of Winewound
-    BLACK_STINGER = Action("Apply a Jet Black Stinger to your (Skeleton Type)", cost = Value.ACTION.value*2 + Value.SURVEY.value, value = 50, tails_needed = -1, tails = 1, menace = 2)
-
-    # No consistent source
-    # OBSIDIAN_TAIL = Action("Apply an Obsidian Chitin Tail to your (Skeleton Type)", cost = cp_model.INT32_MAX, value = 500, tails_needed = -1, tails = 1, amalgamy = 1)
-
-    # Helicon House, 3 at a time
-    WITHERED_TAIL = Action("Apply a Withered Tentacle as a tail on your (Skeleton Type)", cost = 50/3 + Value.ACTION.value*4/3, value = 250, tails_needed = -1, tails = 1, antiquity = -1)
+    REMOVE_TAIL = Action(
+            "Remove the tail from your (Skeleton Type)",
+            cost = Value.ACTION.value,
+            tails = -1
+            )
 
     # This actually sets Skeleton: Tails Needed to 0
-    SKIP_TAILS = Action("Decide your Tailless Animal needs no tail", cost = Value.ACTION.value, tails_needed = -1)
-
-    REMOVE_TAIL = Action("Remove the tail from your (Skeleton Type)", cost = Value.ACTION.value, tails = -1)
+    SKIP_TAILS = Action(
+            "Decide your Tailless Animal needs no tail",
+            cost = Value.ACTION.value,
+            tails_needed = -1
+            )
 
     def __str__(self):
         return str(self.value)
