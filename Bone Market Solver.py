@@ -847,6 +847,25 @@ class Appendage(enum.Enum):
             antiquity = -1
             )
 
+    # Carpenter's Granddaughter, 2 at a time
+    PLASTER_TAIL = Action("Apply Plaster Tail Bones to your (Skeleton Type)", cost = Value.ACTION.value*1.5 + Value.SURVEY.value*5, value = 250, tails_needed = -1, tails = 1, implausibility = 1)
+
+    TOMB_LION_TAIL = Action("Apply a Tomb-Lion's Tail to your (Skeleton Type)", cost = 220 + Value.ACTION.value*2, value = 250, tails_needed = -1, tails = 1, antiquity = 1)
+
+    # Geology of Winewound
+    BLACK_STINGER = Action("Apply a Jet Black Stinger to your (Skeleton Type)", cost = Value.ACTION.value*2 + Value.SURVEY.value, value = 50, tails_needed = -1, tails = 1, menace = 2)
+
+    # No consistent source
+    # OBSIDIAN_TAIL = Action("Apply an Obsidian Chitin Tail to your (Skeleton Type)", cost = cp_model.INT32_MAX, value = 500, tails_needed = -1, tails = 1, amalgamy = 1)
+
+    # Helicon House, 3 at a time
+    WITHERED_TAIL = Action("Apply a Withered Tentacle as a tail on your (Skeleton Type)", cost = 50/3 + Value.ACTION.value*4/3, value = 250, tails_needed = -1, tails = 1, antiquity = -1)
+
+    # This actually sets Skeleton: Tails Needed to 0
+    SKIP_TAILS = Action("Decide your Tailless Animal needs no tail", cost = Value.ACTION.value, tails_needed = -1)
+
+    REMOVE_TAIL = Action("Remove the tail from your (Skeleton Type)", cost = Value.ACTION.value, tails = -1)
+
     def __str__(self):
         return str(self.value)
 
@@ -885,19 +904,6 @@ def create_data_model():
     data['zoological_mania'] = Declaration.AMPHIBIAN
     
     data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [appendage.value for appendage in Appendage] + [
-            # Carpenter's Granddaughter, 2 at a time
-            Action("Apply Plaster Tail Bones to your (Skeleton Type)", cost = Value.ACTION.value*1.5 + Value.SURVEY.value*5, value = 250, tails_needed = -1, tails = 1, implausibility = 1),
-            Action("Apply a Tomb-Lion's Tail to your (Skeleton Type)", cost = 220 + Value.ACTION.value*2, value = 250, tails_needed = -1, tails = 1, antiquity = 1),
-            # Geology of Winewound
-            Action("Apply a Jet Black Stinger to your (Skeleton Type)", cost = Value.ACTION.value*2 + Value.SURVEY.value, value = 50, tails_needed = -1, tails = 1, menace = 2),
-            # No consistent source
-            # Action("Apply an Obsidian Chitin Tail to your (Skeleton Type)", cost = cp_model.INT32_MAX, value = 500, tails_needed = -1, tails = 1, amalgamy = 1),
-            # Helicon House, 3 at a time
-            Action("Apply a Withered Tentacle as a tail on your (Skeleton Type)", cost = 50/3 + Value.ACTION.value*4/3, value = 250, tails_needed = -1, tails = 1, antiquity = -1),
-            # This actually sets Skeleton: Tails Needed to 0
-            Action("Decide your Tailless Animal needs no tail", cost = Value.ACTION.value, tails_needed = -1),
-            Action("Remove the tail from your (Skeleton Type)", cost = Value.ACTION.value, tails = -1),
-
             Action("Make your skeleton less dreadful", cost = Value.ACTION.value, menace = -2),
             Action("Disguise the amalgamy of this piece", cost = 25 + Value.ACTION.value, amalgamy = -2),
             Action("Carve away some evidence of age", cost = Value.ACTION.value, antiquity = -2)
