@@ -1156,6 +1156,7 @@ def Solve():
 
 
     # Profit intermediate variables
+    value_remainder = model.NewIntVar(0, cp_model.INT32_MAX, 'value remainder')
     primary_revenue = model.NewIntVar(0, cp_model.INT32_MAX, 'primary revenue')
     secondary_revenue = model.NewIntVar(0, cp_model.INT32_MAX, 'secondary revenue')
     total_revenue = model.NewIntVar(0, cp_model.INT32_MAX*2, 'total revenue')
@@ -1442,7 +1443,6 @@ def Solve():
     elif BUYER == Buyer.A_NAIVE_COLLECTOR:
         model.Add(skeleton_in_progress >= 100)
 
-        value_remainder = model.NewIntVar(0, 249, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 250)
 
         # Revenue
@@ -1458,7 +1458,6 @@ def Solve():
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity <= 0)
 
-        value_remainder = model.NewIntVar(0, 249, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 250)
 
         # Revenue
@@ -1474,7 +1473,6 @@ def Solve():
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace <= 0)
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
 
         # Revenue
@@ -1490,7 +1488,6 @@ def Solve():
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy <= 0)
 
-        value_remainder = model.NewIntVar(0, 249, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 250)
 
         # Revenue
@@ -1506,7 +1503,6 @@ def Solve():
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
 
         # Revenue
@@ -1522,7 +1518,6 @@ def Solve():
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace > 0)
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
 
         # Revenue
@@ -1538,7 +1533,6 @@ def Solve():
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
 
         # Revenue
@@ -1563,7 +1557,6 @@ def Solve():
         else:
             model.Add(tailfeathers == antiquity_squared)
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
         extra_value = model.NewIntermediateBoolVar('extra value', value_remainder, cp_model.Domain.FromFlatIntervals([0, cp_model.INT_MAX]))
 
@@ -1583,7 +1576,6 @@ def Solve():
         menace_squared = model.NewIntVar(0, cp_model.INT32_MAX, 'menace squared')
         model.AddMultiplicationEquality(menace_squared, [menace, menace])
 
-        value_remainder = model.NewIntVar(0, 9, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 10)
 
         # Revenue
@@ -1608,7 +1600,6 @@ def Solve():
         else:
             model.Add(final_breaths == amalgamy_squared)
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
 
         # Revenue
@@ -1628,7 +1619,6 @@ def Solve():
         antiquity_times_menace = model.NewIntVar(0, cp_model.INT32_MAX, 'antiquity times menace')
         model.AddMultiplicationEquality(antiquity_times_menace, [antiquity, menace])
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
 
         # Revenue
@@ -1648,7 +1638,6 @@ def Solve():
         amalgamy_times_antiquity = model.NewIntVar(0, cp_model.INT32_MAX, 'amalgamy times antiquity')
         model.AddMultiplicationEquality(amalgamy_times_antiquity, [amalgamy, antiquity])
 
-        value_remainder = model.NewIntVar(0, 9, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 10)
 
         # Revenue
@@ -1668,7 +1657,6 @@ def Solve():
         amalgamy_times_menace = model.NewIntVar(0, cp_model.INT32_MAX, 'amalgamy times menace')
         model.AddMultiplicationEquality(amalgamy_times_menace, [amalgamy, menace])
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
 
         # Revenue
@@ -1683,7 +1671,6 @@ def Solve():
     elif BUYER == Buyer.A_CONSTABLE:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 119]))
 
-        value_remainder = model.NewIntVar(0, 49, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 50)
 
         # Revenue
@@ -1718,7 +1705,6 @@ def Solve():
         model.Add(amalgamy <= 0)
         model.Add(counter_church <= 0)
 
-        value_remainder = model.NewIntVar(0, 2, 'value remainder')
         model.AddModuloEquality(value_remainder, value, 3)
 
         # Revenue
@@ -1733,7 +1719,7 @@ def Solve():
     elif BUYER == Buyer.THE_DUMBWAITER_OF_BALMORAL:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([180, 189]))
         model.Add(value >= 250)
-        value_remainder = model.NewIntVar(0, 249, 'value remainder')
+
         model.AddModuloEquality(value_remainder, value, 250)
 
         # Revenue
