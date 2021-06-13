@@ -926,11 +926,10 @@ class Appendage(enum.Enum):
             tails = -1
             )
 
-    # This actually sets Skeleton: Tails Needed to 0
+    # This sets Skeleton: Tails Needed to 0 and is implemented separately
     SKIP_TAILS = Action(
             "Decide your Tailless Animal needs no tail",
-            cost = Value.ACTION.value,
-            tails_needed = -1
+            cost = Value.ACTION.value
             )
 
     def __str__(self):
@@ -1033,43 +1032,47 @@ class Fluctuation(enum.Enum):
 # The current value of Bone Market Fluctuations, which grants various bonuses to certain buyers.
 BONE_MARKET_FLUCTUATIONS = Fluctuation.AMALGAMY 
 
-def create_data_model():
-    data = {}
-    
-    data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [appendage.value for appendage in Appendage] + [adjustment.value for adjustment in Adjustment]
-
-    return data
-
 def Solve():
-    data = create_data_model()
     model = cp_model.CpModel()
 
-    # Any number of any action, except only one torso
-    torsos = {}
     actions = {}
-    for action in data['actions']:
-        if action.torso_style is not None:
-            torsos[action] = model.NewBoolVar(action.name)
-            actions[action] = torsos[action]
+
+    # Torso
+    for torso in Torso:
+        actions[torso] = model.NewBoolVar(torso.value.name)
+
+    # Skull
+    for skull in Skull:
+        actions[skull] = model.NewIntVar(0, cp_model.INT32_MAX, skull.value.name)
+
+    # Appendage
+    for appendage in Appendage:
+        if appendage == Appendage.SKIP_TAILS:
+            actions[appendage] = model.NewBoolVar(appendage.value.name)
         else:
-            actions[action] = model.NewIntVar(0, cp_model.INT32_MAX, action.name)
+            actions[appendage] = model.NewIntVar(0, cp_model.INT32_MAX, appendage.value.name)
 
-    model.Add(cp_model.LinearExpr.Sum(torsos.values()) == 1)
+    # Adjustment
+    for adjustment in Adjustment:
+        actions[adjustment] = model.NewIntVar(0, cp_model.INT32_MAX, adjustment.value.name)
 
-    # Skeleton must be declared something
-    declarations = {}
+    # Declaration
     for declaration in Declaration:
-        declarations[declaration] = model.NewBoolVar(declaration.value.name)
-        actions[declaration.value] = declarations[declaration]
-    model.Add(cp_model.LinearExpr.Sum(declarations.values()) == 1)
+        actions[declaration] = model.NewBoolVar(declaration.value.name)
+
+    # One torso
+    model.Add(cp_model.LinearExpr.Sum([value for (key, value) in actions.items() if isinstance(key, Torso)]) == 1)
+
+    # One declaration
+    model.Add(cp_model.LinearExpr.Sum([value for (key, value) in actions.items() if isinstance(key, Declaration)]) == 1)
 
     # Value calculation
     original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
-    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value for action in actions.keys()]) == original_value)
+    model.Add(original_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
 
     multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX*11, "multiplied value")
-    model.Add(multiplied_value == original_value*11).OnlyEnforceIf(declarations[ZOOLOGICAL_MANIA])
-    model.Add(multiplied_value == original_value*10).OnlyEnforceIf(declarations[ZOOLOGICAL_MANIA].Not())
+    model.Add(multiplied_value == original_value*11).OnlyEnforceIf(actions[ZOOLOGICAL_MANIA])
+    model.Add(multiplied_value == original_value*10).OnlyEnforceIf(actions[ZOOLOGICAL_MANIA].Not())
 
     value = model.NewIntVar(0, cp_model.INT32_MAX, 'value')
     model.AddDivisionEquality(value, multiplied_value, 10)
@@ -1078,64 +1081,64 @@ def Solve():
 
 
     # Torso Style calculation
-    torso_style = model.NewIntVarFromDomain(cp_model.Domain.FromValues([torso.torso_style for torso in torsos.keys()]), 'torso_style')
-    for torso, torso_variable in torsos.items():
-        model.Add(torso_style == torso.torso_style).OnlyEnforceIf(torso_variable)
+    torso_style = model.NewIntVarFromDomain(cp_model.Domain.FromValues([torso.value.torso_style for torso in Torso]), 'torso_style')
+    for torso, torso_variable in {key: value for (key, value) in actions.items() if isinstance(key, Torso)}.items():
+        model.Add(torso_style == torso.value.torso_style).OnlyEnforceIf(torso_variable)
 
     # Skulls calculation
     skulls = model.NewIntVar(0, cp_model.INT32_MAX, 'skulls')
-    model.Add(skulls == cp_model.LinearExpr.ScalProd(actions.values(), [action.skulls for action in actions.keys()]))
+    model.Add(skulls == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.skulls for action in actions.keys()]))
 
     # Arms calculation
     arms = model.NewIntVar(0, cp_model.INT32_MAX, 'arms')
-    model.Add(arms == cp_model.LinearExpr.ScalProd(actions.values(), [action.arms for action in actions.keys()]))
+    model.Add(arms == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.arms for action in actions.keys()]))
 
     # Legs calculation
     legs = model.NewIntVar(0, cp_model.INT32_MAX, 'legs')
-    model.Add(legs == cp_model.LinearExpr.ScalProd(actions.values(), [action.legs for action in actions.keys()]))
+    model.Add(legs == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.legs for action in actions.keys()]))
 
     # Tails calculation
     tails = model.NewIntVar(0, cp_model.INT32_MAX, 'tails')
-    model.Add(tails == cp_model.LinearExpr.ScalProd(actions.values(), [action.tails for action in actions.keys()]))
+    model.Add(tails == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails for action in actions.keys()]))
 
     # Wings calculation
     wings = model.NewIntVar(0, cp_model.INT32_MAX, 'wings')
-    model.Add(wings == cp_model.LinearExpr.ScalProd(actions.values(), [action.wings for action in actions.keys()]))
+    model.Add(wings == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.wings for action in actions.keys()]))
 
     # Fins calculation
     fins = model.NewIntVar(0, cp_model.INT32_MAX, 'fins')
-    model.Add(fins == cp_model.LinearExpr.ScalProd(actions.values(), [action.fins for action in actions.keys()]))
+    model.Add(fins == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.fins for action in actions.keys()]))
 
     # Tentacles calculation
     tentacles = model.NewIntVar(0, cp_model.INT32_MAX, 'tentacles')
-    model.Add(tentacles == cp_model.LinearExpr.ScalProd(actions.values(), [action.tentacles for action in actions.keys()]))
+    model.Add(tentacles == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tentacles for action in actions.keys()]))
 
     # Amalgamy calculation
     amalgamy = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'amalgamy')
-    model.Add(amalgamy == cp_model.LinearExpr.ScalProd(actions.values(), [action.amalgamy for action in actions.keys()]))
+    model.Add(amalgamy == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.amalgamy for action in actions.keys()]))
 
     # Antiquity calculation
     antiquity = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'antiquity')
-    model.Add(antiquity == cp_model.LinearExpr.ScalProd(actions.values(), [action.antiquity for action in actions.keys()]))
+    model.Add(antiquity == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.antiquity for action in actions.keys()]))
 
     # Menace calculation
     menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'menace')
-    model.Add(menace == cp_model.LinearExpr.ScalProd(actions.values(), [action.menace for action in actions.keys()]))
+    model.Add(menace == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.menace for action in actions.keys()]))
 
     # Implausibility calculation
     implausibility = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'implausibility')
-    model.Add(implausibility == cp_model.LinearExpr.ScalProd(actions.values(), [action.implausibility for action in actions.keys()]))
+    model.Add(implausibility == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.implausibility for action in actions.keys()]))
 
     # Counter-church calculation
     # Calculate amount of Counter-church from Holy Relics of the Thigh of Saint Fiacre
-    holy_relic = next(filter(lambda action: action[0].name == "Affix Saint Fiacre's Thigh Relic to your (Skeleton Type)", actions.items()))[1]
+    holy_relic = actions[Appendage.FIACRE_THIGH]
     torso_style_divided_by_ten = model.NewIntVar(0, cp_model.INT32_MAX, 'torso style divided by ten')
     model.AddDivisionEquality(torso_style_divided_by_ten, torso_style, 10)
     holy_relic_counter_church = model.NewIntVar(0, cp_model.INT32_MAX, 'holy relic counter-church')
     model.AddMultiplicationEquality(holy_relic_counter_church, [holy_relic, torso_style_divided_by_ten])
 
     counter_church = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'counter-church')
-    model.Add(counter_church == cp_model.LinearExpr.ScalProd(actions.values(), [action.counter_church for action in actions.keys()]) + holy_relic_counter_church)
+    model.Add(counter_church == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.counter_church for action in actions.keys()]) + holy_relic_counter_church)
 
     del holy_relic, torso_style_divided_by_ten, holy_relic_counter_church
 
@@ -1170,10 +1173,10 @@ def Solve():
     # This is a partial sum formula.
     add_joints_amber_cost = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost')
 
-    add_joints = next(filter(lambda action: action[0].name == "Add four more joints to your skeleton", actions.items()))[1]
+    add_joints = actions[Appendage.ADD_JOINTS]
 
     base_joints = model.NewIntVar(0, cp_model.INT32_MAX, 'base joints')
-    model.Add(base_joints == cp_model.LinearExpr.ScalProd(torsos.values(), [action.limbs_needed for torso in torsos.keys()]))
+    model.Add(base_joints == cp_model.LinearExpr.ScalProd([value for (key, value) in actions.items() if isinstance(key, Torso)], [torso.value.limbs_needed for torso in Torso]))
 
     add_joints_amber_cost_multiple = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple')
 
@@ -1207,7 +1210,7 @@ def Solve():
 
 
     cost = model.NewIntVar(0, MAXIMUM_COST, 'cost')
-    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [int(action.cost) for action in actions.keys()]) + add_joints_amber_cost + sale_cost == cost)
+    model.Add(cost == cp_model.LinearExpr.ScalProd(actions.values(), [int(action.value.cost) for action in actions.keys()]) + add_joints_amber_cost + sale_cost)
 
     del sale_cost, add_joints_amber_cost
 
@@ -1217,196 +1220,202 @@ def Solve():
 
     # Chimera
     model.Add(skeleton_in_progress == 100) \
-            .OnlyEnforceIf(declarations[Declaration.CHIMERA])
+            .OnlyEnforceIf(actions[Declaration.CHIMERA])
     # Humanoid
     model.Add(skeleton_in_progress == 110) \
-            .OnlyEnforceIf(declarations[Declaration.HUMANOID]) \
+            .OnlyEnforceIf(actions[Declaration.HUMANOID]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('humanoid antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 0])))
     # Ancient Humanoid (UNCERTAIN)
     model.Add(skeleton_in_progress == 111) \
-            .OnlyEnforceIf(declarations[Declaration.HUMANOID]) \
+            .OnlyEnforceIf(actions[Declaration.HUMANOID]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('ancient humanoid antiquity', antiquity, cp_model.Domain.FromFlatIntervals([1, 5])))
     # Neanderthal
     model.Add(skeleton_in_progress == 112) \
-            .OnlyEnforceIf(declarations[Declaration.HUMANOID]) \
+            .OnlyEnforceIf(actions[Declaration.HUMANOID]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('neanderthal antiquity', antiquity, cp_model.Domain.FromFlatIntervals([6, cp_model.INT_MAX])))
     # Ape (UNCERTAIN)
     model.Add(skeleton_in_progress == 120) \
-            .OnlyEnforceIf(declarations[Declaration.APE]) \
+            .OnlyEnforceIf(actions[Declaration.APE]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('ape antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
     # Primordial Ape (UNCERTAIN)
     model.Add(skeleton_in_progress == 121) \
-            .OnlyEnforceIf(declarations[Declaration.APE]) \
+            .OnlyEnforceIf(actions[Declaration.APE]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('primordial ape antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, cp_model.INT_MAX])))
     # Monkey
     model.Add(skeleton_in_progress == 125) \
-            .OnlyEnforceIf(declarations[Declaration.MONKEY]) \
+            .OnlyEnforceIf(actions[Declaration.MONKEY]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('monkey antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 0])))
     # Catarrhine Monkey (UNCERTAIN)
     model.Add(skeleton_in_progress == 126) \
-            .OnlyEnforceIf(declarations[Declaration.MONKEY]) \
+            .OnlyEnforceIf(actions[Declaration.MONKEY]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('catarrhine monkey 126 antiquity', antiquity, cp_model.Domain.FromFlatIntervals([1, 8])))
     # Catarrhine Monkey
     model.Add(skeleton_in_progress == 128) \
-            .OnlyEnforceIf(declarations[Declaration.MONKEY]) \
+            .OnlyEnforceIf(actions[Declaration.MONKEY]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('catarrhine monkey 128 antiquity', antiquity, cp_model.Domain.FromFlatIntervals([9, cp_model.INT_MAX])))
     # Crocodile
     model.Add(skeleton_in_progress == 160) \
-            .OnlyEnforceIf(declarations[Declaration.REPTILE]) \
+            .OnlyEnforceIf(actions[Declaration.REPTILE]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('crocodile antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
     # Dinosaur
     model.Add(skeleton_in_progress == 161) \
-            .OnlyEnforceIf(declarations[Declaration.REPTILE]) \
+            .OnlyEnforceIf(actions[Declaration.REPTILE]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('dinosaur antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 4])))
     # Mesosaur (UNCERTAIN)
     model.Add(skeleton_in_progress == 162) \
-            .OnlyEnforceIf(declarations[Declaration.REPTILE]) \
+            .OnlyEnforceIf(actions[Declaration.REPTILE]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('mesosaur antiquity', antiquity, cp_model.Domain.FromFlatIntervals([5, cp_model.INT_MAX])))
     # Toad
     model.Add(skeleton_in_progress == 170) \
-            .OnlyEnforceIf(declarations[Declaration.AMPHIBIAN]) \
+            .OnlyEnforceIf(actions[Declaration.AMPHIBIAN]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('toad antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
     # Primordial Amphibian
     model.Add(skeleton_in_progress == 171) \
-            .OnlyEnforceIf(declarations[Declaration.AMPHIBIAN]) \
+            .OnlyEnforceIf(actions[Declaration.AMPHIBIAN]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('primordial amphibian antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 4])))
     # Temnospondyl
     model.Add(skeleton_in_progress == 172) \
-            .OnlyEnforceIf(declarations[Declaration.AMPHIBIAN]) \
+            .OnlyEnforceIf(actions[Declaration.AMPHIBIAN]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('temnospondyl antiquity', antiquity, cp_model.Domain.FromFlatIntervals([5, cp_model.INT_MAX])))
     # Owl
     model.Add(skeleton_in_progress == 180) \
-            .OnlyEnforceIf(declarations[Declaration.BIRD]) \
+            .OnlyEnforceIf(actions[Declaration.BIRD]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('owl antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
     # Archaeopteryx
     model.Add(skeleton_in_progress == 181) \
-            .OnlyEnforceIf(declarations[Declaration.BIRD]) \
+            .OnlyEnforceIf(actions[Declaration.BIRD]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('archaeopteryx antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 4])))
     # Ornithomimosaur (UNCERTAIN)
     model.Add(skeleton_in_progress == 182) \
-            .OnlyEnforceIf(declarations[Declaration.BIRD]) \
+            .OnlyEnforceIf(actions[Declaration.BIRD]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('ornithomimosaur antiquity', antiquity, cp_model.Domain.FromFlatIntervals([5, cp_model.INT_MAX])))
     # Lamprey
     model.Add(skeleton_in_progress == 190) \
-            .OnlyEnforceIf(declarations[Declaration.FISH]) \
+            .OnlyEnforceIf(actions[Declaration.FISH]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('lamprey antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 0])))
     # Coelacanth (UNCERTAIN)
     model.Add(skeleton_in_progress == 191) \
-            .OnlyEnforceIf(declarations[Declaration.FISH]) \
+            .OnlyEnforceIf(actions[Declaration.FISH]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('coelacanth antiquity', antiquity, cp_model.Domain.FromFlatIntervals([1, cp_model.INT_MAX])))
     # Spider (UNCERTAIN)
     model.Add(skeleton_in_progress == 200) \
-            .OnlyEnforceIf(declarations[Declaration.SPIDER]) \
+            .OnlyEnforceIf(actions[Declaration.SPIDER]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('spider antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
     # Primordial Orb-Weaver (UNCERTAIN)
     model.Add(skeleton_in_progress == 201) \
-            .OnlyEnforceIf(declarations[Declaration.SPIDER]) \
+            .OnlyEnforceIf(actions[Declaration.SPIDER]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('primordial orb-weaver antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 7])))
     # Trigonotarbid
     model.Add(skeleton_in_progress == 203) \
-            .OnlyEnforceIf(declarations[Declaration.SPIDER]) \
+            .OnlyEnforceIf(actions[Declaration.SPIDER]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('trigonotarbid antiquity', antiquity, cp_model.Domain.FromFlatIntervals([8, cp_model.INT_MAX])))
     # Beetle (UNCERTAIN)
     model.Add(skeleton_in_progress == 210) \
-            .OnlyEnforceIf(declarations[Declaration.INSECT]) \
+            .OnlyEnforceIf(actions[Declaration.INSECT]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('beetle antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
     # Primordial Beetle (UNCERTAIN)
     model.Add(skeleton_in_progress == 211) \
-            .OnlyEnforceIf(declarations[Declaration.INSECT]) \
+            .OnlyEnforceIf(actions[Declaration.INSECT]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('primordial beetle antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 6])))
     # Rhyniognatha
     model.Add(skeleton_in_progress == 212) \
-            .OnlyEnforceIf(declarations[Declaration.INSECT]) \
+            .OnlyEnforceIf(actions[Declaration.INSECT]) \
             .OnlyEnforceIf(model.NewIntermediateBoolVar('rhyniognatha antiquity', antiquity, cp_model.Domain.FromFlatIntervals([7, cp_model.INT_MAX])))
     # Curator
     model.Add(skeleton_in_progress == 300) \
-            .OnlyEnforceIf(declarations[Declaration.CURATOR])
+            .OnlyEnforceIf(actions[Declaration.CURATOR])
 
 
     # Humanoid requirements
-    model.Add(skulls == 1).OnlyEnforceIf(declarations[Declaration.HUMANOID])
-    model.Add(legs == 2).OnlyEnforceIf(declarations[Declaration.HUMANOID])
-    model.Add(arms == 2).OnlyEnforceIf(declarations[Declaration.HUMANOID])
-    model.Add(torso_style >= 10).OnlyEnforceIf(declarations[Declaration.HUMANOID])
-    model.Add(torso_style <= 20).OnlyEnforceIf(declarations[Declaration.HUMANOID])
+    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.HUMANOID])
+    model.Add(legs == 2).OnlyEnforceIf(actions[Declaration.HUMANOID])
+    model.Add(arms == 2).OnlyEnforceIf(actions[Declaration.HUMANOID])
+    model.Add(torso_style >= 10).OnlyEnforceIf(actions[Declaration.HUMANOID])
+    model.Add(torso_style <= 20).OnlyEnforceIf(actions[Declaration.HUMANOID])
     for prohibited_quality in [tails, fins, wings]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.HUMANOID])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.HUMANOID])
 
     # Ape requirements
-    model.Add(skulls == 1).OnlyEnforceIf(declarations[Declaration.APE])
-    model.Add(arms == 4).OnlyEnforceIf(declarations[Declaration.APE])
-    model.Add(torso_style >= 10).OnlyEnforceIf(declarations[Declaration.APE])
-    model.Add(torso_style <= 20).OnlyEnforceIf(declarations[Declaration.APE])
+    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.APE])
+    model.Add(arms == 4).OnlyEnforceIf(actions[Declaration.APE])
+    model.Add(torso_style >= 10).OnlyEnforceIf(actions[Declaration.APE])
+    model.Add(torso_style <= 20).OnlyEnforceIf(actions[Declaration.APE])
     for prohibited_quality in [legs, tails, fins, wings]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.APE])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.APE])
 
     # Monkey requirements
-    model.Add(skulls == 1).OnlyEnforceIf(declarations[Declaration.MONKEY])
-    model.Add(arms == 4).OnlyEnforceIf(declarations[Declaration.MONKEY])
-    model.Add(tails == 1).OnlyEnforceIf(declarations[Declaration.MONKEY])
-    model.Add(torso_style >= 10).OnlyEnforceIf(declarations[Declaration.MONKEY])
-    model.Add(torso_style <= 20).OnlyEnforceIf(declarations[Declaration.MONKEY])
+    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.MONKEY])
+    model.Add(arms == 4).OnlyEnforceIf(actions[Declaration.MONKEY])
+    model.Add(tails == 1).OnlyEnforceIf(actions[Declaration.MONKEY])
+    model.Add(torso_style >= 10).OnlyEnforceIf(actions[Declaration.MONKEY])
+    model.Add(torso_style <= 20).OnlyEnforceIf(actions[Declaration.MONKEY])
     for prohibited_quality in [legs, fins, wings]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.MONKEY])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.MONKEY])
 
     # Bird requirements
-    model.Add(legs == 2).OnlyEnforceIf(declarations[Declaration.BIRD])
-    model.Add(wings == 2).OnlyEnforceIf(declarations[Declaration.BIRD])
-    model.Add(torso_style >= 20).OnlyEnforceIf(declarations[Declaration.BIRD])
+    model.Add(legs == 2).OnlyEnforceIf(actions[Declaration.BIRD])
+    model.Add(wings == 2).OnlyEnforceIf(actions[Declaration.BIRD])
+    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.BIRD])
     for prohibited_quality in [arms, fins]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.BIRD])
-    model.Add(tails < 2).OnlyEnforceIf(declarations[Declaration.BIRD])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.BIRD])
+    model.Add(tails < 2).OnlyEnforceIf(actions[Declaration.BIRD])
 
     # Curator requirements
-    model.Add(skulls == 1).OnlyEnforceIf(declarations[Declaration.CURATOR])
-    model.Add(arms == 2).OnlyEnforceIf(declarations[Declaration.CURATOR])
-    model.Add(legs == 2).OnlyEnforceIf(declarations[Declaration.CURATOR])
-    model.Add(wings == 2).OnlyEnforceIf(declarations[Declaration.CURATOR])
+    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.CURATOR])
+    model.Add(arms == 2).OnlyEnforceIf(actions[Declaration.CURATOR])
+    model.Add(legs == 2).OnlyEnforceIf(actions[Declaration.CURATOR])
+    model.Add(wings == 2).OnlyEnforceIf(actions[Declaration.CURATOR])
     for prohibited_quality in [fins, tails]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.CURATOR])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.CURATOR])
 
     # Reptile requirements
-    model.Add(torso_style >= 20).OnlyEnforceIf(declarations[Declaration.REPTILE])
-    model.Add(tails == 1).OnlyEnforceIf(declarations[Declaration.REPTILE])
-    model.Add(skulls == 1).OnlyEnforceIf(declarations[Declaration.REPTILE])
+    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.REPTILE])
+    model.Add(tails == 1).OnlyEnforceIf(actions[Declaration.REPTILE])
+    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.REPTILE])
     for prohibited_quality in [fins, wings, arms]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.REPTILE])
-    model.Add(legs < 5).OnlyEnforceIf(declarations[Declaration.REPTILE])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.REPTILE])
+    model.Add(legs < 5).OnlyEnforceIf(actions[Declaration.REPTILE])
 
     # Amphibian requirements
-    model.Add(torso_style >= 20).OnlyEnforceIf(declarations[Declaration.AMPHIBIAN])
-    model.Add(legs == 4).OnlyEnforceIf(declarations[Declaration.AMPHIBIAN])
-    model.Add(skulls == 1).OnlyEnforceIf(declarations[Declaration.AMPHIBIAN])
+    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
+    model.Add(legs == 4).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
+    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
 
     for prohibited_quality in [tails, fins, wings, arms]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.AMPHIBIAN])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
 
     # Fish requirements
-    model.Add(skulls == 1).OnlyEnforceIf(declarations[Declaration.FISH])
-    model.Add(fins >= 2).OnlyEnforceIf(declarations[Declaration.FISH])
-    model.Add(tails <= 1).OnlyEnforceIf(declarations[Declaration.FISH])
-    model.Add(torso_style >= 20).OnlyEnforceIf(declarations[Declaration.FISH])
+    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.FISH])
+    model.Add(fins >= 2).OnlyEnforceIf(actions[Declaration.FISH])
+    model.Add(tails <= 1).OnlyEnforceIf(actions[Declaration.FISH])
+    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.FISH])
     for prohibited_quality in [arms, legs, wings]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.FISH])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.FISH])
 
     # Insect requirements
-    model.Add(skulls == 1).OnlyEnforceIf(declarations[Declaration.INSECT])
-    model.Add(legs == 6).OnlyEnforceIf(declarations[Declaration.INSECT])
-    model.Add(torso_style >= 20).OnlyEnforceIf(declarations[Declaration.INSECT])
+    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.INSECT])
+    model.Add(legs == 6).OnlyEnforceIf(actions[Declaration.INSECT])
+    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.INSECT])
     for prohibited_quality in [arms, fins, tails]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.INSECT])
-    model.Add(wings < 5).OnlyEnforceIf(declarations[Declaration.INSECT])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.INSECT])
+    model.Add(wings < 5).OnlyEnforceIf(actions[Declaration.INSECT])
 
     # Spider requirements
-    model.Add(legs == 8).OnlyEnforceIf(declarations[Declaration.SPIDER])
-    model.Add(tails <= 1).OnlyEnforceIf(declarations[Declaration.SPIDER])
-    model.Add(torso_style >= 20).OnlyEnforceIf(declarations[Declaration.SPIDER])
+    model.Add(legs == 8).OnlyEnforceIf(actions[Declaration.SPIDER])
+    model.Add(tails <= 1).OnlyEnforceIf(actions[Declaration.SPIDER])
+    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.SPIDER])
     for prohibited_quality in [skulls, arms, wings, fins]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(declarations[Declaration.SPIDER])
+        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.SPIDER])
 
-    # Skeleton must be finished
-    for needed_quality in [lambda action: action.skulls_needed, lambda action: action.limbs_needed, lambda action: action.tails_needed]:
-        model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [needed_quality(action) for action in actions.keys()]) == 0)
+    # Skeleton must have no unfilled skulls
+    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.skulls_needed for action in actions.keys()]) == 0)
+
+    # Skeleton must have no unfilled limbs
+    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.limbs_needed for action in actions.keys()]) == 0)
+
+    # Skeleton must have no unfilled tails, unless they were skipped
+    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails_needed for action in actions.keys()]) == 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS].Not())
+    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails_needed for action in actions.keys()]) >= 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS])
 
     if BUYER == Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES:
         model.Add(skeleton_in_progress >= 100)
@@ -1419,7 +1428,7 @@ def Solve():
         model.Add(difficulty_level == 40*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.A_NAIVE_COLLECTOR:
         model.Add(skeleton_in_progress >= 100)
 
@@ -1434,7 +1443,7 @@ def Solve():
         model.Add(difficulty_level == 25*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity <= 0)
@@ -1450,7 +1459,7 @@ def Solve():
         model.Add(difficulty_level == 50*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace <= 0)
@@ -1466,7 +1475,7 @@ def Solve():
         model.Add(difficulty_level == 50*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy <= 0)
@@ -1482,7 +1491,7 @@ def Solve():
         model.Add(difficulty_level == 50*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
@@ -1498,7 +1507,7 @@ def Solve():
         model.Add(difficulty_level == 45*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.MRS_PLENTY:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace > 0)
@@ -1514,7 +1523,7 @@ def Solve():
         model.Add(difficulty_level == 45*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.A_TENTACLED_SERVANT:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
@@ -1530,7 +1539,7 @@ def Solve():
         model.Add(difficulty_level == 45*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.AN_INVESTMENT_MINDED_AMBASSADOR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
@@ -1559,7 +1568,7 @@ def Solve():
         derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
         model.AddDivisionEquality(derived_exhaustion, antiquity_squared, 20)
 
-        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.A_TELLER_OF_TERRORS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace > 0)
@@ -1581,7 +1590,7 @@ def Solve():
         derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
         model.AddDivisionEquality(derived_exhaustion, menace_squared, 100)
 
-        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.A_TENTACLED_ENTREPRENEUR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
@@ -1609,7 +1618,7 @@ def Solve():
         derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
         model.AddDivisionEquality(derived_exhaustion, amalgamy_squared, 100)
 
-        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.AN_AUTHOR_OF_GOTHIC_TALES:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
@@ -1632,7 +1641,7 @@ def Solve():
         derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
         model.AddDivisionEquality(derived_exhaustion, antiquity_times_menace, 20)
 
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]) + derived_exhaustion)
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + derived_exhaustion)
     elif BUYER == Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
@@ -1655,7 +1664,7 @@ def Solve():
         derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
         model.AddDivisionEquality(derived_exhaustion, amalgamy_times_antiquity, 20)
 
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]) + derived_exhaustion)
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + derived_exhaustion)
     elif BUYER == Buyer.A_RUBBERY_COLLECTOR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
@@ -1678,7 +1687,7 @@ def Solve():
         derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
         model.AddDivisionEquality(derived_exhaustion, amalgamy_times_menace, 20)
 
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]) + derived_exhaustion)
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + derived_exhaustion)
     elif BUYER == Buyer.A_CONSTABLE:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 119]))
 
@@ -1693,7 +1702,7 @@ def Solve():
         model.Add(difficulty_level == 50*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.AN_ENTHUSIAST_IN_SKULLS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(skulls >= 2)
@@ -1714,7 +1723,7 @@ def Solve():
         derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
         model.AddDivisionEquality(derived_exhaustion, vital_intelligence, 4)
 
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]) + derived_exhaustion)
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + derived_exhaustion)
     elif BUYER == Buyer.A_DREARY_MIDNIGHTER:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 299]))
         model.Add(amalgamy <= 0)
@@ -1731,7 +1740,7 @@ def Solve():
         model.Add(difficulty_level == 100*implausibility)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
     elif BUYER == Buyer.THE_DUMBWAITER_OF_BALMORAL:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([180, 189]))
         model.Add(value >= 250)
@@ -1746,7 +1755,7 @@ def Solve():
         model.Add(difficulty_level == 200)
 
         # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
+        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
 
 
     # Maximize profit margin
