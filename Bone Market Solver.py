@@ -1132,6 +1132,7 @@ def Solve():
     implausibility = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'implausibility')
     model.Add(implausibility == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.implausibility for action in actions.keys()]))
 
+
     # Counter-church calculation
     # Calculate amount of Counter-church from Holy Relics of the Thigh of Saint Fiacre
     holy_relic = actions[Appendage.FIACRE_THIGH]
@@ -1145,8 +1146,14 @@ def Solve():
 
     del holy_relic, torso_style_divided_by_ten, holy_relic_counter_church
 
+
     # Exhaustion calculation
     exhaustion = model.NewIntVar(0, MAXIMUM_EXHAUSTION, 'exhaustion')
+
+    # Exhaustion added by certain buyers
+    added_exhaustion = model.NewIntVar(0, MAXIMUM_EXHAUSTION, 'added exhaustion')
+    model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + added_exhaustion)
+
 
     # Profit intermediate variables
     primary_revenue = model.NewIntVar(0, cp_model.INT32_MAX, 'primary revenue')
@@ -1430,8 +1437,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 40*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.A_NAIVE_COLLECTOR:
         model.Add(skeleton_in_progress >= 100)
 
@@ -1445,8 +1452,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 25*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity <= 0)
@@ -1461,8 +1468,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 50*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace <= 0)
@@ -1477,8 +1484,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 50*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy <= 0)
@@ -1493,8 +1500,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 50*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
@@ -1509,8 +1516,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 45*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.MRS_PLENTY:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace > 0)
@@ -1525,8 +1532,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 45*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.A_TENTACLED_SERVANT:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
@@ -1541,8 +1548,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 45*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.AN_INVESTMENT_MINDED_AMBASSADOR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
@@ -1567,11 +1574,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
 
-        # Exhaustion
-        derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
-        model.AddDivisionEquality(derived_exhaustion, antiquity_squared, 20)
-
-        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.AddDivisionEquality(added_exhaustion, antiquity_squared, 20)
     elif BUYER == Buyer.A_TELLER_OF_TERRORS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace > 0)
@@ -1589,11 +1593,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
 
-        # Exhaustion
-        derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
-        model.AddDivisionEquality(derived_exhaustion, menace_squared, 100)
-
-        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.AddDivisionEquality(added_exhaustion, menace_squared, 100)
     elif BUYER == Buyer.A_TENTACLED_ENTREPRENEUR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
@@ -1617,11 +1618,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
 
-        # Exhaustion
-        derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
-        model.AddDivisionEquality(derived_exhaustion, amalgamy_squared, 100)
-
-        model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.AddDivisionEquality(added_exhaustion, amalgamy_squared, 100)
     elif BUYER == Buyer.AN_AUTHOR_OF_GOTHIC_TALES:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
@@ -1640,11 +1638,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
 
-        # Exhaustion
-        derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
-        model.AddDivisionEquality(derived_exhaustion, antiquity_times_menace, 20)
-
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + derived_exhaustion)
+        # Added Exhaustion
+        model.AddDivisionEquality(added_exhaustion, antiquity_times_menace, 20)
     elif BUYER == Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
@@ -1663,11 +1658,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
 
-        # Exhaustion
-        derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
-        model.AddDivisionEquality(derived_exhaustion, amalgamy_times_antiquity, 20)
-
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + derived_exhaustion)
+        # Added Exhaustion
+        model.AddDivisionEquality(added_exhaustion, amalgamy_times_antiquity, 20)
     elif BUYER == Buyer.A_RUBBERY_COLLECTOR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
@@ -1686,11 +1678,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
 
-        # Exhaustion
-        derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
-        model.AddDivisionEquality(derived_exhaustion, amalgamy_times_menace, 20)
-
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + derived_exhaustion)
+        # Added Exhaustion
+        model.AddDivisionEquality(added_exhaustion, amalgamy_times_menace, 20)
     elif BUYER == Buyer.A_CONSTABLE:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 119]))
 
@@ -1704,8 +1693,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 50*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.AN_ENTHUSIAST_IN_SKULLS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(skulls >= 2)
@@ -1722,11 +1711,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 60*implausibility)
 
-        # Exhaustion
-        derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, 'derived exhaustion')
-        model.AddDivisionEquality(derived_exhaustion, vital_intelligence, 4)
-
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + derived_exhaustion)
+        # Added Exhaustion
+        model.AddDivisionEquality(added_exhaustion, vital_intelligence, 4)
     elif BUYER == Buyer.A_DREARY_MIDNIGHTER:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 299]))
         model.Add(amalgamy <= 0)
@@ -1742,8 +1728,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 100*implausibility)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
     elif BUYER == Buyer.THE_DUMBWAITER_OF_BALMORAL:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([180, 189]))
         model.Add(value >= 250)
@@ -1757,8 +1743,8 @@ def Solve():
         # Difficulty Level
         model.Add(difficulty_level == 200)
 
-        # Exhaustion
-        model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]))
+        # Added Exhaustion
+        model.Add(added_exhaustion == 0)
 
 
     # Maximize profit margin
