@@ -25,7 +25,7 @@ MAXIMUM_EXHAUSTION = 4
 
 
 # The number of pennies needed to produce a quality.
-class Value(enum.Enum):
+class Cost(enum.Enum):
     # This is your baseline EPA: the pennies you could generate using an action for a generic grind.
     ACTION = 400
 
@@ -449,7 +449,7 @@ class Action:
 class Torso(enum.Enum):
     HEADLESS_HUMANOID = Action(
             "Reassemble your Headless Humanoid",
-            cost = Value.ACTION.value + Value.HEADLESS_SKELETON.value,
+            cost = Cost.ACTION.value + Cost.HEADLESS_SKELETON.value,
             torso_style = 10,
             value = 250,
             skulls_needed = 1,
@@ -460,7 +460,7 @@ class Torso(enum.Enum):
     # Licentiate
     # VICTIM_SKELETON = Action(
     #        "Supply a skeleton of your own",
-    #        cost = Value.ACTION.value,
+    #        cost = Cost.ACTION.value,
     #        torso_style = 10,
     #        value = 250,
     #        skulls_needed = 1,
@@ -470,7 +470,7 @@ class Torso(enum.Enum):
 
     HUMAN_RIBCAGE = Action(
             "Build on the Human Ribcage",
-            cost = Value.ACTION.value + Value.HUMAN_RIBCAGE.value,
+            cost = Cost.ACTION.value + Cost.HUMAN_RIBCAGE.value,
             torso_style = 15,
             value = 1250,
             skulls_needed = 1,
@@ -479,7 +479,7 @@ class Torso(enum.Enum):
 
     THORNED_RIBCAGE = Action(
             "Make something of your Thorned Ribcage",
-            cost = Value.ACTION.value + Value.THORNED_RIBCAGE.value,
+            cost = Cost.ACTION.value + Cost.THORNED_RIBCAGE.value,
             torso_style = 20,
             value = 1250,
             skulls_needed = 1,
@@ -491,7 +491,7 @@ class Torso(enum.Enum):
 
     SKELETON_WITH_SEVEN_NECKS = Action(
             "Build on the Skeleton with Seven Necks",
-            cost = Value.ACTION.value + Value.SKELETON_WITH_SEVEN_NECKS.value,
+            cost = Cost.ACTION.value + Cost.SKELETON_WITH_SEVEN_NECKS.value,
             torso_style = 30,
             value = 6250,
             skulls_needed = 7,
@@ -503,7 +503,7 @@ class Torso(enum.Enum):
 
     FLOURISHING_RIBCAGE = Action(
             "Build on the Flourishing Ribcage",
-            cost = Value.ACTION.value + Value.FLOURISHING_RIBCAGE.value,
+            cost = Cost.ACTION.value + Cost.FLOURISHING_RIBCAGE.value,
             torso_style = 40,
             value = 1250,
             skulls_needed = 2,
@@ -514,7 +514,7 @@ class Torso(enum.Enum):
 
     MAMMOTH_RIBCAGE = Action(
             "Build on the Mammoth Ribcage",
-            cost = Value.ACTION.value + Value.MAMMOTH_RIBCAGE.value,
+            cost = Cost.ACTION.value + Cost.MAMMOTH_RIBCAGE.value,
             torso_style = 50,
             value = 6250,
             skulls_needed = 1,
@@ -525,7 +525,7 @@ class Torso(enum.Enum):
 
     RIBCAGE_WITH_A_BOUQUET_OF_EIGHT_SPINES = Action(
             "Build on the Ribcage with the Eight Spines",
-            cost = Value.ACTION.value + Value.RIBCAGE_WITH_EIGHT_SPINES.value,
+            cost = Cost.ACTION.value + Cost.RIBCAGE_WITH_EIGHT_SPINES.value,
             torso_style = 60,
             value = 31250,
             skulls_needed = 8,
@@ -536,7 +536,7 @@ class Torso(enum.Enum):
             )
 
     LEVIATHAN_FRAME = Action("Build on the Leviathan Frame",
-            cost = Value.ACTION.value + Value.LEVIATHAN_FRAME.value,
+            cost = Cost.ACTION.value + Cost.LEVIATHAN_FRAME.value,
             torso_style = 70,
             value = 31250,
             skulls_needed = 1,
@@ -548,7 +548,7 @@ class Torso(enum.Enum):
 
     PRISMATIC_FRAME = Action(
             "Build on the Prismatic Frame",
-            cost = Value.ACTION.value + Value.PRISMATIC_FRAME.value,
+            cost = Cost.ACTION.value + Cost.PRISMATIC_FRAME.value,
             torso_style = 80,
             value = 31250,
             skulls_needed = 3,
@@ -560,7 +560,7 @@ class Torso(enum.Enum):
 
     FIVE_POINTED_FRAME = Action(
             "Build on the Five-Pointed Frame",
-            cost = Value.ACTION.value + Value.FIVE_POINTED_RIBCAGE.value,
+            cost = Cost.ACTION.value + Cost.FIVE_POINTED_RIBCAGE.value,
             torso_style = 100,
             value = 31250,
             skulls_needed = 5,
@@ -577,7 +577,7 @@ class Torso(enum.Enum):
 class Skull(enum.Enum):
     BAPTIST_SKULL = Action(
             "Duplicate the skull of John the Baptist, if you can call that a skull",
-            cost = Value.ACTION.value + 500*Value.BONE_FRAGMENT.value + 10*Value.PEPPERCAPS.value,
+            cost = Cost.ACTION.value + 500*Cost.BONE_FRAGMENT.value + 10*Cost.PEPPERCAPS.value,
             value = 1500,
             skulls_needed = -1,
             skulls = 1,
@@ -586,7 +586,7 @@ class Skull(enum.Enum):
 
     BRASS_SKULL = Action(
             "Affix a Bright Brass Skull to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.BRASS_SKULL.value + 200*Value.NEVERCOLD_BRASS.value,
+            cost = Cost.ACTION.value + Cost.BRASS_SKULL.value + 200*Cost.NEVERCOLD_BRASS.value,
             value = 6500,
             skulls_needed = -1,
             skulls = 1,
@@ -595,7 +595,7 @@ class Skull(enum.Enum):
 
     CORAL_SKULL = Action(
             "Affix a Skull in Coral to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.CORAL_SKULL.value + Value.SCINTILLACK.value,
+            cost = Cost.ACTION.value + Cost.CORAL_SKULL.value + Cost.SCINTILLACK.value,
             value = 1750,
             skulls_needed = -1,
             skulls = 1,
@@ -604,7 +604,7 @@ class Skull(enum.Enum):
 
     DOUBLED_SKULL = Action(
             "Affix a Doubled Skull to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.DOUBLED_SKULL.value,
+            cost = Cost.ACTION.value + Cost.DOUBLED_SKULL.value,
             value = 6250,
             skulls_needed = -1,
             skulls = 2,
@@ -615,7 +615,7 @@ class Skull(enum.Enum):
     # Adds Exhaustion
     # ENGRAVED_SKULL = Action(
     #         "Affix a Custom-Engraved Skull to your (Skeleton Type)",
-    #         cost = Value.ACTION.value + Value.ENGRAVED_SKULL.value,
+    #         cost = Cost.ACTION.value + Cost.ENGRAVED_SKULL.value,
     #         value = 10000,
     #         skulls_needed = -1,
     #         skulls = 1,
@@ -624,7 +624,7 @@ class Skull(enum.Enum):
 
     EYELESS_SKULL = Action(
             "Affix an Eyeless Skull to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.EYELESS_SKULL.value,
+            cost = Cost.ACTION.value + Cost.EYELESS_SKULL.value,
             value = 3000,
             skulls_needed = -1,
             skulls = 1,
@@ -633,7 +633,7 @@ class Skull(enum.Enum):
 
     HORNED_SKULL = Action(
             "Affix a Horned Skull to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.HORNED_SKULL.value,
+            cost = Cost.ACTION.value + Cost.HORNED_SKULL.value,
             value = 1250,
             skulls_needed = -1,
             skulls = 1,
@@ -644,7 +644,7 @@ class Skull(enum.Enum):
     # Seeking the Name of Mr. Eaten
     # OWN_SKULL = Action(
     #         "Duplicate your own skull and affix it here",
-    #         cost = Value.ACTION.value + 1000*Value.BONE_FRAGMENT.value,
+    #         cost = Cost.ACTION.value + 1000*Cost.BONE_FRAGMENT.value,
     #         value = -250,
     #         skulls_needed = -1,
     #         skulls = 1
@@ -652,7 +652,7 @@ class Skull(enum.Enum):
 
     PENTAGRAMMIC_SKULL = Action(
             "Affix a Pentagrammic Skull to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.PENTAGRAMMIC_SKULL.value,
+            cost = Cost.ACTION.value + Cost.PENTAGRAMMIC_SKULL.value,
             value = 1250,
             skulls_needed = -1,
             skulls = 1,
@@ -662,7 +662,7 @@ class Skull(enum.Enum):
 
     PLATED_SKULL = Action(
             "Affix a Plated Skull to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.PLATED_SKULL.value,
+            cost = Cost.ACTION.value + Cost.PLATED_SKULL.value,
             value = 2500,
             skulls_needed = -1,
             skulls = 1,
@@ -671,7 +671,7 @@ class Skull(enum.Enum):
 
     RUBBERY_SKULL = Action(
             "Affix a Rubbery Skull to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.RUBBERY_SKULL.value,
+            cost = Cost.ACTION.value + Cost.RUBBERY_SKULL.value,
             value = 600,
             skulls_needed = -1,
             skulls = 1,
@@ -680,7 +680,7 @@ class Skull(enum.Enum):
 
     SABRE_TOOTHED_SKULL = Action(
             "Affix a Sabre-toothed Skull to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.SABRE_TOOTHED_SKULL.value,
+            cost = Cost.ACTION.value + Cost.SABRE_TOOTHED_SKULL.value,
             value = 6250,
             skulls_needed = -1,
             skulls = 1,
@@ -690,14 +690,14 @@ class Skull(enum.Enum):
 
     STYGIAN_IVORY = Action(
             "Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.STYGIAN_IVORY.value,
+            cost = Cost.ACTION.value + Cost.STYGIAN_IVORY.value,
             value = 250,
             skulls_needed = -1
             )
 
     VAKE_SKULL = Action(
             "Duplicate the Vake's skull and use it to decorate your (Skeleton Type)",
-            cost = Value.ACTION.value + 6000*Value.BONE_FRAGMENT.value,
+            cost = Cost.ACTION.value + 6000*Cost.BONE_FRAGMENT.value,
             value = 6500,
             skulls_needed = -1,
             skulls = 1,
@@ -707,7 +707,7 @@ class Skull(enum.Enum):
     # Licentiate
     # VICTIM_SKULL = Action(
     #         "Cap this with a victim’s skull",
-    #         cost = Value.ACTION.value,
+    #         cost = Cost.ACTION.value,
     #         value = 250,
     #         skulls_needed = -1,
     #         skulls = 1
@@ -721,14 +721,14 @@ class Appendage(enum.Enum):
     # Cost from this scales with limbs and is partially implemented separately
     ADD_JOINTS = Action(
             "Add four more joints to your skeleton",
-            cost = Value.ACTION.value + Value.TREMBLING_AMBER.value,
+            cost = Cost.ACTION.value + Cost.TREMBLING_AMBER.value,
             limbs_needed = 4,
             amalgamy = 2
             )
 
     ALBATROSS_WING = Action(
             "Put an Albatross Wing on your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.ALBATROSS_WING.value,
+            cost = Cost.ACTION.value + Cost.ALBATROSS_WING.value,
             value = 1250,
             limbs_needed = -1,
             wings = 1,
@@ -737,7 +737,7 @@ class Appendage(enum.Enum):
 
     AMBER_FIN = Action(
             "Attach the Amber-Crusted Fin to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.AMBER_FIN.value,
+            cost = Cost.ACTION.value + Cost.AMBER_FIN.value,
             value = 1500,
             limbs_needed = -1,
             fins = 1,
@@ -747,7 +747,7 @@ class Appendage(enum.Enum):
 
     BAT_WING = Action(
             "Add a Bat Wing to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.BAT_WING.value,
+            cost = Cost.ACTION.value + Cost.BAT_WING.value,
             value = 1,
             limbs_needed = -1,
             wings = 1,
@@ -755,7 +755,7 @@ class Appendage(enum.Enum):
             )
 
     BLACK_STINGER = Action("Apply a Jet Black Stinger to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.BLACK_STINGER.value,
+            cost = Cost.ACTION.value + Cost.BLACK_STINGER.value,
             value = 50,
             tails_needed = -1,
             tails = 1,
@@ -764,7 +764,7 @@ class Appendage(enum.Enum):
 
     CRUSTACEAN_PINCER = Action(
             "Apply a Crustacean Pincer to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.CRUSTACEAN_PINCER.value,
+            cost = Cost.ACTION.value + Cost.CRUSTACEAN_PINCER.value,
             limbs_needed = -1,
             arms = 1,
             menace = 1
@@ -772,7 +772,7 @@ class Appendage(enum.Enum):
 
     DEER_FEMUR = Action(
             "Apply the Femur of a Surface Deer to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.DEER_FEMUR.value,
+            cost = Cost.ACTION.value + Cost.DEER_FEMUR.value,
             value = 10,
             limbs_needed = -1,
             legs = 1,
@@ -782,7 +782,7 @@ class Appendage(enum.Enum):
     # Counter-Church theology from this scales with torso style and is implemented separately
     FIACRE_THIGH = Action(
             "Affix Saint Fiacre's Thigh Relic to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.FIACRE_THIGH.value,
+            cost = Cost.ACTION.value + Cost.FIACRE_THIGH.value,
             value = 1250,
             limbs_needed = -1,
             legs = 1
@@ -790,7 +790,7 @@ class Appendage(enum.Enum):
 
     FIN_BONES = Action(
             "Put Fins on your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.FIN_BONES.value,
+            cost = Cost.ACTION.value + Cost.FIN_BONES.value,
             value = 50,
             limbs_needed = -1,
             fins = 1
@@ -798,7 +798,7 @@ class Appendage(enum.Enum):
 
     FOSSILISED_FORELIMB = Action(
             "Apply a Fossilised Forelimb to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.FOSSILISED_FORELIMB.value,
+            cost = Cost.ACTION.value + Cost.FOSSILISED_FORELIMB.value,
             value = 2750,
             limbs_needed = -1,
             arms = 1,
@@ -807,7 +807,7 @@ class Appendage(enum.Enum):
 
     HELICAL_THIGH = Action(
             "Affix the Helical Thighbone to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.HELICAL_THIGH.value,
+            cost = Cost.ACTION.value + Cost.HELICAL_THIGH.value,
             value = 300,
             limbs_needed = -1,
             legs = 1,
@@ -816,7 +816,7 @@ class Appendage(enum.Enum):
 
     HUMAN_ARM = Action(
             "Join a Human Arm to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.HUMAN_ARM.value,
+            cost = Cost.ACTION.value + Cost.HUMAN_ARM.value,
             value = 250,
             limbs_needed = -1,
             arms = 1,
@@ -825,7 +825,7 @@ class Appendage(enum.Enum):
 
     IVORY_FEMUR = Action(
             "Apply an Ivory Femur to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.IVORY_FEMUR.value,
+            cost = Cost.ACTION.value + Cost.IVORY_FEMUR.value,
             value = 6500,
             limbs_needed = -1,
             legs = 1
@@ -833,7 +833,7 @@ class Appendage(enum.Enum):
 
     IVORY_HUMERUS = Action(
             "Apply an Ivory Humerus to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.IVORY_HUMERUS.value,
+            cost = Cost.ACTION.value + Cost.IVORY_HUMERUS.value,
             value = 1500,
             limbs_needed = -1,
             arms = 1
@@ -841,7 +841,7 @@ class Appendage(enum.Enum):
 
     JURASSIC_THIGH = Action(
             "Apply a Jurassic Thigh Bone to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.JURASSIC_FEMUR.value,
+            cost = Cost.ACTION.value + Cost.JURASSIC_FEMUR.value,
             value = 300,
             limbs_needed = -1,
             legs = 1,
@@ -850,7 +850,7 @@ class Appendage(enum.Enum):
 
     KNOTTED_HUMERUS = Action(
             "Apply a Knotted Humerus to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.KNOTTED_HUMERUS.value,
+            cost = Cost.ACTION.value + Cost.KNOTTED_HUMERUS.value,
             value = 150,
             limbs_needed = -1,
             arms = 1,
@@ -859,7 +859,7 @@ class Appendage(enum.Enum):
 
     OBSIDIAN_TAIL = Action(
             "Apply an Obsidian Chitin Tail to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.OBSIDIAN_TAIL.value,
+            cost = Cost.ACTION.value + Cost.OBSIDIAN_TAIL.value,
             value = 500,
             tails_needed = -1,
             tails = 1,
@@ -868,7 +868,7 @@ class Appendage(enum.Enum):
 
     PLASTER_TAIL_BONES = Action(
             "Apply Plaster Tail Bones to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.PLASTER_TAIL_BONES.value,
+            cost = Cost.ACTION.value + Cost.PLASTER_TAIL_BONES.value,
             value = 250,
             tails_needed = -1,
             tails = 1,
@@ -877,7 +877,7 @@ class Appendage(enum.Enum):
 
     TERROR_BIRD_WING = Action(
             "Add the Wing of a Young Terror Bird to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.TERROR_BIRD_WING.value,
+            cost = Cost.ACTION.value + Cost.TERROR_BIRD_WING.value,
             value = 250,
             limbs_needed = -1,
             wings = 1,
@@ -887,7 +887,7 @@ class Appendage(enum.Enum):
 
     TOMB_LION_TAIL = Action(
             "Apply a Tomb-Lion's Tail to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.TOMB_LION_TAIL.value,
+            cost = Cost.ACTION.value + Cost.TOMB_LION_TAIL.value,
             value = 250,
             tails_needed = -1,
             tails = 1,
@@ -896,7 +896,7 @@ class Appendage(enum.Enum):
 
     UNIDENTIFIED_THIGH = Action(
             "Apply an Unidentified Thigh Bone to your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.UNIDENTIFIED_THIGH.value,
+            cost = Cost.ACTION.value + Cost.UNIDENTIFIED_THIGH.value,
             value = 100,
             limbs_needed = -1,
             legs = 1
@@ -904,7 +904,7 @@ class Appendage(enum.Enum):
 
     WITHERED_TAIL = Action(
             "Apply a Withered Tentacle as a tail on your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.WITHERED_TENTACLE.value,
+            cost = Cost.ACTION.value + Cost.WITHERED_TENTACLE.value,
             value = 250,
             tails_needed = -1,
             tails = 1,
@@ -913,7 +913,7 @@ class Appendage(enum.Enum):
 
     WITHERED_TENTACLE = Action(
             "Put a Withered Tentacle on your (Skeleton Type)",
-            cost = Value.ACTION.value + Value.WITHERED_TENTACLE.value,
+            cost = Cost.ACTION.value + Cost.WITHERED_TENTACLE.value,
             value = 250,
             limbs_needed = -1,
             tentacles = 1,
@@ -922,14 +922,14 @@ class Appendage(enum.Enum):
 
     REMOVE_TAIL = Action(
             "Remove the tail from your (Skeleton Type)",
-            cost = Value.ACTION.value,
+            cost = Cost.ACTION.value,
             tails = -1
             )
 
     # This sets Skeleton: Tails Needed to 0 and is implemented separately
     SKIP_TAILS = Action(
             "Decide your Tailless Animal needs no tail",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     def __str__(self):
@@ -940,19 +940,19 @@ class Appendage(enum.Enum):
 class Adjustment(enum.Enum):
     CARVE_AWAY_AGE = Action(
             "Carve away some evidence of age",
-            cost = Value.ACTION.value,
+            cost = Cost.ACTION.value,
             antiquity = -2
             )
 
     DISGUISE_AMALGAMY = Action(
             "Disguise the amalgamy of this piece",
-            cost = Value.ACTION.value + Value.JADE_FRAGMENT.value,
+            cost = Cost.ACTION.value + Cost.JADE_FRAGMENT.value,
             amalgamy = -2
             )
 
     MAKE_LESS_DREADFUL = Action(
             "Make your skeleton less dreadful",
-            cost = Value.ACTION.value,
+            cost = Cost.ACTION.value,
             menace = -2
             )
 
@@ -964,58 +964,58 @@ class Adjustment(enum.Enum):
 class Declaration(enum.Enum):
     AMPHIBIAN = Action(
             "Declare your (Skeleton Type) a completed Amphibian",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     APE = Action(
             "Declare your (Skeleton Type) a completed Ape",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     BIRD = Action(
             "Declare your (Skeleton Type) a completed Bird",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     CHIMERA = Action(
             "Declare your (Skeleton Type) a completed Chimera",
-            cost = Value.ACTION.value,
+            cost = Cost.ACTION.value,
             implausibility = 3
             )
 
     CURATOR = Action(
             "Declare your (Skeleton Type) a completed Curator",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     FISH = Action(
             "Declare your (Skeleton Type) a completed Fish",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     HUMANOID = Action(
             "Declare your (Skeleton Type) a completed Humanoid",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     INSECT = Action(
             "Declare your (Skeleton Type) a completed Insect",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     MONKEY = Action(
             "Declare your (Skeleton Type) a completed Monkey",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     REPTILE = Action(
             "Declare your (Skeleton Type) a completed Reptile",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     SPIDER = Action(
             "Declare your (Skeleton Type) a completed Spider",
-            cost = Value.ACTION.value
+            cost = Cost.ACTION.value
             )
 
     def __str__(self):
@@ -1160,11 +1160,11 @@ def Solve():
     model.AddMaxEquality(non_zero_difficulty_level, [difficulty_level, 1])
 
     sale_actions_times_action_value = model.NewIntVar(0, cp_model.INT32_MAX, 'sale actions times action value')
-    model.AddDivisionEquality(sale_actions_times_action_value, model.NewConstant(round(DIFFICULTY_SCALER*SHADOWY_LEVEL*Value.ACTION.value)), non_zero_difficulty_level)
+    model.AddDivisionEquality(sale_actions_times_action_value, model.NewConstant(round(DIFFICULTY_SCALER*SHADOWY_LEVEL*Cost.ACTION.value)), non_zero_difficulty_level)
     abstract_sale_cost = model.NewIntVar(0, cp_model.INT32_MAX, 'abstract sale cost')
-    model.AddDivisionEquality(abstract_sale_cost, Value.ACTION.value**2, sale_actions_times_action_value)
+    model.AddDivisionEquality(abstract_sale_cost, Cost.ACTION.value**2, sale_actions_times_action_value)
     sale_cost = model.NewIntVar(0, cp_model.INT32_MAX, 'sale cost')
-    model.AddMaxEquality(sale_cost, [abstract_sale_cost, Value.ACTION.value])
+    model.AddMaxEquality(sale_cost, [abstract_sale_cost, Cost.ACTION.value])
 
     del non_zero_difficulty_level, sale_actions_times_action_value, abstract_sale_cost
 
@@ -1204,7 +1204,7 @@ def Solve():
 
     del add_joints_amber_cost_multiple_first_term, add_joints_amber_cost_multiple_second_term, add_joints_amber_cost_multiple_third_term, add_joints_amber_cost_multiple_fourth_term, add_joints_amber_cost_multiple_fifth_term
 
-    model.AddGeneralMultiplicationEquality(add_joints_amber_cost, add_joints, add_joints_amber_cost_multiple, Value.WARM_AMBER.value)
+    model.AddGeneralMultiplicationEquality(add_joints_amber_cost, add_joints, add_joints_amber_cost_multiple, Cost.WARM_AMBER.value)
 
     del add_joints, add_joints_amber_cost_multiple
 
