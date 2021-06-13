@@ -39,10 +39,6 @@ class Cost(enum.Enum):
     # Bone Fragment
     BONE_FRAGMENT = 1
 
-    # Bright Brass Skull
-    # Merrigans Exchange
-    BRASS_SKULL = 6250
-
     # Cartographer's Hoard
     CARTOGRAPHERS_HOARD = 31250
 
@@ -159,6 +155,13 @@ class Cost(enum.Enum):
     # Ivory Femur
     # Bohemian Sculptress
     IVORY_FEMUR = ACTION + 750*BONE_FRAGMENT + 3*ORANGE_APPLE
+
+    # Penny
+    PENNY = 1
+
+    # Bright Brass Skull
+    # Merrigans Exchange
+    BRASS_SKULL = 6250*PENNY
 
     # Pentagrammic Skull
     # Upwards
