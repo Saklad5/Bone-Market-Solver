@@ -377,6 +377,8 @@ class Buyer(enum.Enum):
     A_DREARY_MIDNIGHTER = auto()
     THE_DUMBWAITER_OF_BALMORAL = auto()
 
+BUYER = Buyer.AN_ENTHUSIAST_IN_SKULLS
+
 # An action that affects a skeleton's qualities.
 class Action:
     def __init__(self, name, cost, torso_style = None, value = 0, skulls_needed = 0, limbs_needed = 0, tails_needed = 0, skulls = 0, arms = 0, legs = 0, tails = 0, wings = 0, fins = 0, tentacles = 0, amalgamy = 0, antiquity = 0, menace = 0, implausibility = 0, counter_church = 0, exhaustion = 0):
@@ -1020,21 +1022,19 @@ class Declaration(enum.Enum):
     def __str__(self):
         return str(self.value)
 
+# The current value of Zoological Mania, which grants a 10% bonus to value for a certain declaration.
+ZOOLOGICAL_MANIA = Declaration.AMPHIBIAN
+
 # Which skeleton attribute is currently boosted.
 class Fluctuation(enum.Enum):
     ANTIQUITY = 1
     AMALGAMY = 2
 
+# The current value of Bone Market Fluctuations, which grants various bonuses to certain buyers.
+BONE_MARKET_FLUCTUATIONS = Fluctuation.AMALGAMY 
+
 def create_data_model():
     data = {}
-
-    data['buyer'] = Buyer.AN_ENTHUSIAST_IN_SKULLS
-
-    # The current value of Bone Market Fluctuations, which grants various bonuses to certain buyers.
-    data['bone_market_fluctuations'] = Fluctuation.AMALGAMY 
-
-    # The current value of Zoological Mania, which grants a 10% bonus to value for a certain declaration.
-    data['zoological_mania'] = Declaration.AMPHIBIAN
     
     data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [appendage.value for appendage in Appendage] + [adjustment.value for adjustment in Adjustment]
 
@@ -1068,8 +1068,8 @@ def Solve():
     model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value for action in actions.keys()]) == original_value)
 
     multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX*11, "multiplied value")
-    model.Add(multiplied_value == original_value*11).OnlyEnforceIf(declarations[data['zoological_mania']])
-    model.Add(multiplied_value == original_value*10).OnlyEnforceIf(declarations[data['zoological_mania']].Not())
+    model.Add(multiplied_value == original_value*11).OnlyEnforceIf(declarations[ZOOLOGICAL_MANIA])
+    model.Add(multiplied_value == original_value*10).OnlyEnforceIf(declarations[ZOOLOGICAL_MANIA].Not())
 
     value = model.NewIntVar(0, cp_model.INT32_MAX, 'value')
     model.AddDivisionEquality(value, multiplied_value, 10)
@@ -1408,7 +1408,7 @@ def Solve():
     for needed_quality in [lambda action: action.skulls_needed, lambda action: action.limbs_needed, lambda action: action.tails_needed]:
         model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [needed_quality(action) for action in actions.keys()]) == 0)
 
-    if data['buyer'] == Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES:
+    if BUYER == Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES:
         model.Add(skeleton_in_progress >= 100)
 
         # Revenue
@@ -1420,7 +1420,7 @@ def Solve():
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.A_NAIVE_COLLECTOR:
+    elif BUYER == Buyer.A_NAIVE_COLLECTOR:
         model.Add(skeleton_in_progress >= 100)
 
         value_remainder = model.NewIntVar(0, 249, 'value remainder')
@@ -1435,7 +1435,7 @@ def Solve():
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS:
+    elif BUYER == Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity <= 0)
 
@@ -1451,7 +1451,7 @@ def Solve():
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER:
+    elif BUYER == Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace <= 0)
 
@@ -1467,7 +1467,7 @@ def Solve():
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL:
+    elif BUYER == Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy <= 0)
 
@@ -1483,7 +1483,7 @@ def Solve():
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD:
+    elif BUYER == Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
 
@@ -1492,14 +1492,14 @@ def Solve():
 
         # Revenue
         model.Add(primary_revenue == value - value_remainder)
-        model.Add(secondary_revenue == 250*antiquity + (250 if data['bone_market_fluctuations'] == Fluctuation.ANTIQUITY else 0))
+        model.Add(secondary_revenue == 250*antiquity + (250 if BONE_MARKET_FLUCTUATIONS == Fluctuation.ANTIQUITY else 0))
         
         # Difficulty Level
         model.Add(difficulty_level == 45*implausibility)
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.MRS_PLENTY:
+    elif BUYER == Buyer.MRS_PLENTY:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace > 0)
 
@@ -1515,7 +1515,7 @@ def Solve():
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.A_TENTACLED_SERVANT:
+    elif BUYER == Buyer.A_TENTACLED_SERVANT:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
 
@@ -1524,14 +1524,14 @@ def Solve():
 
         # Revenue
         model.Add(primary_revenue == value - value_remainder + 250)
-        model.Add(secondary_revenue == 250*amalgamy + (250 if data['bone_market_fluctuations'] == Fluctuation.AMALGAMY else 0))
+        model.Add(secondary_revenue == 250*amalgamy + (250 if BONE_MARKET_FLUCTUATIONS == Fluctuation.AMALGAMY else 0))
         
         # Difficulty Level
         model.Add(difficulty_level == 45*implausibility)
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.AN_INVESTMENT_MINDED_AMBASSADOR:
+    elif BUYER == Buyer.AN_INVESTMENT_MINDED_AMBASSADOR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
 
@@ -1539,7 +1539,7 @@ def Solve():
         model.AddMultiplicationEquality(antiquity_squared, [antiquity, antiquity])
 
         tailfeathers = model.NewIntVar(0, cp_model.INT32_MAX, 'tailfeathers')
-        if data['bone_market_fluctuations'] == Fluctuation.ANTIQUITY:
+        if BONE_MARKET_FLUCTUATIONS == Fluctuation.ANTIQUITY:
             model.AddApproximateExponentiationEquality(tailfeathers, antiquity, 2.2, MAXIMUM_ATTRIBUTE)
         else:
             model.Add(tailfeathers == antiquity_squared)
@@ -1560,7 +1560,7 @@ def Solve():
         model.AddDivisionEquality(derived_exhaustion, antiquity_squared, 20)
 
         model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.A_TELLER_OF_TERRORS:
+    elif BUYER == Buyer.A_TELLER_OF_TERRORS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(menace > 0)
 
@@ -1582,7 +1582,7 @@ def Solve():
         model.AddDivisionEquality(derived_exhaustion, menace_squared, 100)
 
         model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.A_TENTACLED_ENTREPRENEUR:
+    elif BUYER == Buyer.A_TENTACLED_ENTREPRENEUR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
 
@@ -1590,7 +1590,7 @@ def Solve():
         model.AddMultiplicationEquality(amalgamy_squared, [amalgamy, amalgamy])
 
         final_breaths = model.NewIntVar(0, cp_model.INT32_MAX, 'final breaths')
-        if data['bone_market_fluctuations'] == Fluctuation.AMALGAMY:
+        if BONE_MARKET_FLUCTUATIONS == Fluctuation.AMALGAMY:
             model.AddApproximateExponentiationEquality(final_breaths, amalgamy, 2.2, MAXIMUM_ATTRIBUTE)
         else:
             model.Add(final_breaths == amalgamy_squared)
@@ -1610,7 +1610,7 @@ def Solve():
         model.AddDivisionEquality(derived_exhaustion, amalgamy_squared, 100)
 
         model.Add(exhaustion == derived_exhaustion + cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.AN_AUTHOR_OF_GOTHIC_TALES:
+    elif BUYER == Buyer.AN_AUTHOR_OF_GOTHIC_TALES:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
         model.Add(menace > 0)
@@ -1623,7 +1623,7 @@ def Solve():
 
         # Revenue
         model.Add(primary_revenue == value - value_remainder + 250)
-        model.Add(secondary_revenue == 250*antiquity_times_menace + 250*(menace if data['bone_market_fluctuations'] == Fluctuation.ANTIQUITY else 0))
+        model.Add(secondary_revenue == 250*antiquity_times_menace + 250*(menace if BONE_MARKET_FLUCTUATIONS == Fluctuation.ANTIQUITY else 0))
 
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
@@ -1633,7 +1633,7 @@ def Solve():
         model.AddDivisionEquality(derived_exhaustion, antiquity_times_menace, 20)
 
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]) + derived_exhaustion)
-    elif data['buyer'] == Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS:
+    elif BUYER == Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(antiquity > 0)
         model.Add(amalgamy > 0)
@@ -1646,7 +1646,7 @@ def Solve():
 
         # Revenue
         model.Add(primary_revenue == value - value_remainder + 250)
-        model.Add(secondary_revenue == 250*amalgamy_times_antiquity + 250*(amalgamy if data['bone_market_fluctuations'] == Fluctuation.ANTIQUITY else antiquity if data['bone_market_fluctuations'] == Fluctuation.AMALGAMY else 0))
+        model.Add(secondary_revenue == 250*amalgamy_times_antiquity + 250*(amalgamy if BONE_MARKET_FLUCTUATIONS == Fluctuation.ANTIQUITY else antiquity if BONE_MARKET_FLUCTUATIONS == Fluctuation.AMALGAMY else 0))
 
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
@@ -1656,7 +1656,7 @@ def Solve():
         model.AddDivisionEquality(derived_exhaustion, amalgamy_times_antiquity, 20)
 
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]) + derived_exhaustion)
-    elif data['buyer'] == Buyer.A_RUBBERY_COLLECTOR:
+    elif BUYER == Buyer.A_RUBBERY_COLLECTOR:
         model.Add(skeleton_in_progress >= 100)
         model.Add(amalgamy > 0)
         model.Add(menace > 0)
@@ -1669,7 +1669,7 @@ def Solve():
 
         # Revenue
         model.Add(primary_revenue == value - value_remainder + 250)
-        model.Add(secondary_revenue == 250*amalgamy_times_menace + 250*(menace if data['bone_market_fluctuations'] == Fluctuation.AMALGAMY else 0))
+        model.Add(secondary_revenue == 250*amalgamy_times_menace + 250*(menace if BONE_MARKET_FLUCTUATIONS == Fluctuation.AMALGAMY else 0))
 
         # Difficulty Level
         model.Add(difficulty_level == 75*implausibility)
@@ -1679,7 +1679,7 @@ def Solve():
         model.AddDivisionEquality(derived_exhaustion, amalgamy_times_menace, 20)
 
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]) + derived_exhaustion)
-    elif data['buyer'] == Buyer.A_CONSTABLE:
+    elif BUYER == Buyer.A_CONSTABLE:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 119]))
 
         value_remainder = model.NewIntVar(0, 49, 'value remainder')
@@ -1694,7 +1694,7 @@ def Solve():
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.AN_ENTHUSIAST_IN_SKULLS:
+    elif BUYER == Buyer.AN_ENTHUSIAST_IN_SKULLS:
         model.Add(skeleton_in_progress >= 100)
         model.Add(skulls >= 2)
         
@@ -1715,7 +1715,7 @@ def Solve():
         model.AddDivisionEquality(derived_exhaustion, vital_intelligence, 4)
 
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]) + derived_exhaustion)
-    elif data['buyer'] == Buyer.A_DREARY_MIDNIGHTER:
+    elif BUYER == Buyer.A_DREARY_MIDNIGHTER:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 299]))
         model.Add(amalgamy <= 0)
         model.Add(counter_church <= 0)
@@ -1732,7 +1732,7 @@ def Solve():
 
         # Exhaustion
         model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.exhaustion for action in actions.keys()]))
-    elif data['buyer'] == Buyer.THE_DUMBWAITER_OF_BALMORAL:
+    elif BUYER == Buyer.THE_DUMBWAITER_OF_BALMORAL:
         model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([180, 189]))
         model.Add(value >= 250)
         value_remainder = model.NewIntVar(0, 249, 'value remainder')
