@@ -134,6 +134,9 @@ class Value(enum.Enum):
     # Ealing Gardens statue, 2 at a time
     IVORY_HUMERUS = (ACTION + 4*BOHEMIAN_FAVOURS)/2
 
+    # Jade Fragment
+    JADE_FRAGMENT = 1
+
     # Femur of a Jurassic Beast
     # Brawling for yourself, large Bone Market crate, 12 at a time
     JURASSIC_FEMUR = (10*ACTION)/12
@@ -932,6 +935,30 @@ class Appendage(enum.Enum):
         return str(self.value)
 
 
+# Actions that are taken after all parts have been added to a skeleton.
+class Adjustment(enum.Enum):
+    CARVE_AWAY_AGE = Action(
+            "Carve away some evidence of age",
+            cost = Value.ACTION.value,
+            antiquity = -2
+            )
+
+    DISGUISE_AMALGAMY = Action(
+            "Disguise the amalgamy of this piece",
+            cost = Value.ACTION.value + Value.JADE_FRAGMENT.value,
+            amalgamy = -2
+            )
+
+    MAKE_LESS_DREADFUL = Action(
+            "Make your skeleton less dreadful",
+            cost = Value.ACTION.value,
+            menace = -2
+            )
+
+    def __str__(self):
+        return str(self.value)
+
+
 # Which kind of skeleton is to be declared.
 class Declaration(enum.Enum):
     CHIMERA = Action("Declare your (Skeleton Type) a completed Chimera", cost = Value.ACTION.value, implausibility = 3)
@@ -965,11 +992,7 @@ def create_data_model():
     # The current value of Zoological Mania, which grants a 10% bonus to value for a certain declaration.
     data['zoological_mania'] = Declaration.AMPHIBIAN
     
-    data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [appendage.value for appendage in Appendage] + [
-            Action("Make your skeleton less dreadful", cost = Value.ACTION.value, menace = -2),
-            Action("Disguise the amalgamy of this piece", cost = 25 + Value.ACTION.value, amalgamy = -2),
-            Action("Carve away some evidence of age", cost = Value.ACTION.value, antiquity = -2)
-    ]
+    data['actions'] = [torso.value for torso in Torso] + [skull.value for skull in Skull] + [appendage.value for appendage in Appendage] + [adjustment.value for adjustment in Adjustment]
 
     return data
 
