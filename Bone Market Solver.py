@@ -369,29 +369,6 @@ setattr(cp_model.CpModel, 'AddGeneralMultiplicationEquality', AddGeneralMultipli
 del AddGeneralMultiplicationEquality
 
 
-# A way to convert a skeleton into revenue.
-class Buyer(enum.Enum):
-    A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES = auto()
-    A_NAIVE_COLLECTOR = auto()
-    A_FAMILIAR_BOHEMIAN_SCULPTRESS = auto()
-    A_PEDAGOGICALLY_INCLINED_GRANDMOTHER = auto()
-    A_THEOLOGIAN_OF_THE_OLD_SCHOOL = auto()
-    AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD = auto()
-    MRS_PLENTY = auto()
-    A_TENTACLED_SERVANT = auto()
-    AN_INVESTMENT_MINDED_AMBASSADOR = auto()
-    A_TELLER_OF_TERRORS = auto()
-    A_TENTACLED_ENTREPRENEUR = auto()
-    AN_AUTHOR_OF_GOTHIC_TALES = auto()
-    A_ZAILOR_WITH_PARTICULAR_INTERESTS = auto()
-    A_RUBBERY_COLLECTOR = auto()
-    A_CONSTABLE = auto()
-    AN_ENTHUSIAST_IN_SKULLS = auto()
-    A_DREARY_MIDNIGHTER = auto()
-    THE_DUMBWAITER_OF_BALMORAL = auto()
-
-BUYER = Buyer.AN_ENTHUSIAST_IN_SKULLS
-
 # An action that affects a skeleton's qualities.
 class Action:
     def __init__(self, name, cost, torso_style = None, value = 0, skulls_needed = 0, limbs_needed = 0, tails_needed = 0, skulls = 0, arms = 0, legs = 0, tails = 0, wings = 0, fins = 0, tentacles = 0, amalgamy = 0, antiquity = 0, menace = 0, implausibility = 0, counter_church = 0, exhaustion = 0):
@@ -1054,6 +1031,104 @@ class Embellishment(enum.Enum):
 
     def __str__(self):
         return str(self.value)
+
+
+# A way to convert a skeleton into revenue.
+class Buyer(enum.Enum):
+    A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES = Action(
+            "Sell a complete skeleton to the Bone Hoarder",
+            cost = Cost.ACTION.value
+            )
+
+    A_NAIVE_COLLECTOR = Action(
+            "Sell your Skeleton to a Naive Collector",
+            cost = Cost.ACTION.value
+            )
+
+    A_FAMILIAR_BOHEMIAN_SCULPTRESS = Action(
+            "Sell your Skeleton to the Sculptress",
+            cost = Cost.ACTION.value
+            )
+
+    A_PEDAGOGICALLY_INCLINED_GRANDMOTHER = Action(
+            "Sell your skeleton to a Pedagogically Inclined Grandmother",
+            cost = Cost.ACTION.value
+            )
+
+    A_THEOLOGIAN_OF_THE_OLD_SCHOOL = Action(
+            "Sell your Skeleton to the Theologian of the Old School",
+            cost = Cost.ACTION.value
+            )
+
+    AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD = Action(
+            "Sell your skeleton to an Enthusiast of the Ancient World",
+            cost = Cost.ACTION.value
+            )
+
+    MRS_PLENTY = Action(
+            "Sell a complete skeleton to Mrs Plenty",
+            cost = Cost.ACTION.value
+            )
+
+    A_TENTACLED_SERVANT = Action(
+            "Sell him your amalgamous skeleton",
+            cost = Cost.ACTION.value
+            )
+
+    AN_INVESTMENT_MINDED_AMBASSADOR = Action(
+            "Sell your skeleton to the Ambassador",
+            cost = Cost.ACTION.value
+            )
+
+    A_TELLER_OF_TERRORS = Action(
+            "Sell your skeleton to the Teller of Terrors",
+            cost = Cost.ACTION.value
+            )
+
+    A_TENTACLED_ENTREPRENEUR = Action(
+            "Sell to the Tentacled Entrepreneur",
+            cost = Cost.ACTION.value
+            )
+
+    AN_AUTHOR_OF_GOTHIC_TALES = Action(
+            "Sell to an Author of Gothic Tales",
+            cost = Cost.ACTION.value
+            )
+
+    A_ZAILOR_WITH_PARTICULAR_INTERESTS = Action(
+            "Sell your skeleton to a Zailor",
+            cost = Cost.ACTION.value
+            )
+
+    A_RUBBERY_COLLECTOR = Action(
+            "Sell to an Enthusiast of a Rubbery Menace",
+            cost = Cost.ACTION.value
+            )
+
+    A_CONSTABLE = Action(
+            "Sell to a Constable",
+            cost = Cost.ACTION.value
+            )
+
+    AN_ENTHUSIAST_IN_SKULLS = Action(
+            "Sell to the Cranial Enthusiast",
+            cost = Cost.ACTION.value
+            )
+
+    A_DREARY_MIDNIGHTER = Action(
+            "Sell to the Dreary Midnighter",
+            cost = Cost.ACTION.value
+            )
+
+    THE_DUMBWAITER_OF_BALMORAL = Action(
+            "Export the Skeleton of a Neathy Bird",
+            cost = Cost.ACTION.value
+            )
+
+    def __str__(self):
+        return str(self.value)
+
+BUYER = Buyer.AN_ENTHUSIAST_IN_SKULLS
 
 
 # Which skeleton attribute is currently boosted.
