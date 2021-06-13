@@ -69,6 +69,9 @@ class Cost(enum.Enum):
     # Various opportunity cards
     DOCK_FAVOURS = ACTION
 
+    # Extraordinary Implication
+    EXTRAORDINARY_IMPLICATION = 250
+
     # Eyeless Skull
     # No consistent source
     EYELESS_SKULL = cp_model.INT32_MAX/2
@@ -115,6 +118,9 @@ class Cost(enum.Enum):
     # Human Arm
     # These are accumulated while acquiring other qualities.
     HUMAN_ARM = 0
+
+    # Incisive Observation
+    INCISIVE_OBSERVATION = 50
 
     # Crate of Incorruptible Biscuits
     INCORRUPTIBLE_BISCUITS = 250
@@ -169,6 +175,10 @@ class Cost(enum.Enum):
 
     # Hand-picked Peppercaps
     PEPPERCAPS = HINTERLAND_SCRIP
+
+    # Revisionist Historical Narrative
+    # Waswood
+    REVISIONIST_NARRATIVE = ACTION + 4*EXTRAORDINARY_IMPLICATION + INCISIVE_OBSERVATION
 
     # Knob of Scintillack
     SCINTILLACK = 250
@@ -1027,6 +1037,25 @@ class Declaration(enum.Enum):
 # The current value of Zoological Mania, which grants a 10% bonus to value for a certain declaration.
 ZOOLOGICAL_MANIA = Declaration.AMPHIBIAN
 
+
+# Actions taken after a declaration is made.
+class Embellishment(enum.Enum):
+    MORE_PLAUSIBLE = Action(
+            "Make it seem just a bit more plausible",
+            cost = Cost.ACTION.value + Cost.REVISIONIST_NARRATIVE.value,
+            implausibility = -1
+            )
+
+    CONVINCING_HISTORY = Action(
+            "Invest great time and skill in coming up with a convincing history",
+            cost = Cost.ACTION.value + 3*Cost.REVISIONIST_NARRATIVE.value,
+            implausibility = -5
+            )
+
+    def __str__(self):
+        return str(self.value)
+
+
 # Which skeleton attribute is currently boosted.
 class Fluctuation(enum.Enum):
     ANTIQUITY = 1
@@ -1034,6 +1063,7 @@ class Fluctuation(enum.Enum):
 
 # The current value of Bone Market Fluctuations, which grants various bonuses to certain buyers.
 BONE_MARKET_FLUCTUATIONS = Fluctuation.AMALGAMY 
+
 
 def Solve():
     model = cp_model.CpModel()
@@ -1062,6 +1092,10 @@ def Solve():
     # Declaration
     for declaration in Declaration:
         actions[declaration] = model.NewBoolVar(declaration.value.name)
+
+    # Embellishment
+    for embellishment in Embellishment:
+        actions[embellishment] = model.NewIntVar(0, cp_model.INT32_MAX, embellishment.value.name)
 
     # One torso
     model.Add(cp_model.LinearExpr.Sum([value for (key, value) in actions.items() if isinstance(key, Torso)]) == 1)
@@ -1165,7 +1199,7 @@ def Solve():
 
     # Cost
     # Calculate value of actions needed to sell the skeleton.
-    difficulty_level = model.NewIntVar(0, cp_model.INT32_MAX, 'difficulty level')
+    difficulty_level = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'difficulty level')
 
     non_zero_difficulty_level = model.NewIntVar(1, cp_model.INT32_MAX, 'non-zero difficulty level')
     model.AddMaxEquality(non_zero_difficulty_level, [difficulty_level, 1])
