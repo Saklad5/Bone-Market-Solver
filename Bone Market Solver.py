@@ -961,17 +961,61 @@ class Adjustment(enum.Enum):
 
 # Which kind of skeleton is to be declared.
 class Declaration(enum.Enum):
-    CHIMERA = Action("Declare your (Skeleton Type) a completed Chimera", cost = Value.ACTION.value, implausibility = 3)
-    HUMANOID = Action("Declare your (Skeleton Type) a completed Humanoid", cost = Value.ACTION.value)
-    APE = Action("Declare your (Skeleton Type) a completed Ape", cost = Value.ACTION.value)
-    MONKEY = Action("Declare your (Skeleton Type) a completed Monkey", cost = Value.ACTION.value)
-    BIRD = Action("Declare your (Skeleton Type) a completed Bird", cost = Value.ACTION.value)
-    CURATOR = Action("Declare your (Skeleton Type) a completed Curator", cost = Value.ACTION.value)
-    REPTILE = Action("Declare your (Skeleton Type) a completed Reptile", cost = Value.ACTION.value)
-    AMPHIBIAN = Action("Declare your (Skeleton Type) a completed Amphibian", cost = Value.ACTION.value)
-    FISH = Action("Declare your (Skeleton Type) a completed Fish", cost = Value.ACTION.value)
-    INSECT = Action("Declare your (Skeleton Type) a completed Insect", cost = Value.ACTION.value)
-    SPIDER = Action("Declare your (Skeleton Type) a completed Spider", cost = Value.ACTION.value)
+    AMPHIBIAN = Action(
+            "Declare your (Skeleton Type) a completed Amphibian",
+            cost = Value.ACTION.value
+            )
+
+    APE = Action(
+            "Declare your (Skeleton Type) a completed Ape",
+            cost = Value.ACTION.value
+            )
+
+    BIRD = Action(
+            "Declare your (Skeleton Type) a completed Bird",
+            cost = Value.ACTION.value
+            )
+
+    CHIMERA = Action(
+            "Declare your (Skeleton Type) a completed Chimera",
+            cost = Value.ACTION.value,
+            implausibility = 3
+            )
+
+    CURATOR = Action(
+            "Declare your (Skeleton Type) a completed Curator",
+            cost = Value.ACTION.value
+            )
+
+    FISH = Action(
+            "Declare your (Skeleton Type) a completed Fish",
+            cost = Value.ACTION.value
+            )
+
+    HUMANOID = Action(
+            "Declare your (Skeleton Type) a completed Humanoid",
+            cost = Value.ACTION.value
+            )
+
+    INSECT = Action(
+            "Declare your (Skeleton Type) a completed Insect",
+            cost = Value.ACTION.value
+            )
+
+    MONKEY = Action(
+            "Declare your (Skeleton Type) a completed Monkey",
+            cost = Value.ACTION.value
+            )
+
+    REPTILE = Action(
+            "Declare your (Skeleton Type) a completed Reptile",
+            cost = Value.ACTION.value
+            )
+
+    SPIDER = Action(
+            "Declare your (Skeleton Type) a completed Spider",
+            cost = Value.ACTION.value
+            )
 
     def __str__(self):
         return str(self.value)
