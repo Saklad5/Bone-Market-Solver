@@ -1,6 +1,7 @@
 import functools
 import enum
 import os
+import argparse
 
 from enum import auto
 from ortools.sat.python import cp_model
@@ -16,13 +17,6 @@ DIFFICULTY_SCALER = 0.6
 
 # This is the effective level of Shadowy used for attempting to sell.
 SHADOWY_LEVEL = 300
-
-# The maximum number of pennies that should be invested in this skeleton.
-MAXIMUM_COST = cp_model.INT32_MAX
-
-# The maximum Exhaustion that this skeleton should generate.
-MAXIMUM_EXHAUSTION = 4
-
 
 # The number of pennies needed to produce a quality.
 class Cost(enum.Enum):
@@ -1011,9 +1005,6 @@ class Declaration(enum.Enum):
     def __str__(self):
         return str(self.value)
 
-# The current value of Zoological Mania, which grants a 10% bonus to value for a certain declaration.
-ZOOLOGICAL_MANIA = Declaration.AMPHIBIAN
-
 
 # Actions taken after a declaration is made.
 class Embellishment(enum.Enum):
@@ -1128,19 +1119,13 @@ class Buyer(enum.Enum):
     def __str__(self):
         return str(self.value)
 
-BUYER = Buyer.AN_ENTHUSIAST_IN_SKULLS
-
-
 # Which skeleton attribute is currently boosted.
 class Fluctuation(enum.Enum):
     ANTIQUITY = 1
     AMALGAMY = 2
 
-# The current value of Bone Market Fluctuations, which grants various bonuses to certain buyers.
-BONE_MARKET_FLUCTUATIONS = Fluctuation.AMALGAMY 
 
-
-def Solve():
+def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, verbose = False):
     model = cp_model.CpModel()
 
     actions = {}
@@ -1186,16 +1171,16 @@ def Solve():
     model.Add(cp_model.LinearExpr.Sum([value for (key, value) in actions.items() if isinstance(key, Buyer)]) == 1)
 
     # Set buyer
-    if BUYER is not None:
-        model.Add(actions[BUYER] == 1)
+    if desired_buyer is not None:
+        model.Add(actions[desired_buyer] == 1)
 
     # Value calculation
     original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
     model.Add(original_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
 
     multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX*11, "multiplied value")
-    model.Add(multiplied_value == original_value*11).OnlyEnforceIf(actions[ZOOLOGICAL_MANIA])
-    model.Add(multiplied_value == original_value*10).OnlyEnforceIf(actions[ZOOLOGICAL_MANIA].Not())
+    model.Add(multiplied_value == original_value*11).OnlyEnforceIf(actions[zoological_mania])
+    model.Add(multiplied_value == original_value*10).OnlyEnforceIf(actions[zoological_mania].Not())
 
     value = model.NewIntVar(0, cp_model.INT32_MAX, 'value')
     model.AddDivisionEquality(value, multiplied_value, 10)
@@ -1268,10 +1253,10 @@ def Solve():
 
 
     # Exhaustion calculation
-    exhaustion = model.NewIntVar(0, MAXIMUM_EXHAUSTION, 'exhaustion')
+    exhaustion = model.NewIntVar(0, maximum_exhaustion, 'exhaustion')
 
     # Exhaustion added by certain buyers
-    added_exhaustion = model.NewIntVar(0, MAXIMUM_EXHAUSTION, 'added exhaustion')
+    added_exhaustion = model.NewIntVar(0, maximum_exhaustion, 'added exhaustion')
     model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + added_exhaustion)
 
 
@@ -1339,7 +1324,7 @@ def Solve():
     del add_joints, add_joints_amber_cost_multiple
 
 
-    cost = model.NewIntVar(0, MAXIMUM_COST, 'cost')
+    cost = model.NewIntVar(0, maximum_cost, 'cost')
     model.Add(cost == cp_model.LinearExpr.ScalProd(actions.values(), [int(action.value.cost) for action in actions.keys()]) + add_joints_amber_cost + sale_cost)
 
     del sale_cost, add_joints_amber_cost
@@ -1634,7 +1619,7 @@ def Solve():
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
-    model.Add(secondary_revenue == 250*antiquity + (250 if BONE_MARKET_FLUCTUATIONS == Fluctuation.ANTIQUITY else 0)).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
+    model.Add(secondary_revenue == 250*antiquity + (250 if bone_market_fluctuations == Fluctuation.ANTIQUITY else 0)).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
 
     model.Add(difficulty_level == 45*implausibility).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
 
@@ -1668,7 +1653,7 @@ def Solve():
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder + 250).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
-    model.Add(secondary_revenue == 250*amalgamy + (250 if BONE_MARKET_FLUCTUATIONS == Fluctuation.AMALGAMY else 0)).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
+    model.Add(secondary_revenue == 250*amalgamy + (250 if bone_market_fluctuations == Fluctuation.AMALGAMY else 0)).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
 
     model.Add(difficulty_level == 45*implausibility).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
 
@@ -1685,7 +1670,7 @@ def Solve():
     model.AddMultiplicationEquality(antiquity_squared, [antiquity, antiquity])
 
     tailfeathers = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_INVESTMENT_MINDED_AMBASSADOR.name, 'tailfeathers'))
-    if BONE_MARKET_FLUCTUATIONS == Fluctuation.ANTIQUITY:
+    if bone_market_fluctuations == Fluctuation.ANTIQUITY:
         model.AddApproximateExponentiationEquality(tailfeathers, antiquity, 2.2, MAXIMUM_ATTRIBUTE)
     else:
         model.Add(tailfeathers == antiquity_squared).OnlyEnforceIf(actions[Buyer.AN_INVESTMENT_MINDED_AMBASSADOR])
@@ -1738,7 +1723,7 @@ def Solve():
     model.AddMultiplicationEquality(amalgamy_squared, [amalgamy, amalgamy])
 
     final_breaths = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TENTACLED_ENTREPRENEUR.name, 'final breaths'))
-    if BONE_MARKET_FLUCTUATIONS == Fluctuation.AMALGAMY:
+    if bone_market_fluctuations == Fluctuation.AMALGAMY:
         model.AddApproximateExponentiationEquality(final_breaths, amalgamy, 2.2, MAXIMUM_ATTRIBUTE)
     else:
         model.Add(final_breaths == amalgamy_squared).OnlyEnforceIf(actions[Buyer.A_TENTACLED_ENTREPRENEUR])
@@ -1771,7 +1756,7 @@ def Solve():
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder + 250).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
-    model.Add(secondary_revenue == 250*antiquity_times_menace + 250*(menace if BONE_MARKET_FLUCTUATIONS == Fluctuation.ANTIQUITY else 0)).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
+    model.Add(secondary_revenue == 250*antiquity_times_menace + 250*(menace if bone_market_fluctuations == Fluctuation.ANTIQUITY else 0)).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
 
     model.Add(difficulty_level == 75*implausibility).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
 
@@ -1795,7 +1780,7 @@ def Solve():
     model.AddModuloEquality(value_remainder, value, 10)
 
     model.Add(primary_revenue == value - value_remainder + 250).OnlyEnforceIf(actions[Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS])
-    model.Add(secondary_revenue == 250*amalgamy_times_antiquity + 250*(amalgamy if BONE_MARKET_FLUCTUATIONS == Fluctuation.ANTIQUITY else antiquity if BONE_MARKET_FLUCTUATIONS == Fluctuation.AMALGAMY else 0)).OnlyEnforceIf(actions[Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS])
+    model.Add(secondary_revenue == 250*amalgamy_times_antiquity + 250*(amalgamy if bone_market_fluctuations == Fluctuation.ANTIQUITY else antiquity if bone_market_fluctuations == Fluctuation.AMALGAMY else 0)).OnlyEnforceIf(actions[Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS])
 
     model.Add(difficulty_level == 75*implausibility).OnlyEnforceIf(actions[Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS])
 
@@ -1819,7 +1804,7 @@ def Solve():
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder + 250).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
-    model.Add(secondary_revenue == 250*amalgamy_times_menace + 250*(menace if BONE_MARKET_FLUCTUATIONS == Fluctuation.AMALGAMY else 0)).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
+    model.Add(secondary_revenue == 250*amalgamy_times_menace + 250*(menace if bone_market_fluctuations == Fluctuation.AMALGAMY else 0)).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
 
     model.Add(difficulty_level == 75*implausibility).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
 
@@ -1931,7 +1916,7 @@ def Solve():
 
     solver = cp_model.CpSolver()
     solver.parameters.num_search_workers = os.cpu_count()
-    solver.parameters.log_search_progress = True
+    solver.parameters.log_search_progress = verbose
 
     status = solver.StatusName(solver.Solve(model))
     if status == "INFEASIBLE":
@@ -1963,5 +1948,77 @@ def Solve():
 
     print("\nExhaustion: {:n}".format(solver.Value(exhaustion)))
 
-if __name__ == '__main__':
-    Solve()
+
+class EnumAction(argparse.Action):
+    def __init__(self, **kwargs):
+        # Pop off the type value
+        enum = kwargs.pop("type", None)
+
+        # Generate choices from the Enum
+        kwargs.setdefault("choices", tuple(e.name.lower() for e in enum))
+
+        super(EnumAction, self).__init__(**kwargs)
+
+        self._enum = enum
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        # Convert value back into an Enum
+        enum = self._enum[values.upper()]
+        setattr(namespace, self.dest, enum)
+
+
+def main():
+    parser = argparse.ArgumentParser(prog='Bone Market Solver', description='Devise the optimal skeleton at the Bone Market in Fallen London.')
+    parser.add_argument(
+            '-f', '--bone-market-fluctuations',
+            action=EnumAction,
+            type=Fluctuation,
+            required=True,
+            help='current value of Bone Market Fluctuations, which grants various bonuses to certain buyers',
+            dest='bone_market_fluctuations'
+            )
+    parser.add_argument(
+            '-m', '--zoological-mania',
+            action=EnumAction,
+            type=Declaration,
+            required=True,
+            help='current value of Zoological Mania, which grants a 10%% bonus to value for a certain declaration',
+            dest='zoological_mania'
+            )
+    parser.add_argument(
+            '-b','--buyer', '--desired-buyer',
+            action=EnumAction,
+            type=Buyer,
+            help='specific buyer that skeleton should be designed for',
+            dest='desired_buyer'
+            )
+    parser.add_argument(
+            '-c', '--cost', '--maximum-cost',
+            default=cp_model.INT32_MAX,
+            type=int,
+            help='maximum number of pennies that should be invested in skeleton',
+            dest='maximum_cost'
+            )
+    parser.add_argument(
+            '-e', '--exhaustion', '--maximum_exhaustion',
+            default=cp_model.INT32_MAX,
+            type=int,
+            help='maximum exhaustion that skeleton should generate',
+            dest='maximum_exhaustion'
+            )
+    parser.add_argument(
+            '-v', '--verbose',
+            nargs='?',
+            const='True',
+            default=False,
+            type=bool,
+            help='whether the solver should output progress',
+            dest='verbose'
+            )
+
+    args = parser.parse_args()
+
+    Solve(args.bone_market_fluctuations, args.zoological_mania, args.desired_buyer, args.maximum_cost, args.maximum_exhaustion, args.verbose)
+
+
+main()
