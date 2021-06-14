@@ -1116,6 +1116,11 @@ class Buyer(enum.Enum):
             cost = Cost.ACTION.value
             )
 
+    THE_CARPENTERS_GRANDDAUGHTER = Action(
+            "Impress her with your own constructions",
+            cost = Cost.ACTION.value
+            )
+
     def __str__(self):
         return str(self.value)
 
@@ -1887,6 +1892,18 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL])
 
     del value_remainder
+
+
+    # The Carpenter's Granddaughter
+    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
+    model.Add(value >= 30000).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
+
+    model.Add(primary_revenue == 31250).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
+    model.Add(secondary_revenue == 0).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
+
+    model.Add(difficulty_level == 100*implausibility).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
+
+    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
 
 
     # Maximize profit margin
