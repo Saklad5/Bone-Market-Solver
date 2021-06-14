@@ -263,7 +263,7 @@ class Cost(enum.Enum):
 
     # Ribcage with a Bouquet of Eight Spines
     # Helicon House
-    RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + THORNED_RIBCAGE + 3*TREMBLING_AMBER
+    RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + SKELETON_WITH_SEVEN_NECKS +THORNED_RIBCAGE + 3*TREMBLING_AMBER
 
     # Rubbery Skull
     # Flute Street, including travel due to quality cap
