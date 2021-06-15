@@ -2018,6 +2018,58 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
 
     model.Maximize(profit_margin)
 
+
+    # Prints the steps that comprise a skeleton, as well as relevant attributes.
+    class SkeletonPrinter(cp_model.CpSolverSolutionCallback):
+        def __init__(self):
+            cp_model.CpSolverSolutionCallback.__init__(self)
+            self.__solution_count = 0
+
+        # Prints the latest solution of a provided solver.
+        def PrintableSolution(self, solver = None):
+            output = ""
+
+            # Allows use as a callback
+            if solver is None:
+                solver = self
+
+            for action in actions.keys():
+                for _ in range(int(solver.Value(actions[action]))):
+                    output += str(action) + "\n"
+
+            output += "\nProfit: £{:,.2f}\n".format(solver.Value(net_profit)/100)
+            output += "Profit Margin: {:+,.2%}\n".format(solver.Value(profit_margin)/PROFIT_MARGIN_MULTIPLIER)
+
+            output += "\nTotal Revenue: £{:,.2f}\n".format(solver.Value(total_revenue)/100)
+            output += "Primary Revenue: £{:,.2f}\n".format(solver.Value(primary_revenue)/100)
+            output += "Secondary Revenue: £{:,.2f}\n".format(solver.Value(secondary_revenue)/100)
+
+            output += "\nCost: £{:,.2f}\n".format(solver.Value(cost)/100)
+
+            output += "\nValue: £{:,.2f}\n".format(solver.Value(value)/100)
+            output += "Amalgamy: {:n}\n".format(solver.Value(amalgamy))
+            output += "Antiquity: {:n}\n".format(solver.Value(antiquity))
+            output += "Menace: {:n}\n".format(solver.Value(menace))
+            output += "Counter-Church: {:n}\n".format(solver.Value(counter_church))
+            output += "Implausibility: {:n}\n".format(solver.Value(implausibility))
+
+            output += "\nExhaustion: {:n}".format(solver.Value(exhaustion))
+
+            return output
+
+
+        def OnSolutionCallback(self):
+            self.__solution_count += 1
+            print()
+            print(self.PrintableSolution())
+            print()
+
+        def SolutionCount(self):
+            return self.__solution_count
+
+
+    printer = SkeletonPrinter()
+
     solver = cp_model.CpSolver()
     solver.parameters.num_search_workers = os.cpu_count()
     solver.parameters.log_search_progress = verbose
@@ -2030,27 +2082,8 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     elif status != "OPTIMAL":
         raise RuntimeError("Unknown status returned: {}.".format(status))
 
-    for action in actions.keys():
-        for _ in range(int(solver.Value(actions[action]))):
-            print(action)
-
-    print("\nProfit: £{:,.2f}".format(solver.Value(net_profit)/100))
-    print("Profit Margin: {:+,.2%}".format(solver.Value(profit_margin)/PROFIT_MARGIN_MULTIPLIER))
-
-    print("\nTotal Revenue: £{:,.2f}".format(solver.Value(total_revenue)/100))
-    print("Primary Revenue: £{:,.2f}".format(solver.Value(primary_revenue)/100))
-    print("Secondary Revenue: £{:,.2f}".format(solver.Value(secondary_revenue)/100))
-
-    print("\nCost: £{:,.2f}".format(solver.Value(cost)/100))
-
-    print("\nValue: £{:,.2f}".format(solver.Value(value)/100))
-    print("Amalgamy: {:n}".format(solver.Value(amalgamy)))
-    print("Antiquity: {:n}".format(solver.Value(antiquity)))
-    print("Menace: {:n}".format(solver.Value(menace)))
-    print("Counter-Church: {:n}".format(solver.Value(counter_church)))
-    print("Implausibility: {:n}".format(solver.Value(implausibility)))
-
-    print("\nExhaustion: {:n}".format(solver.Value(exhaustion)))
+    print()
+    print(printer.PrintableSolution(solver))
 
 
 class EnumAction(argparse.Action):
