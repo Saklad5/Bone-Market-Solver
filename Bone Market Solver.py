@@ -1914,7 +1914,7 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
 
     # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name, 'derived exhaustion'))
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name, 'derived exhaustion'))
     model.AddDivisionEquality(derived_exhaustion, amalgamy_times_implausibility, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
 
@@ -1938,7 +1938,7 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
 
     # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name, 'derived exhaustion'))
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name, 'derived exhaustion'))
     model.AddDivisionEquality(derived_exhaustion, menace_times_implausibility, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
 
@@ -1962,7 +1962,7 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
 
     # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'derived exhaustion'))
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'derived exhaustion'))
     model.AddDivisionEquality(derived_exhaustion, antiquity_times_implausibility, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
 
