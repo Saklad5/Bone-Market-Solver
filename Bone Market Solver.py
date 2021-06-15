@@ -1165,6 +1165,8 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
             actions[appendage] = model.NewBoolVar(appendage.value.name)
         else:
             actions[appendage] = model.NewIntVar(0, cp_model.INT32_MAX, appendage.value.name)
+    # Avoid adding joints at first
+    model.AddHint(actions[Appendage.ADD_JOINTS], 0)
 
     # Adjustment
     for adjustment in Adjustment:
@@ -1173,6 +1175,8 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     # Declaration
     for declaration in Declaration:
         actions[declaration] = model.NewBoolVar(declaration.value.name)
+    # Try non-Chimera declarations first
+    model.AddHint(actions[Declaration.CHIMERA], 0)
 
     # Embellishment
     for embellishment in Embellishment:
@@ -1193,7 +1197,7 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
 
     # Set buyer
     if desired_buyer is not None:
-        model.Add(actions[desired_buyer] == 1)
+        model.AddAssumption(actions[desired_buyer])
 
     # Value calculation
     original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
