@@ -1121,6 +1121,11 @@ class Buyer(enum.Enum):
             cost = Cost.ACTION.value
             )
 
+    A_COLOURFUL_PHANTASIST_CELESTIAL = Action(
+            "Sell an antique skeleton as a work of Celestial art",
+            cost = Cost.ACTION.value
+            )
+
     THE_DUMBWAITER_OF_BALMORAL = Action(
             "Export the Skeleton of a Neathy Bird",
             cost = Cost.ACTION.value
@@ -1933,6 +1938,30 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
 
     del menace_times_implausibility, value_remainder, derived_exhaustion
+
+
+    # A Colourful Phantasist - Celestial
+    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
+    model.Add(implausibility >= 2).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
+    model.Add(antiquity >= 4).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
+
+    antiquity_times_implausibility = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'antiquity times implausibility'))
+    model.AddMultiplicationEquality(antiquity_times_implausibility, [antiquity, implausibility])
+
+    value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'value remainder'))
+    model.AddModuloEquality(value_remainder, value, 50)
+
+    model.Add(primary_revenue == value - value_remainder + 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
+    model.Add(secondary_revenue == 250*antiquity_times_implausibility + 250).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
+
+    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
+
+    # The indirection is necessary for applying an enforcement literal
+    derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'derived exhaustion'))
+    model.AddDivisionEquality(derived_exhaustion, antiquity_times_implausibility, 20)
+    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
+
+    del antiquity_times_implausibility, value_remainder, derived_exhaustion
 
 
     # The Dumbwaiter of Balmoral
