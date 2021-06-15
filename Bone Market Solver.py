@@ -930,7 +930,7 @@ class Adjustment(enum.Enum):
 
     DISGUISE_AMALGAMY = Action(
             "Disguise the amalgamy of this piece",
-            cost = Cost.ACTION.value + Cost.JADE_FRAGMENT.value,
+            cost = Cost.ACTION.value + 25*Cost.JADE_FRAGMENT.value,
             amalgamy = -2
             )
 
