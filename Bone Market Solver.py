@@ -2,6 +2,7 @@ import functools
 import enum
 import os
 import argparse
+import curses
 
 from enum import auto
 from ortools.sat.python import cp_model
@@ -1145,7 +1146,7 @@ class Fluctuation(enum.Enum):
     AMALGAMY = 2
 
 
-def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, verbose = False):
+def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -2060,9 +2061,15 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
 
         def OnSolutionCallback(self):
             self.__solution_count += 1
-            print()
-            print(self.PrintableSolution())
-            print()
+
+            # Prints current solution to window
+            stdscr.clear()
+            stdscr.addstr(self.PrintableSolution())
+
+            stdscr.addstr(stdscr.getmaxyx()[0] - 1, 0, "Skeleton #{:n}".format(self.__solution_count))
+
+            stdscr.refresh()
+
 
         def SolutionCount(self):
             return self.__solution_count
@@ -2072,9 +2079,16 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
 
     solver = cp_model.CpSolver()
     solver.parameters.num_search_workers = os.cpu_count()
-    solver.parameters.log_search_progress = verbose
 
-    status = solver.StatusName(solver.Solve(model))
+    # There's no window in verbose mode
+    if stdscr is None:
+        solver.parameters.log_search_progress = True
+        solver.Solve(model)
+    else:
+        solver.SolveWithSolutionCallback(model, printer)
+
+    status = solver.StatusName()
+
     if status == "INFEASIBLE":
         raise RuntimeError("There is no satisfactory skeleton.")
     elif status == "FEASIBLE":
@@ -2082,8 +2096,7 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     elif status != "OPTIMAL":
         raise RuntimeError("Unknown status returned: {}.".format(status))
 
-    print()
-    print(printer.PrintableSolution(solver))
+    return printer.PrintableSolution(solver)
 
 
 class EnumAction(argparse.Action):
@@ -2149,13 +2162,21 @@ def main():
             const='True',
             default=False,
             type=bool,
-            help='whether the solver should output progress',
+            help='whether the solver should output search progress rather than showing intermediate solutions',
             dest='verbose'
             )
 
     args = parser.parse_args()
 
-    Solve(args.bone_market_fluctuations, args.zoological_mania, args.desired_buyer, args.maximum_cost, args.maximum_exhaustion, args.verbose)
+    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.desired_buyer, args.maximum_cost, args.maximum_exhaustion)
+
+    if not args.verbose:
+        def WrappedSolve(stdscr, arguments):
+            # Move stdscr to last position
+            return Solve(*arguments, stdscr)
+        print(curses.wrapper(WrappedSolve, arguments))
+    else:
+        print(Solve(*arguments))
 
 
 main()
