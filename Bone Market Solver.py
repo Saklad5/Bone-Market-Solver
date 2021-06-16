@@ -1146,7 +1146,7 @@ class Fluctuation(enum.Enum):
     AMALGAMY = 2
 
 
-def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, stdscr = None):
+def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -2083,6 +2083,7 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
 
     solver = cp_model.CpSolver()
     solver.parameters.num_search_workers = os.cpu_count()
+    solver.parameters.max_time_in_seconds = time_limit
 
     # There's no window in verbose mode
     if stdscr is None:
@@ -2169,10 +2170,17 @@ def main():
             help='whether the solver should output search progress rather than showing intermediate solutions',
             dest='verbose'
             )
+    parser.add_argument(
+            '-t', '--time-limit',
+            default=float('inf'),
+            type=float,
+            help='maximum number of seconds that solver runs for',
+            dest='time_limit'
+            )
 
     args = parser.parse_args()
 
-    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.desired_buyer, args.maximum_cost, args.maximum_exhaustion)
+    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.desired_buyer, args.maximum_cost, args.maximum_exhaustion, args.time_limit)
 
     if not args.verbose:
         def WrappedSolve(stdscr, arguments):
