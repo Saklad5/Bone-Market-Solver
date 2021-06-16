@@ -1926,20 +1926,23 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     amalgamy_times_implausibility = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name, 'amalgamy times implausibility'))
     model.AddMultiplicationEquality(amalgamy_times_implausibility, [amalgamy, implausibility])
 
+    bazaarine_poetry = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name, 'bazaarine poetry'))
+    model.Add(bazaarine_poetry == amalgamy_times_implausibility + 1)
+
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder + 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
-    model.Add(secondary_revenue == 250*amalgamy_times_implausibility + 250).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
+    model.Add(secondary_revenue == 250*bazaarine_poetry).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
 
     model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
 
     # The indirection is necessary for applying an enforcement literal
     derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name, 'derived exhaustion'))
-    model.AddDivisionEquality(derived_exhaustion, amalgamy_times_implausibility, 20)
+    model.AddDivisionEquality(derived_exhaustion, bazaarine_poetry, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
 
-    del amalgamy_times_implausibility, value_remainder, derived_exhaustion
+    del amalgamy_times_implausibility, bazaarine_poetry, value_remainder, derived_exhaustion
 
 
     # A Colourful Phantasist - Nocturnal
@@ -1950,20 +1953,23 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     menace_times_implausibility = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name, 'menace times implausibility'))
     model.AddMultiplicationEquality(menace_times_implausibility, [menace, implausibility])
 
+    stygian_ivory = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name, 'stygian ivory'))
+    model.Add(stygian_ivory == menace_times_implausibility + 1)
+
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder + 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
-    model.Add(secondary_revenue == 250*menace_times_implausibility + 250).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
+    model.Add(secondary_revenue == 250*stygian_ivory).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
 
     model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
 
     # The indirection is necessary for applying an enforcement literal
     derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name, 'derived exhaustion'))
-    model.AddDivisionEquality(derived_exhaustion, menace_times_implausibility, 20)
+    model.AddDivisionEquality(derived_exhaustion, stygian_ivory, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
 
-    del menace_times_implausibility, value_remainder, derived_exhaustion
+    del menace_times_implausibility, stygian_ivory, value_remainder, derived_exhaustion
 
 
     # A Colourful Phantasist - Celestial
@@ -1974,20 +1980,23 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     antiquity_times_implausibility = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'antiquity times implausibility'))
     model.AddMultiplicationEquality(antiquity_times_implausibility, [antiquity, implausibility])
 
+    knob_of_scintillack = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'knob of scintillack'))
+    model.Add(knob_of_scintillack == antiquity_times_implausibility + 1)
+
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder + 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
-    model.Add(secondary_revenue == 250*antiquity_times_implausibility + 250).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
+    model.Add(secondary_revenue == 250*knob_of_scintillack).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
 
     model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
 
     # The indirection is necessary for applying an enforcement literal
     derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name, 'derived exhaustion'))
-    model.AddDivisionEquality(derived_exhaustion, antiquity_times_implausibility, 20)
+    model.AddDivisionEquality(derived_exhaustion, knob_of_scintillack, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
 
-    del antiquity_times_implausibility, value_remainder, derived_exhaustion
+    del antiquity_times_implausibility, knob_of_scintillack, value_remainder, derived_exhaustion
 
 
     # The Dumbwaiter of Balmoral
