@@ -1145,8 +1145,20 @@ class Fluctuation(enum.Enum):
     ANTIQUITY = 1
     AMALGAMY = 2
 
+# Which of several unusual buyers are available.
+class OccasionalBuyer(enum.Enum):
+    AN_ENTHUSIAST_IN_SKULLS = [Buyer.AN_ENTHUSIAST_IN_SKULLS]
 
-def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), stdscr = None):
+    A_DREARY_MIDNIGHTER = [Buyer.A_DREARY_MIDNIGHTER]
+
+    A_COLOURFUL_PHANTASIST = [
+            Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE,
+            Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL,
+            Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL,
+            ]
+
+
+def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyer = None, maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -1182,9 +1194,18 @@ def Solve(bone_market_fluctuations, zoological_mania, desired_buyer = None, maxi
     for embellishment in Embellishment:
         actions[embellishment] = model.NewIntVar(0, cp_model.INT32_MAX, embellishment.value.name)
 
+
     # Buyer
     for buyer in Buyer:
         actions[buyer] = model.NewBoolVar(buyer.value.name)
+
+    # Mark unavailable buyers
+    model.AddAssumptions([
+        actions[buyer].Not()
+        for unavailable_buyer in OccasionalBuyer if unavailable_buyer != occasional_buyer
+        for buyer in unavailable_buyer.value if buyer != desired_buyer
+        ])
+
 
     # One torso
     model.Add(cp_model.LinearExpr.Sum([value for (key, value) in actions.items() if isinstance(key, Torso)]) == 1)
@@ -2124,6 +2145,7 @@ class EnumAction(argparse.Action):
 
 def main():
     parser = argparse.ArgumentParser(prog='Bone Market Solver', description='Devise the optimal skeleton at the Bone Market in Fallen London.')
+
     parser.add_argument(
             '-f', '--bone-market-fluctuations',
             action=EnumAction,
@@ -2132,6 +2154,7 @@ def main():
             help='current value of Bone Market Fluctuations, which grants various bonuses to certain buyers',
             dest='bone_market_fluctuations'
             )
+
     parser.add_argument(
             '-m', '--zoological-mania',
             action=EnumAction,
@@ -2140,13 +2163,23 @@ def main():
             help='current value of Zoological Mania, which grants a 10%% bonus to value for a certain declaration',
             dest='zoological_mania'
             )
-    parser.add_argument(
+
+    buyer = parser.add_mutually_exclusive_group(required=True)
+    buyer.add_argument(
+            '-o', '--occasional-buyer',
+            action=EnumAction,
+            type=OccasionalBuyer,
+            help='current value of Occasional Buyer, which allows access to a buyer that is not otherwise available',
+            dest='occasional_buyer'
+            )
+    buyer.add_argument(
             '-b','--buyer', '--desired-buyer',
             action=EnumAction,
             type=Buyer,
             help='specific buyer that skeleton should be designed for',
             dest='desired_buyer'
             )
+
     parser.add_argument(
             '-c', '--cost', '--maximum-cost',
             default=cp_model.INT32_MAX,
@@ -2180,7 +2213,7 @@ def main():
 
     args = parser.parse_args()
 
-    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.desired_buyer, args.maximum_cost, args.maximum_exhaustion, args.time_limit)
+    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.occasional_buyer, args.desired_buyer, args.maximum_cost, args.maximum_exhaustion, args.time_limit)
 
     if not args.verbose:
         def WrappedSolve(stdscr, arguments):
