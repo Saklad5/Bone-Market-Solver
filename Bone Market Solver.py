@@ -1158,7 +1158,7 @@ class OccasionalBuyer(enum.Enum):
             ]
 
 
-def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyer = None, maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), stdscr = None):
+def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -1203,8 +1203,12 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     model.AddAssumptions([
         actions[buyer].Not()
         for unavailable_buyer in OccasionalBuyer if unavailable_buyer != occasional_buyer
-        for buyer in unavailable_buyer.value if buyer != desired_buyer
+        for buyer in unavailable_buyer.value if buyer not in desired_buyers
         ])
+
+    # Restrict to desired buyers
+    if desired_buyers:
+        model.Add(cp_model.LinearExpr.Sum([actions[desired_buyer] for desired_buyer in desired_buyers]) == 1)
 
 
     # One torso
@@ -1216,9 +1220,6 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     # One buyer
     model.Add(cp_model.LinearExpr.Sum([value for (key, value) in actions.items() if isinstance(key, Buyer)]) == 1)
 
-    # Set buyer
-    if desired_buyer is not None:
-        model.AddAssumption(actions[desired_buyer])
 
     # Value calculation
     original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
@@ -2137,19 +2138,28 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
 class EnumAction(argparse.Action):
     def __init__(self, **kwargs):
         # Pop off the type value
-        enum = kwargs.pop("type", None)
+        enum = kwargs.pop('type', None)
+
+        nargs = kwargs.pop('nargs', None)
 
         # Generate choices from the Enum
-        kwargs.setdefault("choices", tuple(e.name.lower() for e in enum))
+        kwargs.setdefault('choices', tuple(member.name.lower() for member in enum))
 
         super(EnumAction, self).__init__(**kwargs)
 
         self._enum = enum
+        self._nargs = nargs
 
     def __call__(self, parser, namespace, values, option_string=None):
         # Convert value back into an Enum
         enum = self._enum[values.upper()]
-        setattr(namespace, self.dest, enum)
+
+        if self._nargs is None or self._nargs == '?':
+            setattr(namespace, self.dest, enum)
+        else:
+            items = getattr(namespace, self.dest, list())
+            items.append(enum)
+            setattr(namespace, self.dest, items)
 
 
 def main():
@@ -2184,9 +2194,11 @@ def main():
     buyer.add_argument(
             '-b','--buyer', '--desired-buyer',
             action=EnumAction,
+            nargs='+',
+            default=[],
             type=Buyer,
-            help='specific buyer that skeleton should be designed for',
-            dest='desired_buyer'
+            help='specific buyer that skeleton should be designed for (if declared repeatedly, will choose from among those provided)',
+            dest='desired_buyers'
             )
 
     parser.add_argument(
@@ -2222,7 +2234,7 @@ def main():
 
     args = parser.parse_args()
 
-    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.occasional_buyer, args.desired_buyer, args.maximum_cost, args.maximum_exhaustion, args.time_limit)
+    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.occasional_buyer, args.desired_buyers, args.maximum_cost, args.maximum_exhaustion, args.time_limit)
 
     if not args.verbose:
         def WrappedSolve(stdscr, arguments):
