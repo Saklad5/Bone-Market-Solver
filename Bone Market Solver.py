@@ -104,7 +104,7 @@ class Cost(enum.Enum):
 
     # Fossilised Forelimb
     # Anning and Daughters
-    FOSSILISED_FORELIMB = 50*HINTERLAND_SCRIP
+    FOSSILISED_FORELIMB = 55*HINTERLAND_SCRIP
 
     # Hedonist
     # Handsome Townhouse, 3cp at a time
@@ -232,12 +232,12 @@ class Cost(enum.Enum):
     FLOURISHING_RIBCAGE = ACTION + HUMAN_RIBCAGE + THORNED_RIBCAGE
 
     # Time Remaining in the Woods
-    # Compel Ghillie, 5 at a time
-    TIME_REMAINING_IN_THE_WOODS = (ACTION + 4*COLLATED_RESEARCH)/5
+    # Compel Ghillie, 7 at a time
+    TIME_REMAINING_IN_THE_WOODS = (ACTION + 4*COLLATED_RESEARCH)/7
 
     # Observation: Red Deer
     # Balmoral Woods
-    DEER_OBSERVATION = 11*ACTION + 10*TIME_REMAINING_IN_THE_WOODS
+    DEER_OBSERVATION = 13*ACTION + 12*TIME_REMAINING_IN_THE_WOODS
 
     # Mammoth Ribcage
     # Keeper of the Marigold Menagerie
@@ -253,7 +253,7 @@ class Cost(enum.Enum):
 
     # Observation: Grouse
     # Balmoral Woods
-    GROUSE_OBSERVATION = 8*ACTION + 7*TIME_REMAINING_IN_THE_WOODS
+    GROUSE_OBSERVATION = 9*ACTION + 8*TIME_REMAINING_IN_THE_WOODS
 
     # Skeleton with Seven Necks
     # Keeper of the Marigold Menagerie
@@ -563,10 +563,10 @@ class Skull(enum.Enum):
     BAPTIST_SKULL = Action(
             "Duplicate the skull of John the Baptist, if you can call that a skull",
             cost = Cost.ACTION.value + 500*Cost.BONE_FRAGMENT.value + 10*Cost.PEPPERCAPS.value,
-            value = 1500,
+            value = 1250,
             skulls_needed = -1,
             skulls = 1,
-            counter_church = 2
+            counter_church = 1
             )
 
     BRASS_SKULL = Action(
