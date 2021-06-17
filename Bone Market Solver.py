@@ -836,7 +836,7 @@ class Appendage(enum.Enum):
     KNOTTED_HUMERUS = Action(
             "Apply a Knotted Humerus to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.KNOTTED_HUMERUS.value,
-            value = 150,
+            value = 300,
             limbs_needed = -1,
             arms = 1,
             amalgamy = 1
