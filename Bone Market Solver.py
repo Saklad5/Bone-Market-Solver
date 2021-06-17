@@ -1338,7 +1338,7 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     add_joints = actions[Appendage.ADD_JOINTS]
 
     base_joints = model.NewIntVar(0, cp_model.INT32_MAX, 'base joints')
-    model.Add(base_joints == cp_model.LinearExpr.ScalProd([value for (key, value) in actions.items() if isinstance(key, Torso)], [torso.value.limbs_needed for torso in Torso]))
+    model.Add(base_joints == cp_model.LinearExpr.ScalProd([value for (key, value) in actions.items() if isinstance(key, Torso)], [torso.value.limbs_needed + torso.value.arms + torso.value.legs + torso.value.wings + torso.value.fins + torso.value.tentacles for torso in Torso]))
 
     add_joints_amber_cost_multiple = model.NewIntVar(0, cp_model.INT32_MAX, 'add joints amber cost multiple')
 
