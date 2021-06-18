@@ -520,7 +520,8 @@ class Torso(enum.Enum):
             menace = 2
             )
 
-    LEVIATHAN_FRAME = Action("Build on the Leviathan Frame",
+    LEVIATHAN_FRAME = Action(
+            "Build on the Leviathan Frame",
             cost = Cost.ACTION.value + Cost.LEVIATHAN_FRAME.value,
             torso_style = 70,
             value = 31250,
@@ -739,7 +740,8 @@ class Appendage(enum.Enum):
             menace = -1
             )
 
-    BLACK_STINGER = Action("Apply a Jet Black Stinger to your (Skeleton Type)",
+    BLACK_STINGER = Action(
+            "Apply a Jet Black Stinger to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.BLACK_STINGER.value,
             value = 50,
             tails_needed = -1,
