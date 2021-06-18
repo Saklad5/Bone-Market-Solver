@@ -1,10 +1,9 @@
-import functools
-import enum
-import os
 import argparse
 import curses
+from enum import Enum
+from functools import reduce
+from os import cpu_count
 
-from enum import auto
 from ortools.sat.python import cp_model
 
 # This multiplier is applied to the profit margin to avoid losing precision due to rounding.
@@ -19,7 +18,7 @@ DIFFICULTY_SCALER = 0.6
 # This is the effective level of Shadowy used for attempting to sell.
 SHADOWY_LEVEL = 300
 
-class Cost(enum.Enum):
+class Cost(Enum):
     """The number of pennies needed to produce a quality."""
 
     # This is your baseline EPA: the pennies you could generate using an action for a generic grind.
@@ -362,7 +361,7 @@ def AddGeneralMultiplicationEquality(self, target, *variables):
         self.AddMultiplicationEquality(intermediate, [a, b])
         return intermediate
 
-    product = functools.reduce(function, variables)
+    product = reduce(function, variables)
     return self.Add(target == product)
 
 setattr(cp_model.CpModel, 'AddGeneralMultiplicationEquality', AddGeneralMultiplicationEquality)
@@ -436,7 +435,7 @@ class Action:
         return str(self.name)
 
 
-class Torso(enum.Enum):
+class Torso(Enum):
     """An action that initiates a skeleton."""
 
     HEADLESS_HUMANOID = Action(
@@ -566,7 +565,7 @@ class Torso(enum.Enum):
         return str(self.value)
 
 
-class Skull(enum.Enum):
+class Skull(Enum):
     """An action that is taken immediately after starting a skeleton."""
 
     BAPTIST_SKULL = Action(
@@ -710,7 +709,7 @@ class Skull(enum.Enum):
     def __str__(self):
         return str(self.value)
 
-class Appendage(enum.Enum):
+class Appendage(Enum):
     """An action that is taken once all skulls are added to a skeleton."""
 
     # Cost from this scales with limbs and is partially implemented separately
@@ -932,7 +931,7 @@ class Appendage(enum.Enum):
         return str(self.value)
 
 
-class Adjustment(enum.Enum):
+class Adjustment(Enum):
     """An action that is taken after all parts have been added to a skeleton."""
 
     CARVE_AWAY_AGE = Action(
@@ -957,7 +956,7 @@ class Adjustment(enum.Enum):
         return str(self.value)
 
 
-class Declaration(enum.Enum):
+class Declaration(Enum):
     """An action that is taken after all adjustments have been made to a skeleton."""
 
     AMPHIBIAN = Action(
@@ -1020,7 +1019,7 @@ class Declaration(enum.Enum):
         return str(self.value)
 
 
-class Embellishment(enum.Enum):
+class Embellishment(Enum):
     """An action is taken after a declaration has been made for a skeleton."""
 
     MORE_PLAUSIBLE = Action(
@@ -1039,7 +1038,7 @@ class Embellishment(enum.Enum):
         return str(self.value)
 
 
-class Buyer(enum.Enum):
+class Buyer(Enum):
     """An action that converts a skeleton into revenue."""
 
     A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES = Action(
@@ -1155,13 +1154,13 @@ class Buyer(enum.Enum):
     def __str__(self):
         return str(self.value)
 
-class Fluctuation(enum.Enum):
+class Fluctuation(Enum):
     """Which skeleton attribute is currently boosted."""
 
     ANTIQUITY = 1
     AMALGAMY = 2
 
-class OccasionalBuyer(enum.Enum):
+class OccasionalBuyer(Enum):
     """Which of several unusual buyers are available."""
 
     AN_ENTHUSIAST_IN_SKULLS = [Buyer.AN_ENTHUSIAST_IN_SKULLS]
@@ -2132,7 +2131,7 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     printer = SkeletonPrinter()
 
     solver = cp_model.CpSolver()
-    solver.parameters.num_search_workers = os.cpu_count()
+    solver.parameters.num_search_workers = cpu_count()
     solver.parameters.max_time_in_seconds = time_limit
 
     # There's no window in verbose mode
