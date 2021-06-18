@@ -1238,7 +1238,7 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
 
 
     # Torso Style calculation
-    torso_style = model.NewIntVarFromDomain(cp_model.Domain.FromValues([torso.value.torso_style for torso in Torso]), 'torso_style')
+    torso_style = model.NewIntVarFromDomain(cp_model.Domain.FromValues([torso.value.torso_style for torso in Torso]), 'torso style')
     for torso, torso_variable in {key: value for (key, value) in actions.items() if isinstance(key, Torso)}.items():
         model.Add(torso_style == torso.value.torso_style).OnlyEnforceIf(torso_variable)
 
