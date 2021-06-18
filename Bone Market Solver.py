@@ -1227,7 +1227,7 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
     model.Add(original_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
 
-    multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX*11, "multiplied value")
+    multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX*11, 'multiplied value')
     model.Add(multiplied_value == original_value*11).OnlyEnforceIf(actions[zoological_mania])
     model.Add(multiplied_value == original_value*10).OnlyEnforceIf(actions[zoological_mania].Not())
 
@@ -2127,11 +2127,11 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
 
     status = solver.StatusName()
 
-    if status == "INFEASIBLE":
+    if status == 'INFEASIBLE':
         raise RuntimeError("There is no satisfactory skeleton.")
-    elif status == "FEASIBLE":
+    elif status == 'FEASIBLE':
         print("WARNING: skeleton may be suboptimal.")
-    elif status != "OPTIMAL":
+    elif status != 'OPTIMAL':
         raise RuntimeError("Unknown status returned: {}.".format(status))
 
     return printer.PrintableSolution(solver)
@@ -2165,72 +2165,72 @@ class EnumAction(argparse.Action):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='Bone Market Solver', description='Devise the optimal skeleton at the Bone Market in Fallen London.')
+    parser = argparse.ArgumentParser(prog='Bone Market Solver', description="Devise the optimal skeleton at the Bone Market in Fallen London.")
 
     parser.add_argument(
-            '-f', '--bone-market-fluctuations',
+            "-f", "--bone-market-fluctuations",
             action=EnumAction,
             type=Fluctuation,
             required=True,
-            help='current value of Bone Market Fluctuations, which grants various bonuses to certain buyers',
+            help="current value of Bone Market Fluctuations, which grants various bonuses to certain buyers",
             dest='bone_market_fluctuations'
             )
 
     parser.add_argument(
-            '-m', '--zoological-mania',
+            "-m", "--zoological-mania",
             action=EnumAction,
             type=Declaration,
             required=True,
-            help='current value of Zoological Mania, which grants a 10%% bonus to value for a certain declaration',
+            help="current value of Zoological Mania, which grants a 10%% bonus to value for a certain declaration",
             dest='zoological_mania'
             )
 
     buyer = parser.add_mutually_exclusive_group(required=True)
     buyer.add_argument(
-            '-o', '--occasional-buyer',
+            "-o", "--occasional-buyer",
             action=EnumAction,
             type=OccasionalBuyer,
-            help='current value of Occasional Buyer, which allows access to a buyer that is not otherwise available',
+            help="current value of Occasional Buyer, which allows access to a buyer that is not otherwise available",
             dest='occasional_buyer'
             )
     buyer.add_argument(
-            '-b','--buyer', '--desired-buyer',
+            "-b", "--buyer", "--desired-buyer",
             action=EnumAction,
             nargs='+',
             default=[],
             type=Buyer,
-            help='specific buyer that skeleton should be designed for (if declared repeatedly, will choose from among those provided)',
+            help="specific buyer that skeleton should be designed for (if declared repeatedly, will choose from among those provided)",
             dest='desired_buyers'
             )
 
     parser.add_argument(
-            '-c', '--cost', '--maximum-cost',
+            "-c", "--cost", "--maximum-cost",
             default=cp_model.INT32_MAX,
             type=int,
-            help='maximum number of pennies that should be invested in skeleton',
+            help="maximum number of pennies that should be invested in skeleton",
             dest='maximum_cost'
             )
     parser.add_argument(
-            '-e', '--exhaustion', '--maximum_exhaustion',
+            "-e", "--exhaustion", "--maximum_exhaustion",
             default=cp_model.INT32_MAX,
             type=int,
-            help='maximum exhaustion that skeleton should generate',
+            help="maximum exhaustion that skeleton should generate",
             dest='maximum_exhaustion'
             )
     parser.add_argument(
-            '-v', '--verbose',
+            "-v", "--verbose",
             nargs='?',
-            const='True',
+            const=True,
             default=False,
             type=bool,
-            help='whether the solver should output search progress rather than showing intermediate solutions',
+            help="whether the solver should output search progress rather than showing intermediate solutions",
             dest='verbose'
             )
     parser.add_argument(
-            '-t', '--time-limit',
+            "-t", "--time-limit",
             default=float('inf'),
             type=float,
-            help='maximum number of seconds that solver runs for',
+            help="maximum number of seconds that solver runs for",
             dest='time_limit'
             )
 
