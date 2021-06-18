@@ -19,8 +19,9 @@ DIFFICULTY_SCALER = 0.6
 # This is the effective level of Shadowy used for attempting to sell.
 SHADOWY_LEVEL = 300
 
-# The number of pennies needed to produce a quality.
 class Cost(enum.Enum):
+    """The number of pennies needed to produce a quality."""
+
     # This is your baseline EPA: the pennies you could generate using an action for a generic grind.
     ACTION = 400
 
@@ -325,8 +326,9 @@ class Cost(enum.Enum):
     WITHERED_TENTACLE = (ACTION + 5*WARM_AMBER)/3
 
 
-# Adds a fully-reified implication using an intermediate Boolean variable.
 def NewIntermediateBoolVar(self, name, expression, domain):
+    """Add a fully-reified implication using an intermediate Boolean variable."""
+
     intermediate = self.NewBoolVar(name)
     self.AddLinearExpressionInDomain(expression, domain).OnlyEnforceIf(intermediate)
     self.AddLinearExpressionInDomain(expression, domain.Complement()).OnlyEnforceIf(intermediate.Not())
@@ -336,17 +338,20 @@ setattr(cp_model.CpModel, 'NewIntermediateBoolVar', NewIntermediateBoolVar)
 del NewIntermediateBoolVar
 
 
-# Adds an approximate exponentiation equality using a lookup table.
-# Set `upto` to a value that is unlikely to come into play.
 def AddApproximateExponentiationEquality(self, target, var, exp, upto):
+    """Add an approximate exponentiation equality using a lookup table.
+
+    Set `upto` to a value that is unlikely to come into play.
+    """
     return self.AddAllowedAssignments([target, var], [(int(base**exp), base) for base in range(upto + 1)])
 
 setattr(cp_model.CpModel, 'AddApproximateExponentiationEquality', AddApproximateExponentiationEquality)
 del AddApproximateExponentiationEquality
 
 
-# Adds a multiplication equality for any number of terms using intermediate variables.
 def AddGeneralMultiplicationEquality(self, target, *variables):
+    """Add a multiplication equality for any number of terms using intermediate variables."""
+
     # This is used for producing unique names for intermediate variables.
     term_index = 1
 
@@ -364,8 +369,9 @@ setattr(cp_model.CpModel, 'AddGeneralMultiplicationEquality', AddGeneralMultipli
 del AddGeneralMultiplicationEquality
 
 
-# An action that affects a skeleton's qualities.
 class Action:
+    """An action that affects a skeleton's qualities."""
+
     def __init__(self, name, cost, torso_style = None, value = 0, skulls_needed = 0, limbs_needed = 0, tails_needed = 0, skulls = 0, arms = 0, legs = 0, tails = 0, wings = 0, fins = 0, tentacles = 0, amalgamy = 0, antiquity = 0, menace = 0, implausibility = 0, counter_church = 0, exhaustion = 0):
         self.name = name
 
@@ -430,8 +436,9 @@ class Action:
         return str(self.name)
 
 
-# Actions that initiate a skeleton.
 class Torso(enum.Enum):
+    """An action that initiates a skeleton."""
+
     HEADLESS_HUMANOID = Action(
             "Reassemble your Headless Humanoid",
             cost = Cost.ACTION.value + Cost.HEADLESS_SKELETON.value,
@@ -559,8 +566,9 @@ class Torso(enum.Enum):
         return str(self.value)
 
 
-# Actions that are taken immediately after starting a skeleton.
 class Skull(enum.Enum):
+    """An action that is taken immediately after starting a skeleton."""
+
     BAPTIST_SKULL = Action(
             "Duplicate the skull of John the Baptist, if you can call that a skull",
             cost = Cost.ACTION.value + 500*Cost.BONE_FRAGMENT.value + 10*Cost.PEPPERCAPS.value,
@@ -702,8 +710,9 @@ class Skull(enum.Enum):
     def __str__(self):
         return str(self.value)
 
-# Actions that are taken once all skulls are added to a skeleton.
 class Appendage(enum.Enum):
+    """An action that is taken once all skulls are added to a skeleton."""
+
     # Cost from this scales with limbs and is partially implemented separately
     ADD_JOINTS = Action(
             "Add four more joints to your skeleton",
@@ -923,8 +932,9 @@ class Appendage(enum.Enum):
         return str(self.value)
 
 
-# Actions that are taken after all parts have been added to a skeleton.
 class Adjustment(enum.Enum):
+    """An action that is taken after all parts have been added to a skeleton."""
+
     CARVE_AWAY_AGE = Action(
             "Carve away some evidence of age",
             cost = Cost.ACTION.value,
@@ -947,8 +957,9 @@ class Adjustment(enum.Enum):
         return str(self.value)
 
 
-# Which kind of skeleton is to be declared.
 class Declaration(enum.Enum):
+    """An action that is taken after all adjustments have been made to a skeleton."""
+
     AMPHIBIAN = Action(
             "Declare your (Skeleton Type) a completed Amphibian",
             cost = Cost.ACTION.value
@@ -1009,8 +1020,9 @@ class Declaration(enum.Enum):
         return str(self.value)
 
 
-# Actions taken after a declaration is made.
 class Embellishment(enum.Enum):
+    """An action is taken after a declaration has been made for a skeleton."""
+
     MORE_PLAUSIBLE = Action(
             "Make it seem just a bit more plausible",
             cost = Cost.ACTION.value + Cost.REVISIONIST_NARRATIVE.value,
@@ -1027,8 +1039,9 @@ class Embellishment(enum.Enum):
         return str(self.value)
 
 
-# A way to convert a skeleton into revenue.
 class Buyer(enum.Enum):
+    """An action that converts a skeleton into revenue."""
+
     A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES = Action(
             "Sell a complete skeleton to the Bone Hoarder",
             cost = Cost.ACTION.value
@@ -1142,13 +1155,15 @@ class Buyer(enum.Enum):
     def __str__(self):
         return str(self.value)
 
-# Which skeleton attribute is currently boosted.
 class Fluctuation(enum.Enum):
+    """Which skeleton attribute is currently boosted."""
+
     ANTIQUITY = 1
     AMALGAMY = 2
 
-# Which of several unusual buyers are available.
 class OccasionalBuyer(enum.Enum):
+    """Which of several unusual buyers are available."""
+
     AN_ENTHUSIAST_IN_SKULLS = [Buyer.AN_ENTHUSIAST_IN_SKULLS]
 
     A_DREARY_MIDNIGHTER = [Buyer.A_DREARY_MIDNIGHTER]
@@ -2057,14 +2072,16 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     model.Maximize(profit_margin)
 
 
-    # Prints the steps that comprise a skeleton, as well as relevant attributes.
     class SkeletonPrinter(cp_model.CpSolverSolutionCallback):
+        """A class that prints the steps that comprise a skeleton as well as relevant attributes."""
+
         def __init__(self):
             cp_model.CpSolverSolutionCallback.__init__(self)
             self.__solution_count = 0
 
-        # Prints the latest solution of a provided solver.
         def PrintableSolution(self, solver = None):
+            """Print the latest solution of a provided solver."""
+
             output = ""
 
             # Allows use as a callback
