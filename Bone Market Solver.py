@@ -1,10 +1,14 @@
-import functools
-import enum
-import os
+"""Use constraint programming to devise the optimal skeleton at the Bone Market in Fallen London."""
+
+__all__ = ['Declaration', 'Fluctuation', 'OccasionalBuyer', 'Solve']
+__author__ = "Jeremy Saklad"
+
 import argparse
 import curses
+from enum import Enum
+from functools import reduce
+from os import cpu_count
 
-from enum import auto
 from ortools.sat.python import cp_model
 
 # This multiplier is applied to the profit margin to avoid losing precision due to rounding.
@@ -19,8 +23,9 @@ DIFFICULTY_SCALER = 0.6
 # This is the effective level of Shadowy used for attempting to sell.
 SHADOWY_LEVEL = 300
 
-# The number of pennies needed to produce a quality.
-class Cost(enum.Enum):
+class Cost(Enum):
+    """The number of pennies needed to produce a quality."""
+
     # This is your baseline EPA: the pennies you could generate using an action for a generic grind.
     ACTION = 400
 
@@ -325,8 +330,9 @@ class Cost(enum.Enum):
     WITHERED_TENTACLE = (ACTION + 5*WARM_AMBER)/3
 
 
-# Adds a fully-reified implication using an intermediate Boolean variable.
 def NewIntermediateBoolVar(self, name, expression, domain):
+    """Add a fully-reified implication using an intermediate Boolean variable."""
+
     intermediate = self.NewBoolVar(name)
     self.AddLinearExpressionInDomain(expression, domain).OnlyEnforceIf(intermediate)
     self.AddLinearExpressionInDomain(expression, domain.Complement()).OnlyEnforceIf(intermediate.Not())
@@ -336,17 +342,20 @@ setattr(cp_model.CpModel, 'NewIntermediateBoolVar', NewIntermediateBoolVar)
 del NewIntermediateBoolVar
 
 
-# Adds an approximate exponentiation equality using a lookup table.
-# Set `upto` to a value that is unlikely to come into play.
 def AddApproximateExponentiationEquality(self, target, var, exp, upto):
+    """Add an approximate exponentiation equality using a lookup table.
+
+    Set `upto` to a value that is unlikely to come into play.
+    """
     return self.AddAllowedAssignments([target, var], [(int(base**exp), base) for base in range(upto + 1)])
 
 setattr(cp_model.CpModel, 'AddApproximateExponentiationEquality', AddApproximateExponentiationEquality)
 del AddApproximateExponentiationEquality
 
 
-# Adds a multiplication equality for any number of terms using intermediate variables.
 def AddGeneralMultiplicationEquality(self, target, *variables):
+    """Add a multiplication equality for any number of terms using intermediate variables."""
+
     # This is used for producing unique names for intermediate variables.
     term_index = 1
 
@@ -357,15 +366,16 @@ def AddGeneralMultiplicationEquality(self, target, *variables):
         self.AddMultiplicationEquality(intermediate, [a, b])
         return intermediate
 
-    product = functools.reduce(function, variables)
+    product = reduce(function, variables)
     return self.Add(target == product)
 
 setattr(cp_model.CpModel, 'AddGeneralMultiplicationEquality', AddGeneralMultiplicationEquality)
 del AddGeneralMultiplicationEquality
 
 
-# An action that affects a skeleton's qualities.
 class Action:
+    """An action that affects a skeleton's qualities."""
+
     def __init__(self, name, cost, torso_style = None, value = 0, skulls_needed = 0, limbs_needed = 0, tails_needed = 0, skulls = 0, arms = 0, legs = 0, tails = 0, wings = 0, fins = 0, tentacles = 0, amalgamy = 0, antiquity = 0, menace = 0, implausibility = 0, counter_church = 0, exhaustion = 0):
         self.name = name
 
@@ -430,8 +440,9 @@ class Action:
         return str(self.name)
 
 
-# Actions that initiate a skeleton.
-class Torso(enum.Enum):
+class Torso(Enum):
+    """An action that initiates a skeleton."""
+
     HEADLESS_HUMANOID = Action(
             "Reassemble your Headless Humanoid",
             cost = Cost.ACTION.value + Cost.HEADLESS_SKELETON.value,
@@ -520,7 +531,8 @@ class Torso(enum.Enum):
             menace = 2
             )
 
-    LEVIATHAN_FRAME = Action("Build on the Leviathan Frame",
+    LEVIATHAN_FRAME = Action(
+            "Build on the Leviathan Frame",
             cost = Cost.ACTION.value + Cost.LEVIATHAN_FRAME.value,
             torso_style = 70,
             value = 31250,
@@ -558,8 +570,9 @@ class Torso(enum.Enum):
         return str(self.value)
 
 
-# Actions that are taken immediately after starting a skeleton.
-class Skull(enum.Enum):
+class Skull(Enum):
+    """An action that is taken immediately after starting a skeleton."""
+
     BAPTIST_SKULL = Action(
             "Duplicate the skull of John the Baptist, if you can call that a skull",
             cost = Cost.ACTION.value + 500*Cost.BONE_FRAGMENT.value + 10*Cost.PEPPERCAPS.value,
@@ -701,8 +714,9 @@ class Skull(enum.Enum):
     def __str__(self):
         return str(self.value)
 
-# Actions that are taken once all skulls are added to a skeleton.
-class Appendage(enum.Enum):
+class Appendage(Enum):
+    """An action that is taken once all skulls are added to a skeleton."""
+
     # Cost from this scales with limbs and is partially implemented separately
     ADD_JOINTS = Action(
             "Add four more joints to your skeleton",
@@ -739,7 +753,8 @@ class Appendage(enum.Enum):
             menace = -1
             )
 
-    BLACK_STINGER = Action("Apply a Jet Black Stinger to your (Skeleton Type)",
+    BLACK_STINGER = Action(
+            "Apply a Jet Black Stinger to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.BLACK_STINGER.value,
             value = 50,
             tails_needed = -1,
@@ -921,8 +936,9 @@ class Appendage(enum.Enum):
         return str(self.value)
 
 
-# Actions that are taken after all parts have been added to a skeleton.
-class Adjustment(enum.Enum):
+class Adjustment(Enum):
+    """An action that is taken after all parts have been added to a skeleton."""
+
     CARVE_AWAY_AGE = Action(
             "Carve away some evidence of age",
             cost = Cost.ACTION.value,
@@ -945,8 +961,9 @@ class Adjustment(enum.Enum):
         return str(self.value)
 
 
-# Which kind of skeleton is to be declared.
-class Declaration(enum.Enum):
+class Declaration(Enum):
+    """An action that is taken after all adjustments have been made to a skeleton."""
+
     AMPHIBIAN = Action(
             "Declare your (Skeleton Type) a completed Amphibian",
             cost = Cost.ACTION.value
@@ -1007,8 +1024,9 @@ class Declaration(enum.Enum):
         return str(self.value)
 
 
-# Actions taken after a declaration is made.
-class Embellishment(enum.Enum):
+class Embellishment(Enum):
+    """An action is taken after a declaration has been made for a skeleton."""
+
     MORE_PLAUSIBLE = Action(
             "Make it seem just a bit more plausible",
             cost = Cost.ACTION.value + Cost.REVISIONIST_NARRATIVE.value,
@@ -1025,8 +1043,9 @@ class Embellishment(enum.Enum):
         return str(self.value)
 
 
-# A way to convert a skeleton into revenue.
-class Buyer(enum.Enum):
+class Buyer(Enum):
+    """An action that converts a skeleton into revenue."""
+
     A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES = Action(
             "Sell a complete skeleton to the Bone Hoarder",
             cost = Cost.ACTION.value
@@ -1140,13 +1159,15 @@ class Buyer(enum.Enum):
     def __str__(self):
         return str(self.value)
 
-# Which skeleton attribute is currently boosted.
-class Fluctuation(enum.Enum):
+class Fluctuation(Enum):
+    """Which skeleton attribute is currently boosted."""
+
     ANTIQUITY = 1
     AMALGAMY = 2
 
-# Which of several unusual buyers are available.
-class OccasionalBuyer(enum.Enum):
+class OccasionalBuyer(Enum):
+    """Which of several unusual buyers are available."""
+
     AN_ENTHUSIAST_IN_SKULLS = [Buyer.AN_ENTHUSIAST_IN_SKULLS]
 
     A_DREARY_MIDNIGHTER = [Buyer.A_DREARY_MIDNIGHTER]
@@ -1158,7 +1179,7 @@ class OccasionalBuyer(enum.Enum):
             ]
 
 
-def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = os.cpu_count(),stdscr = None):
+def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -1225,7 +1246,7 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
     model.Add(original_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
 
-    multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX*11, "multiplied value")
+    multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX*11, 'multiplied value')
     model.Add(multiplied_value == original_value*11).OnlyEnforceIf(actions[zoological_mania])
     model.Add(multiplied_value == original_value*10).OnlyEnforceIf(actions[zoological_mania].Not())
 
@@ -1236,7 +1257,7 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
 
 
     # Torso Style calculation
-    torso_style = model.NewIntVarFromDomain(cp_model.Domain.FromValues([torso.value.torso_style for torso in Torso]), 'torso_style')
+    torso_style = model.NewIntVarFromDomain(cp_model.Domain.FromValues([torso.value.torso_style for torso in Torso]), 'torso style')
     for torso, torso_variable in {key: value for (key, value) in actions.items() if isinstance(key, Torso)}.items():
         model.Add(torso_style == torso.value.torso_style).OnlyEnforceIf(torso_variable)
 
@@ -2055,14 +2076,16 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     model.Maximize(profit_margin)
 
 
-    # Prints the steps that comprise a skeleton, as well as relevant attributes.
     class SkeletonPrinter(cp_model.CpSolverSolutionCallback):
+        """A class that prints the steps that comprise a skeleton as well as relevant attributes."""
+
         def __init__(self):
             cp_model.CpSolverSolutionCallback.__init__(self)
             self.__solution_count = 0
 
-        # Prints the latest solution of a provided solver.
         def PrintableSolution(self, solver = None):
+            """Print the latest solution of a provided solver."""
+
             output = ""
 
             # Allows use as a callback
@@ -2125,11 +2148,11 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
 
     status = solver.StatusName()
 
-    if status == "INFEASIBLE":
+    if status == 'INFEASIBLE':
         raise RuntimeError("There is no satisfactory skeleton.")
-    elif status == "FEASIBLE":
+    elif status == 'FEASIBLE':
         print("WARNING: skeleton may be suboptimal.")
-    elif status != "OPTIMAL":
+    elif status != 'OPTIMAL':
         raise RuntimeError("Unknown status returned: {}.".format(status))
 
     return printer.PrintableSolution(solver)
@@ -2163,79 +2186,79 @@ class EnumAction(argparse.Action):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='Bone Market Solver', description='Devise the optimal skeleton at the Bone Market in Fallen London.')
+    parser = argparse.ArgumentParser(prog='Bone Market Solver', description="Devise the optimal skeleton at the Bone Market in Fallen London.")
 
     parser.add_argument(
-            '-f', '--bone-market-fluctuations',
+            "-f", "--bone-market-fluctuations",
             action=EnumAction,
             type=Fluctuation,
             required=True,
-            help='current value of Bone Market Fluctuations, which grants various bonuses to certain buyers',
+            help="current value of Bone Market Fluctuations, which grants various bonuses to certain buyers",
             dest='bone_market_fluctuations'
             )
 
     parser.add_argument(
-            '-m', '--zoological-mania',
+            "-m", "--zoological-mania",
             action=EnumAction,
             type=Declaration,
             required=True,
-            help='current value of Zoological Mania, which grants a 10%% bonus to value for a certain declaration',
+            help="current value of Zoological Mania, which grants a 10%% bonus to value for a certain declaration",
             dest='zoological_mania'
             )
 
     buyer = parser.add_mutually_exclusive_group(required=True)
     buyer.add_argument(
-            '-o', '--occasional-buyer',
+            "-o", "--occasional-buyer",
             action=EnumAction,
             type=OccasionalBuyer,
-            help='current value of Occasional Buyer, which allows access to a buyer that is not otherwise available',
+            help="current value of Occasional Buyer, which allows access to a buyer that is not otherwise available",
             dest='occasional_buyer'
             )
     buyer.add_argument(
-            '-b','--buyer', '--desired-buyer',
+            "-b", "--buyer", "--desired-buyer",
             action=EnumAction,
             nargs='+',
             default=[],
             type=Buyer,
-            help='specific buyer that skeleton should be designed for (if declared repeatedly, will choose from among those provided)',
+            help="specific buyer that skeleton should be designed for (if declared repeatedly, will choose from among those provided)",
             dest='desired_buyers'
             )
 
     parser.add_argument(
-            '-c', '--cost', '--maximum-cost',
+            "-c", "--cost", "--maximum-cost",
             default=cp_model.INT32_MAX,
             type=int,
-            help='maximum number of pennies that should be invested in skeleton',
+            help="maximum number of pennies that should be invested in skeleton",
             dest='maximum_cost'
             )
     parser.add_argument(
-            '-e', '--exhaustion', '--maximum_exhaustion',
+            "-e", "--exhaustion", "--maximum_exhaustion",
             default=cp_model.INT32_MAX,
             type=int,
-            help='maximum exhaustion that skeleton should generate',
+            help="maximum exhaustion that skeleton should generate",
             dest='maximum_exhaustion'
             )
     parser.add_argument(
-            '-v', '--verbose',
+            "-v", "--verbose",
             nargs='?',
-            const='True',
+            const=True,
             default=False,
             type=bool,
-            help='whether the solver should output search progress rather than showing intermediate solutions',
+            help="whether the solver should output search progress rather than showing intermediate solutions",
             dest='verbose'
             )
     parser.add_argument(
-            '-t', '--time-limit',
+            "-t", "--time-limit",
             default=float('inf'),
             type=float,
-            help='maximum number of seconds that solver runs for',
+            help="maximum number of seconds that solver runs for",
             dest='time_limit'
             )
     parser.add_argument(
-            '-w', '--workers',
-            default=os.cpu_count(),
+            "-w", "--workers",
+            default=cpu_count(),
             type=int,
-            help='number of search worker threads to run in parallel',
+            help="number of search worker threads to run in parallel (default: one worker per available CPU thread)",
             dest='workers'
             )
 
@@ -2252,4 +2275,5 @@ def main():
         print(Solve(*arguments))
 
 
-main()
+if __name__ == '__main__':
+    main()
