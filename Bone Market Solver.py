@@ -1179,7 +1179,7 @@ class OccasionalBuyer(Enum):
             ]
 
 
-def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), stdscr = None):
+def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -2136,7 +2136,7 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     printer = SkeletonPrinter()
 
     solver = cp_model.CpSolver()
-    solver.parameters.num_search_workers = cpu_count()
+    solver.parameters.num_search_workers = workers
     solver.parameters.max_time_in_seconds = time_limit
 
     # There's no window in verbose mode
@@ -2254,10 +2254,17 @@ def main():
             help="maximum number of seconds that solver runs for",
             dest='time_limit'
             )
+    parser.add_argument(
+            "-w", "--workers",
+            default=cpu_count(),
+            type=int,
+            help="number of search worker threads to run in parallel (default: one worker per available CPU thread)",
+            dest='workers'
+            )
 
     args = parser.parse_args()
 
-    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.occasional_buyer, args.desired_buyers, args.maximum_cost, args.maximum_exhaustion, args.time_limit)
+    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.occasional_buyer, args.desired_buyers, args.maximum_cost, args.maximum_exhaustion, args.time_limit, args.workers)
 
     if not args.verbose:
         def WrappedSolve(stdscr, arguments):
