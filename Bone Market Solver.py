@@ -2263,4 +2263,5 @@ def main():
         print(Solve(*arguments))
 
 
-main()
+if __name__ == '__main__':
+    main()
