@@ -1,3 +1,8 @@
+"""Use constraint programming to devise the optimal skeleton at the Bone Market in Fallen London."""
+
+__all__ = ['Declaration', 'Fluctuation', 'OccasionalBuyer', 'Solve']
+__author__ = "Jeremy Saklad"
+
 import argparse
 import curses
 from enum import Enum
