@@ -267,7 +267,7 @@ class Cost(Enum):
 
     # Ribcage with a Bouquet of Eight Spines
     # Helicon House
-    RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + SKELETON_WITH_SEVEN_NECKS +THORNED_RIBCAGE + 3*TREMBLING_AMBER
+    RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + SKELETON_WITH_SEVEN_NECKS + THORNED_RIBCAGE + 3*TREMBLING_AMBER
 
     # Rubbery Skull
     # Flute Street, including travel due to quality cap
@@ -2237,6 +2237,7 @@ def main():
             help="maximum number of pennies that should be invested in skeleton",
             dest='maximum_cost'
             )
+
     parser.add_argument(
             "-e", "--exhaustion", "--maximum_exhaustion",
             default=cp_model.INT32_MAX,
@@ -2244,6 +2245,7 @@ def main():
             help="maximum exhaustion that skeleton should generate",
             dest='maximum_exhaustion'
             )
+
     parser.add_argument(
             "-v", "--verbose",
             nargs='?',
@@ -2253,6 +2255,7 @@ def main():
             help="whether the solver should output search progress rather than showing intermediate solutions",
             dest='verbose'
             )
+
     parser.add_argument(
             "-t", "--time-limit",
             default=float('inf'),
@@ -2260,6 +2263,7 @@ def main():
             help="maximum number of seconds that solver runs for",
             dest='time_limit'
             )
+
     parser.add_argument(
             "-w", "--workers",
             default=cpu_count(),
