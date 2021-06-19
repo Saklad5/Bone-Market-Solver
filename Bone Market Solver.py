@@ -20,8 +20,6 @@ MAXIMUM_ATTRIBUTE = 100
 # This is a constant used to calculate difficulty checks. You almost certainly do not need to change this.
 DIFFICULTY_SCALER = 0.6
 
-# This is the effective level of Shadowy used for attempting to sell.
-SHADOWY_LEVEL = 300
 
 class Cost(Enum):
     """The number of pennies needed to produce a quality."""
@@ -1179,7 +1177,7 @@ class OccasionalBuyer(Enum):
             ]
 
 
-def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
+def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -1343,7 +1341,7 @@ def Solve(bone_market_fluctuations, zoological_mania, occasional_buyer = None, d
     model.AddMaxEquality(non_zero_difficulty_level, [difficulty_level, 1])
 
     sale_actions_times_action_value = model.NewIntVar(0, cp_model.INT32_MAX, 'sale actions times action value')
-    model.AddDivisionEquality(sale_actions_times_action_value, model.NewConstant(round(DIFFICULTY_SCALER*SHADOWY_LEVEL*Cost.ACTION.value)), non_zero_difficulty_level)
+    model.AddDivisionEquality(sale_actions_times_action_value, model.NewConstant(round(DIFFICULTY_SCALER*shadowy_level*Cost.ACTION.value)), non_zero_difficulty_level)
     abstract_sale_cost = model.NewIntVar(0, cp_model.INT32_MAX, 'abstract sale cost')
     model.AddDivisionEquality(abstract_sale_cost, Cost.ACTION.value**2, sale_actions_times_action_value)
     sale_cost = model.NewIntVar(0, cp_model.INT32_MAX, 'sale cost')
@@ -2189,6 +2187,14 @@ def main():
     parser = argparse.ArgumentParser(prog='Bone Market Solver', description="Devise the optimal skeleton at the Bone Market in Fallen London.")
 
     parser.add_argument(
+            "-s", "--shadowy",
+            type=int,
+            required=True,
+            help="the effective level of Shadowy used for selling to buyers",
+            dest='shadowy_level'
+            )
+
+    parser.add_argument(
             "-f", "--bone-market-fluctuations",
             action=EnumAction,
             type=Fluctuation,
@@ -2264,7 +2270,7 @@ def main():
 
     args = parser.parse_args()
 
-    arguments = (args.bone_market_fluctuations, args.zoological_mania, args.occasional_buyer, args.desired_buyers, args.maximum_cost, args.maximum_exhaustion, args.time_limit, args.workers)
+    arguments = (args.shadowy_level, args.bone_market_fluctuations, args.zoological_mania, args.occasional_buyer, args.desired_buyers, args.maximum_cost, args.maximum_exhaustion, args.time_limit, args.workers)
 
     if not args.verbose:
         def WrappedSolve(stdscr, arguments):
