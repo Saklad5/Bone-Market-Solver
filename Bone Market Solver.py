@@ -2278,6 +2278,8 @@ def main():
 
     if not args.verbose:
         def WrappedSolve(stdscr, arguments):
+            # Prevents crash if window is too small to fit text
+            stdscr.scrollok(True)
             # Move stdscr to last position
             return Solve(*arguments, stdscr)
         print(curses.wrapper(WrappedSolve, arguments))
