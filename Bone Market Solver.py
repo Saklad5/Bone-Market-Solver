@@ -1144,6 +1144,11 @@ class Buyer(Enum):
             cost = Cost.ACTION.value
             )
 
+    AN_INGENUOUS_MALACOLOGIST = Action(
+            "Sell him a tentacle-laden skeleton",
+            cost = Cost.ACTION.value
+            )
+
     THE_DUMBWAITER_OF_BALMORAL = Action(
             "Export the Skeleton of a Neathy Bird",
             cost = Cost.ACTION.value
@@ -1175,6 +1180,8 @@ class OccasionalBuyer(Enum):
             Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL,
             Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL,
             ]
+
+    AN_INGENUOUS_MALACOLOGIST = [Buyer.AN_INGENUOUS_MALACOLOGIST]
 
 
 def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
@@ -2017,6 +2024,32 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
 
     del antiquity_times_implausibility, knob_of_scintillack, value_remainder, derived_exhaustion
+
+
+    # An Ingenuous Malacologist
+    model.Add(tentacles >= 4).OnlyEnforceIf(actions[Buyer.AN_INGENUOUS_MALACOLOGIST])
+    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.AN_INGENUOUS_MALACOLOGIST])
+
+    exponentiated_tentacles = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_INGENUOUS_MALACOLOGIST.name, 'exponentiated tentacles'))
+    model.AddApproximateExponentiationEquality(exponentiated_tentacles, tentacles, 2.2, MAXIMUM_ATTRIBUTE)
+
+    collated_research = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_INGENUOUS_MALACOLOGIST.name, 'collated research'))
+    model.AddDivisionEquality(collated_research, exponentiated_tentacles, 5)
+
+    value_remainder = model.NewIntVar(0, 249, '{}: {}'.format(Buyer.AN_INGENUOUS_MALACOLOGIST.name, 'value remainder'))
+    model.AddModuloEquality(value_remainder, value, 250)
+
+    model.Add(primary_revenue == value - value_remainder + 250).OnlyEnforceIf(actions[Buyer.AN_INGENUOUS_MALACOLOGIST])
+    model.Add(secondary_revenue == 250*collated_research).OnlyEnforceIf(actions[Buyer.AN_INGENUOUS_MALACOLOGIST])
+
+    model.Add(difficulty_level == 60*implausibility).OnlyEnforceIf(actions[Buyer.AN_INGENUOUS_MALACOLOGIST])
+
+    # The indirection is necessary for applying an enforcement literal
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_INGENUOUS_MALACOLOGIST.name, 'derived exhaustion'))
+    model.AddDivisionEquality(derived_exhaustion, exponentiated_tentacles, 100)
+    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.AN_INGENUOUS_MALACOLOGIST])
+
+    del exponentiated_tentacles, collated_research, value_remainder, derived_exhaustion
 
 
     # The Dumbwaiter of Balmoral
