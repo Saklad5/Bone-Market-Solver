@@ -1737,7 +1737,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
 
     tailfeathers = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_INVESTMENT_MINDED_AMBASSADOR.name, 'tailfeathers'))
     if bone_market_fluctuations == Fluctuation.ANTIQUITY:
-        model.AddApproximateExponentiationEquality(tailfeathers, antiquity, 2.2, MAXIMUM_ATTRIBUTE)
+        model.AddApproximateExponentiationEquality(tailfeathers, antiquity, 2.1, MAXIMUM_ATTRIBUTE)
     else:
         model.Add(tailfeathers == antiquity_squared).OnlyEnforceIf(actions[Buyer.AN_INVESTMENT_MINDED_AMBASSADOR])
 
@@ -1790,7 +1790,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
 
     final_breaths = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TENTACLED_ENTREPRENEUR.name, 'final breaths'))
     if bone_market_fluctuations == Fluctuation.AMALGAMY:
-        model.AddApproximateExponentiationEquality(final_breaths, amalgamy, 2.2, MAXIMUM_ATTRIBUTE)
+        model.AddApproximateExponentiationEquality(final_breaths, amalgamy, 2.1, MAXIMUM_ATTRIBUTE)
     else:
         model.Add(final_breaths == amalgamy_squared).OnlyEnforceIf(actions[Buyer.A_TENTACLED_ENTREPRENEUR])
 
