@@ -1251,14 +1251,16 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
     model.Add(original_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
 
-    multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX*11, 'multiplied value')
-    model.Add(multiplied_value == original_value*11).OnlyEnforceIf(actions[zoological_mania])
-    model.Add(multiplied_value == original_value*10).OnlyEnforceIf(actions[zoological_mania].Not())
+    multiplier = 115 if zoological_mania in [Declaration.FISH, Declaration.INSECT, Declaration.SPIDER] else 110
+
+    multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX, 'multiplied value')
+    model.Add(multiplied_value == multiplier*original_value).OnlyEnforceIf(actions[zoological_mania])
+    model.Add(multiplied_value == 100*original_value).OnlyEnforceIf(actions[zoological_mania].Not())
 
     value = model.NewIntVar(0, cp_model.INT32_MAX, 'value')
-    model.AddDivisionEquality(value, multiplied_value, 10)
+    model.AddDivisionEquality(value, multiplied_value, 100)
 
-    del original_value, multiplied_value
+    del original_value, multiplier, multiplied_value
 
 
     # Torso Style calculation
