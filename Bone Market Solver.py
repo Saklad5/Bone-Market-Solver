@@ -1159,6 +1159,11 @@ class Buyer(Enum):
             cost = Cost.ACTION.value
             )
 
+    THE_TRIFLING_DIPLOMAT_ANTIQUE = Action(
+            "Sell the Diplomat an antique skeleton",
+            cost = Cost.ACTION.value
+            )
+
     def __str__(self):
         return str(self.value)
 
@@ -1184,7 +1189,13 @@ class OccasionalBuyer(Enum):
     AN_INGENUOUS_MALACOLOGIST = [Buyer.AN_INGENUOUS_MALACOLOGIST]
 
 
-def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_buyer = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
+class DiplomatFascination(Enum):
+    """The current requirements of the Trifling Diplomat."""
+
+    ANTIQUITY = Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE
+
+
+def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -1230,6 +1241,10 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
         actions[buyer].Not()
         for unavailable_buyer in OccasionalBuyer if unavailable_buyer != occasional_buyer
         for buyer in unavailable_buyer.value if buyer not in desired_buyers
+        ])
+    model.AddAssumptions([
+        actions[outmoded_fascination.value].Not()
+        for outmoded_fascination in DiplomatFascination if outmoded_fascination != diplomat_fascination and outmoded_fascination.value not in desired_buyers
         ])
 
     # Restrict to desired buyers
@@ -2103,6 +2118,30 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
 
 
+    # The Trifling Diplomat - Antique
+    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE])
+    model.Add(antiquity >= 5).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE])
+
+    antiquity_squared = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE.name, 'antiquity squared'))
+    model.AddMultiplicationEquality(antiquity_squared, [antiquity, antiquity])
+
+    value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE.name, 'value remainder'))
+    model.AddModuloEquality(value_remainder, value, 50)
+
+    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE])
+    model.Add(secondary_revenue == 50*antiquity_squared).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE])
+
+    # TODO: Add actual difficulty level
+    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE])
+
+    # The indirection is necessary for applying an enforcement literal
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE.name, 'derived exhaustion'))
+    model.AddDivisionEquality(derived_exhaustion, antiquity_squared, 100)
+    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE])
+
+    del antiquity_squared, value_remainder, derived_exhaustion
+
+
     # Maximize profit margin
     net_profit = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'net profit')
     model.Add(net_profit == total_revenue - cost)
@@ -2272,12 +2311,20 @@ def main():
             )
 
     buyer = parser.add_mutually_exclusive_group()
-    buyer.add_argument(
+    transient_buyers = buyer.add_argument_group()
+    transient_buyers.add_argument(
             "-o", "--occasional-buyer",
             action=EnumAction,
             type=OccasionalBuyer,
             help="current value of Occasional Buyer, which allows access to a buyer that is not otherwise available",
             dest='occasional_buyer'
+            )
+    transient_buyers.add_argument(
+            "-d", "--diplomat-fascination",
+            action=EnumAction,
+            type=DiplomatFascination,
+            help="current value of The Diplomat's Current Fascination, which determines what the Trifling Diplomat is interested in",
+            dest='diplomat_fascination'
             )
     buyer.add_argument(
             "-b", "--buyer", "--desired-buyer",
