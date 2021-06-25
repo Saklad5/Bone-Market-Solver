@@ -2239,7 +2239,11 @@ class EnumAction(argparse.Action):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='Bone Market Solver', description="Devise the optimal skeleton at the Bone Market in Fallen London.")
+    parser = argparse.ArgumentParser(
+            prog='Bone Market Solver',
+            description="Devise the optimal skeleton at the Bone Market in Fallen London.",
+            argument_default=argparse.SUPPRESS,
+            )
 
     parser.add_argument(
             "-s", "--shadowy",
@@ -2279,7 +2283,6 @@ def main():
             "-b", "--buyer", "--desired-buyer",
             action=EnumAction,
             nargs='+',
-            default=[],
             type=Buyer,
             help="specific buyer that skeleton should be designed for (if declared repeatedly, will choose from among those provided)",
             dest='desired_buyers'
@@ -2287,7 +2290,6 @@ def main():
 
     parser.add_argument(
             "-c", "--cost", "--maximum-cost",
-            default=cp_model.INT32_MAX,
             type=int,
             help="maximum number of pennies that should be invested in skeleton",
             dest='maximum_cost'
@@ -2295,7 +2297,6 @@ def main():
 
     parser.add_argument(
             "-e", "--exhaustion", "--maximum_exhaustion",
-            default=cp_model.INT32_MAX,
             type=int,
             help="maximum exhaustion that skeleton should generate",
             dest='maximum_exhaustion'
@@ -2313,7 +2314,6 @@ def main():
 
     parser.add_argument(
             "-t", "--time-limit",
-            default=float('inf'),
             type=float,
             help="maximum number of seconds that solver runs for",
             dest='time_limit'
@@ -2321,7 +2321,6 @@ def main():
 
     parser.add_argument(
             "-w", "--workers",
-            default=cpu_count(),
             type=int,
             help="number of search worker threads to run in parallel (default: one worker per available CPU thread)",
             dest='workers'
@@ -2329,17 +2328,18 @@ def main():
 
     args = parser.parse_args()
 
-    arguments = (args.shadowy_level, args.bone_market_fluctuations, args.zoological_mania, args.occasional_buyer, args.desired_buyers, args.maximum_cost, args.maximum_exhaustion, args.time_limit, args.workers)
+    arguments = vars(args)
 
-    if not args.verbose:
+    if not arguments.pop('verbose'):
         def WrappedSolve(stdscr, arguments):
             # Prevents crash if window is too small to fit text
             stdscr.scrollok(True)
             # Move stdscr to last position
-            return Solve(*arguments, stdscr)
+            arguments['stdscr'] = stdscr
+            return Solve(**arguments)
         print(curses.wrapper(WrappedSolve, arguments))
     else:
-        print(Solve(*arguments))
+        print(Solve(**arguments))
 
 
 if __name__ == '__main__':
