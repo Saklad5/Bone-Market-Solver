@@ -2271,7 +2271,7 @@ def main():
             dest='zoological_mania'
             )
 
-    buyer = parser.add_mutually_exclusive_group(required=True)
+    buyer = parser.add_mutually_exclusive_group()
     buyer.add_argument(
             "-o", "--occasional-buyer",
             action=EnumAction,
