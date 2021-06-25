@@ -2306,7 +2306,7 @@ def main():
             action=EnumAction,
             type=Declaration,
             required=True,
-            help="current value of Zoological Mania, which grants a 10%% bonus to value for a certain declaration",
+            help="current value of Zoological Mania, which grants a percentage bonus to value for a certain declaration",
             dest='zoological_mania'
             )
 
