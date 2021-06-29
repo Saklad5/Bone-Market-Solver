@@ -1164,6 +1164,11 @@ class Buyer(Enum):
             cost = Cost.ACTION.value
             )
 
+    THE_TRIFLING_DIPLOMAT_FOSSIL_FISH = Action(
+            "Sell the Diplomat a fossil fish",
+            cost = Cost.ACTION.value
+            )
+
     def __str__(self):
         return str(self.value)
 
@@ -1193,6 +1198,8 @@ class DiplomatFascination(Enum):
     """The current requirements of the Trifling Diplomat."""
 
     ANTIQUITY = Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE
+
+    FOSSILISED_FISH = Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH
 
 
 def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
@@ -2140,6 +2147,38 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUE])
 
     del antiquity_squared, value_remainder, derived_exhaustion
+
+
+    # The Trifling Diplomat - Fossilised Fish
+    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([190, 199])).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH])
+
+    non_negative_amalgamy = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH.name, 'non-negative amalgamy'))
+    model.AddMaxEquality(non_negative_amalgamy, [amalgamy, 0])
+
+    non_negative_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH.name, 'non-negative menace'))
+    model.AddMaxEquality(non_negative_menace, [menace, 0])
+
+    non_negative_antiquity = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH.name, 'non-negative antiquity'))
+    model.AddMaxEquality(non_negative_antiquity, [antiquity, 0])
+
+    compromising_documents = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH.name, ''))
+    model.AddGeneralMultiplicationEquality(compromising_documents, non_negative_amalgamy, non_negative_menace, non_negative_antiquity)
+
+    value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH.name, 'value remainder'))
+    model.AddModuloEquality(value_remainder, value, 50)
+
+    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH])
+    model.Add(secondary_revenue == 50*compromising_documents).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH])
+
+    # TODO: Add actual difficulty level
+    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH])
+
+    # The indirection is necessary for applying an enforcement literal
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH.name, 'derived exhaustion'))
+    model.AddDivisionEquality(derived_exhaustion, compromising_documents, 100)
+    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FOSSIL_FISH])
+
+    del non_negative_amalgamy, non_negative_menace, non_negative_antiquity, compromising_documents, value_remainder, derived_exhaustion
 
 
     # Maximize profit margin
