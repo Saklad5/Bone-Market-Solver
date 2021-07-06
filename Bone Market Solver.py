@@ -336,7 +336,7 @@ def NewIntermediateBoolVar(self, name, expression, domain):
     self.AddLinearExpressionInDomain(expression, domain.Complement()).OnlyEnforceIf(intermediate.Not())
     return intermediate
 
-setattr(cp_model.CpModel, 'NewIntermediateBoolVar', NewIntermediateBoolVar)
+cp_model.CpModel.NewIntermediateBoolVar = NewIntermediateBoolVar
 del NewIntermediateBoolVar
 
 
@@ -347,7 +347,7 @@ def AddApproximateExponentiationEquality(self, target, var, exp, upto):
     """
     return self.AddAllowedAssignments([target, var], [(int(base**exp), base) for base in range(upto + 1)])
 
-setattr(cp_model.CpModel, 'AddApproximateExponentiationEquality', AddApproximateExponentiationEquality)
+cp_model.CpModel.AddApproximateExponentiationEquality = AddApproximateExponentiationEquality
 del AddApproximateExponentiationEquality
 
 
@@ -367,7 +367,7 @@ def AddGeneralMultiplicationEquality(self, target, *variables):
     product = reduce(function, variables)
     return self.Add(target == product)
 
-setattr(cp_model.CpModel, 'AddGeneralMultiplicationEquality', AddGeneralMultiplicationEquality)
+cp_model.CpModel.AddGeneralMultiplicationEquality = AddGeneralMultiplicationEquality
 del AddGeneralMultiplicationEquality
 
 
