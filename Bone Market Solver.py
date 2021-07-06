@@ -1,6 +1,6 @@
 """Use constraint programming to devise the optimal skeleton at the Bone Market in Fallen London."""
 
-__all__ = ['Declaration', 'Fluctuation', 'OccasionalBuyer', 'Solve']
+__all__ = ['Declaration', 'DiplomatFascination', 'Fluctuation', 'OccasionalBuyer', 'Solve']
 __author__ = "Jeremy Saklad"
 
 import argparse
