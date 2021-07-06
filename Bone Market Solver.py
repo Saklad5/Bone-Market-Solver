@@ -1182,6 +1182,7 @@ class Fluctuation(Enum):
 
     ANTIQUITY = 1
     AMALGAMY = 2
+    MENACE = 3
 
 class OccasionalBuyer(Enum):
     """Which of several unusual buyers are available."""
@@ -1802,11 +1803,17 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     menace_squared = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TELLER_OF_TERRORS.name, 'menace squared'))
     model.AddMultiplicationEquality(menace_squared, [menace, menace])
 
+    feathers = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TELLER_OF_TERRORS.name, 'feathers'))
+    if bone_market_fluctuations == Fluctuation.MENACE:
+        model.AddApproximateExponentiationEquality(feathers, menace, 2.1, MAXIMUM_ATTRIBUTE)
+    else:
+        model.Add(feathers == menace_squared).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
+
     value_remainder = model.NewIntVar(0, 9, '{}: {}'.format(Buyer.A_TELLER_OF_TERRORS.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 10)
 
     model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
-    model.Add(secondary_revenue == 50*menace_squared).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
+    model.Add(secondary_revenue == 50*feathers).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
 
     model.Add(difficulty_level == 75*implausibility).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
 
@@ -1815,7 +1822,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.AddDivisionEquality(derived_exhaustion, menace_squared, 100)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
 
-    del menace_squared, value_remainder, derived_exhaustion
+    del menace_squared, feathers, value_remainder, derived_exhaustion
 
 
     # A Tentacled Entrepreneur
@@ -1860,11 +1867,16 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     antiquity_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'antiquity fluctuation bonus'))
     model.AddDivisionEquality(antiquity_fluctuation_bonus, multiplied_antiquity, 5)
 
+    multiplied_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'multiplied menace'))
+    model.AddMultiplicationEquality(multiplied_menace, [menace, 4])
+    menace_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'menace fluctuation bonus'))
+    model.AddDivisionEquality(menace_fluctuation_bonus, multiplied_menace, 5)
+
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder + 250).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
-    model.Add(secondary_revenue == 250*antiquity_times_menace + 250*(antiquity_fluctuation_bonus if bone_market_fluctuations == Fluctuation.ANTIQUITY else 0)).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
+    model.Add(secondary_revenue == 250*antiquity_times_menace + 250*(antiquity_fluctuation_bonus if bone_market_fluctuations == Fluctuation.ANTIQUITY else menace_fluctuation_bonus if bone_market_fluctuations == Fluctuation.MENACE else 0)).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
 
     model.Add(difficulty_level == 75*implausibility).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
 
@@ -1873,7 +1885,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.AddDivisionEquality(derived_exhaustion, antiquity_times_menace, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
 
-    del antiquity_times_menace, multiplied_antiquity, antiquity_fluctuation_bonus, value_remainder, derived_exhaustion
+    del antiquity_times_menace, multiplied_antiquity, antiquity_fluctuation_bonus, multiplied_menace, menace_fluctuation_bonus, value_remainder, derived_exhaustion
 
 
     # A Zailor with Particular Interests
@@ -1923,11 +1935,16 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     amalgamy_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'amalgamy fluctuation bonus'))
     model.AddDivisionEquality(amalgamy_fluctuation_bonus, multiplied_amalgamy, 5)
 
+    multiplied_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'multiplied menace'))
+    model.AddMultiplicationEquality(multiplied_menace, [menace, 4])
+    menace_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'menace fluctuation bonus'))
+    model.AddDivisionEquality(menace_fluctuation_bonus, multiplied_menace, 5)
+
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 50)
 
     model.Add(primary_revenue == value - value_remainder + 250).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
-    model.Add(secondary_revenue == 250*amalgamy_times_menace + 250*(amalgamy_fluctuation_bonus if bone_market_fluctuations == Fluctuation.AMALGAMY else 0)).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
+    model.Add(secondary_revenue == 250*amalgamy_times_menace + 250*(amalgamy_fluctuation_bonus if bone_market_fluctuations == Fluctuation.AMALGAMY else menace_fluctuation_bonus if bone_market_fluctuations == Fluctuation.MENACE else 0)).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
 
     model.Add(difficulty_level == 75*implausibility).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
 
@@ -1936,7 +1953,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.AddDivisionEquality(derived_exhaustion, amalgamy_times_menace, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
 
-    del amalgamy_times_menace, multiplied_amalgamy, amalgamy_fluctuation_bonus, value_remainder, derived_exhaustion
+    del amalgamy_times_menace, multiplied_amalgamy, amalgamy_fluctuation_bonus, multiplied_menace, menace_fluctuation_bonus, value_remainder, derived_exhaustion
 
 
     # A Constable
