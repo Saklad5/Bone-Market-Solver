@@ -2161,7 +2161,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     non_negative_antiquity = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FISH.name, 'non-negative antiquity'))
     model.AddMaxEquality(non_negative_antiquity, [antiquity, 0])
 
-    compromising_documents = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FISH.name, ''))
+    compromising_documents = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FISH.name, 'compromising documents'))
     model.AddGeneralMultiplicationEquality(compromising_documents, non_negative_amalgamy, non_negative_menace, non_negative_antiquity)
 
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_FISH.name, 'value remainder'))
