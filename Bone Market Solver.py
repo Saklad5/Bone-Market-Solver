@@ -1149,6 +1149,11 @@ class Buyer(Enum):
             cost = Cost.ACTION.value
             )
 
+    AN_ENTERPRISING_BOOT_SALESMAN = Action(
+            "Sell to the Enterprising Boot Salesman",
+            cost = Cost.ACTION.value
+            )
+
     THE_DUMBWAITER_OF_BALMORAL = Action(
             "Export the Skeleton of a Neathy Bird",
             cost = Cost.ACTION.value
@@ -1198,6 +1203,8 @@ class OccasionalBuyer(Enum):
             ]
 
     AN_INGENUOUS_MALACOLOGIST = [Buyer.AN_INGENUOUS_MALACOLOGIST]
+
+    AN_ENTERPRISING_BOOT_SALESMAN = [Buyer.AN_ENTERPRISING_BOOT_SALESMAN]
 
 
 DiplomatFascination = Enum(
@@ -2117,6 +2124,31 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.AN_INGENUOUS_MALACOLOGIST])
 
     del exponentiated_tentacles, collated_research, value_remainder, derived_exhaustion
+
+
+    # An Enterprising Boot Salesman
+    model.Add(menace <= 0).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+    model.Add(amalgamy <= 0).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+    model.Add(legs >= 4).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+
+    diamonds = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_ENTERPRISING_BOOT_SALESMAN.name, 'diamonds'))
+    model.AddApproximateExponentiationEquality(diamonds, legs, 2.2, MAXIMUM_ATTRIBUTE)
+
+    value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.AN_ENTERPRISING_BOOT_SALESMAN.name, 'value remainder'))
+    model.AddModuloEquality(value_remainder, value, 50)
+
+    model.Add(primary_revenue == value - value_remainder).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+    model.Add(secondary_revenue == 50*diamonds).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+
+    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+
+    # The indirection is necessary for applying an enforcement literal
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_ENTERPRISING_BOOT_SALESMAN.name, 'derived exhaustion'))
+    model.AddDivisionEquality(derived_exhaustion, diamonds, 100)
+    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+
+    del diamonds, value_remainder, derived_exhaustion
 
 
     # The Dumbwaiter of Balmoral
