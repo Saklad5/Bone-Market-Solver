@@ -1194,12 +1194,13 @@ class OccasionalBuyer(Enum):
     AN_INGENUOUS_MALACOLOGIST = [Buyer.AN_INGENUOUS_MALACOLOGIST]
 
 
-class DiplomatFascination(Enum):
-    """The current requirements of the Trifling Diplomat."""
-
-    ANTIQUITY = Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY
-
-    FISH = Buyer.THE_TRIFLING_DIPLOMAT_FISH
+DiplomatFascination = Enum(
+        'DiplomatFascination',
+        ( (diplomat.name[22:], diplomat) for diplomat in Buyer
+            if diplomat.name.startswith('THE_TRIFLING_DIPLOMAT_') ),
+        module = __name__
+        )
+DiplomatFascination.__doc__ = "The current fascination of the Trifling Diplomat."
 
 
 def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
