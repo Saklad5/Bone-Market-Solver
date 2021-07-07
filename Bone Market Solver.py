@@ -1556,16 +1556,14 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.HUMANOID])
     model.Add(legs == 2).OnlyEnforceIf(actions[Declaration.HUMANOID])
     model.Add(arms == 2).OnlyEnforceIf(actions[Declaration.HUMANOID])
-    model.Add(torso_style >= 10).OnlyEnforceIf(actions[Declaration.HUMANOID])
-    model.Add(torso_style <= 20).OnlyEnforceIf(actions[Declaration.HUMANOID])
+    model.AddLinearExpressionInDomain(torso_style, cp_model.Domain.FromFlatIntervals([10, 20])).OnlyEnforceIf(actions[Declaration.HUMANOID])
     for prohibited_quality in [tails, fins, wings]:
         model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.HUMANOID])
 
     # Ape requirements
     model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.APE])
     model.Add(arms == 4).OnlyEnforceIf(actions[Declaration.APE])
-    model.Add(torso_style >= 10).OnlyEnforceIf(actions[Declaration.APE])
-    model.Add(torso_style <= 20).OnlyEnforceIf(actions[Declaration.APE])
+    model.AddLinearExpressionInDomain(torso_style, cp_model.Domain.FromFlatIntervals([10, 20])).OnlyEnforceIf(actions[Declaration.APE])
     for prohibited_quality in [legs, tails, fins, wings]:
         model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.APE])
 
@@ -1573,8 +1571,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.MONKEY])
     model.Add(arms == 4).OnlyEnforceIf(actions[Declaration.MONKEY])
     model.Add(tails == 1).OnlyEnforceIf(actions[Declaration.MONKEY])
-    model.Add(torso_style >= 10).OnlyEnforceIf(actions[Declaration.MONKEY])
-    model.Add(torso_style <= 20).OnlyEnforceIf(actions[Declaration.MONKEY])
+    model.AddLinearExpressionInDomain(torso_style, cp_model.Domain.FromFlatIntervals([10, 20])).OnlyEnforceIf(actions[Declaration.MONKEY])
     for prohibited_quality in [legs, fins, wings]:
         model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.MONKEY])
 
@@ -1606,7 +1603,6 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
     model.Add(legs == 4).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
     model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
-
     for prohibited_quality in [tails, fins, wings, arms]:
         model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
 
@@ -1641,7 +1637,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
 
     # Skeleton must have no unfilled tails, unless they were skipped
     model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails_needed for action in actions.keys()]) == 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS].Not())
-    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails_needed for action in actions.keys()]) >= 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS])
+    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails_needed for action in actions.keys()]) > 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS])
 
 
     # A Palaeontologist with Hoarding Propensities
