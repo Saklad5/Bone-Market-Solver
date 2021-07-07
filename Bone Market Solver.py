@@ -1869,15 +1869,11 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     antiquity_times_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'antiquity times menace'))
     model.AddMultiplicationEquality(antiquity_times_menace, [antiquity, menace])
 
-    multiplied_antiquity = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'multiplied antiquity'))
-    model.AddMultiplicationEquality(multiplied_antiquity, [antiquity, 4])
     antiquity_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'antiquity fluctuation bonus'))
-    model.AddDivisionEquality(antiquity_fluctuation_bonus, multiplied_antiquity, 5)
+    model.AddDivisionEquality(antiquity_fluctuation_bonus, antiquity, 2)
 
-    multiplied_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'multiplied menace'))
-    model.AddMultiplicationEquality(multiplied_menace, [menace, 4])
     menace_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'menace fluctuation bonus'))
-    model.AddDivisionEquality(menace_fluctuation_bonus, multiplied_menace, 5)
+    model.AddDivisionEquality(menace_fluctuation_bonus, menace, 2)
 
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.AN_AUTHOR_OF_GOTHIC_TALES.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 50)
@@ -1892,7 +1888,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.AddDivisionEquality(derived_exhaustion, antiquity_times_menace, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.AN_AUTHOR_OF_GOTHIC_TALES])
 
-    del antiquity_times_menace, multiplied_antiquity, antiquity_fluctuation_bonus, multiplied_menace, menace_fluctuation_bonus, value_remainder, derived_exhaustion
+    del antiquity_times_menace, antiquity_fluctuation_bonus, menace_fluctuation_bonus, value_remainder, derived_exhaustion
 
 
     # A Zailor with Particular Interests
@@ -1903,15 +1899,11 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     amalgamy_times_antiquity = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS.name, 'amalgamy times antiquity'))
     model.AddMultiplicationEquality(amalgamy_times_antiquity, [amalgamy, antiquity])
 
-    multiplied_amalgamy = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS.name, 'multiplied amalgamy'))
-    model.AddMultiplicationEquality(multiplied_amalgamy, [amalgamy, 4])
     amalgamy_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS.name, 'amalgamy fluctuation bonus'))
-    model.AddDivisionEquality(amalgamy_fluctuation_bonus, multiplied_amalgamy, 5)
+    model.AddDivisionEquality(amalgamy_fluctuation_bonus, amalgamy, 2)
 
-    multiplied_antiquity = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS.name, 'multiplied antiquity'))
-    model.AddMultiplicationEquality(multiplied_antiquity, [antiquity, 4])
     antiquity_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS.name, 'antiquity fluctuation bonus'))
-    model.AddDivisionEquality(antiquity_fluctuation_bonus, multiplied_antiquity, 5)
+    model.AddDivisionEquality(antiquity_fluctuation_bonus, antiquity, 2)
 
     value_remainder = model.NewIntVar(0, 9, '{}: {}'.format(Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 10)
@@ -1926,7 +1918,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.AddDivisionEquality(derived_exhaustion, amalgamy_times_antiquity, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_ZAILOR_WITH_PARTICULAR_INTERESTS])
 
-    del amalgamy_times_antiquity, multiplied_amalgamy, amalgamy_fluctuation_bonus, multiplied_antiquity, antiquity_fluctuation_bonus, value_remainder, derived_exhaustion
+    del amalgamy_times_antiquity, amalgamy_fluctuation_bonus, antiquity_fluctuation_bonus, value_remainder, derived_exhaustion
 
 
     # A Rubbery Collector
@@ -1937,15 +1929,11 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     amalgamy_times_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'amalgamy times menace'))
     model.AddMultiplicationEquality(amalgamy_times_menace, [amalgamy, menace])
 
-    multiplied_amalgamy = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'multiplied amalgamy'))
-    model.AddMultiplicationEquality(multiplied_amalgamy, [amalgamy, 4])
     amalgamy_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'amalgamy fluctuation bonus'))
-    model.AddDivisionEquality(amalgamy_fluctuation_bonus, multiplied_amalgamy, 5)
+    model.AddDivisionEquality(amalgamy_fluctuation_bonus, amalgamy, 2)
 
-    multiplied_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'multiplied menace'))
-    model.AddMultiplicationEquality(multiplied_menace, [menace, 4])
     menace_fluctuation_bonus = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'menace fluctuation bonus'))
-    model.AddDivisionEquality(menace_fluctuation_bonus, multiplied_menace, 5)
+    model.AddDivisionEquality(menace_fluctuation_bonus, menace, 2)
 
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.A_RUBBERY_COLLECTOR.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 50)
@@ -1960,7 +1948,7 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.AddDivisionEquality(derived_exhaustion, amalgamy_times_menace, 20)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_RUBBERY_COLLECTOR])
 
-    del amalgamy_times_menace, multiplied_amalgamy, amalgamy_fluctuation_bonus, multiplied_menace, menace_fluctuation_bonus, value_remainder, derived_exhaustion
+    del amalgamy_times_menace, amalgamy_fluctuation_bonus, menace_fluctuation_bonus, value_remainder, derived_exhaustion
 
 
     # A Constable
