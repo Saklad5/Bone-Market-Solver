@@ -2209,7 +2209,6 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_BIRD])
     model.Add(secondary_revenue == 50*compromising_documents).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_BIRD])
 
-    # TODO: Add actual difficulty level
     model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_BIRD])
 
     # The indirection is necessary for applying an enforcement literal
