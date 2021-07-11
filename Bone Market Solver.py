@@ -1216,7 +1216,7 @@ DiplomatFascination = Enum(
 DiplomatFascination.__doc__ = "The current fascination of the Trifling Diplomat."
 
 
-def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
+def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = None, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -1287,16 +1287,20 @@ def Solve(shadowy_level, bone_market_fluctuations, zoological_mania, occasional_
     original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
     model.Add(original_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
 
-    multiplier = 115 if zoological_mania in [Declaration.FISH, Declaration.INSECT, Declaration.SPIDER] else 110
-
-    multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX, 'multiplied value')
-    model.Add(multiplied_value == multiplier*original_value).OnlyEnforceIf(actions[zoological_mania])
-    model.Add(multiplied_value == 100*original_value).OnlyEnforceIf(actions[zoological_mania].Not())
-
     value = model.NewIntVar(0, cp_model.INT32_MAX, 'value')
-    model.AddDivisionEquality(value, multiplied_value, 100)
 
-    del original_value, multiplier, multiplied_value
+    if zoological_mania:
+        multiplier = 115 if zoological_mania in [Declaration.FISH, Declaration.INSECT, Declaration.SPIDER] else 110
+
+        multiplied_value = model.NewIntVar(0, cp_model.INT32_MAX, 'multiplied value')
+        model.Add(multiplied_value == multiplier*original_value).OnlyEnforceIf(actions[zoological_mania])
+        model.Add(multiplied_value == 100*original_value).OnlyEnforceIf(actions[zoological_mania].Not())
+
+        model.AddDivisionEquality(value, multiplied_value, 100)
+    else:
+        model.Add(value == original_value)
+
+    del original_value
 
 
     # Torso Style calculation
@@ -2401,7 +2405,6 @@ def main():
             "-f", "--bone-market-fluctuations",
             action=EnumAction,
             type=Fluctuation,
-            required=True,
             help="current value of Bone Market Fluctuations, which grants various bonuses to certain buyers",
             dest='bone_market_fluctuations'
             )
@@ -2410,7 +2413,6 @@ def main():
             "-m", "--zoological-mania",
             action=EnumAction,
             type=Declaration,
-            required=True,
             help="current value of Zoological Mania, which grants a percentage bonus to value for a certain declaration",
             dest='zoological_mania'
             )
