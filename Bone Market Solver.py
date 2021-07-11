@@ -2391,15 +2391,13 @@ def main():
             argument_default=argparse.SUPPRESS,
             )
 
-    parser.add_argument(
-            "-s", "--shadowy",
-            type=int,
-            required=True,
-            help="the effective level of Shadowy used for selling to buyers",
-            dest='shadowy_level'
+
+    world_qualities = parser.add_argument_group(
+            "world qualities",
+            "Parameters shared across Fallen London, often changing on a routine basis"
             )
 
-    parser.add_argument(
+    world_qualities.add_argument(
             "-f", "--bone-market-fluctuations",
             action=EnumAction,
             type=Fluctuation,
@@ -2408,7 +2406,7 @@ def main():
             dest='bone_market_fluctuations'
             )
 
-    parser.add_argument(
+    world_qualities.add_argument(
             "-m", "--zoological-mania",
             action=EnumAction,
             type=Declaration,
@@ -2417,23 +2415,37 @@ def main():
             dest='zoological_mania'
             )
 
-    buyer = parser.add_mutually_exclusive_group()
-    transient_buyers = buyer.add_argument_group()
-    transient_buyers.add_argument(
+    world_qualities.add_argument(
             "-o", "--occasional-buyer",
             action=EnumAction,
             type=OccasionalBuyer,
             help="current value of Occasional Buyer, which allows access to a buyer that is not otherwise available",
             dest='occasional_buyer'
             )
-    transient_buyers.add_argument(
+
+    world_qualities.add_argument(
             "-d", "--diplomat-fascination",
             action=EnumAction,
             type=DiplomatFascination,
             help="current value of The Diplomat's Current Fascination, which determines what the Trifling Diplomat is interested in",
             dest='diplomat_fascination'
             )
-    buyer.add_argument(
+
+
+    skeleton_parameters = parser.add_argument_group(
+            "skeleton parameters",
+            "Parameters that determine what you want the solver to produce"
+            )
+
+    skeleton_parameters.add_argument(
+            "-s", "--shadowy",
+            type=int,
+            required=True,
+            help="the effective level of Shadowy used for selling to buyers",
+            dest='shadowy_level'
+            )
+
+    skeleton_parameters.add_argument(
             "-b", "--buyer", "--desired-buyer",
             action=EnumAction,
             nargs='+',
@@ -2442,21 +2454,27 @@ def main():
             dest='desired_buyers'
             )
 
-    parser.add_argument(
+    skeleton_parameters.add_argument(
             "-c", "--cost", "--maximum-cost",
             type=int,
             help="maximum number of pennies that should be invested in skeleton",
             dest='maximum_cost'
             )
 
-    parser.add_argument(
+    skeleton_parameters.add_argument(
             "-e", "--exhaustion", "--maximum_exhaustion",
             type=int,
             help="maximum exhaustion that skeleton should generate",
             dest='maximum_exhaustion'
             )
 
-    parser.add_argument(
+
+    solver_options = parser.add_argument_group(
+            "solver options",
+            "Options that affect how the solver behaves"
+            )
+
+    solver_options.add_argument(
             "-v", "--verbose",
             action='store_true',
             default=False,
@@ -2464,19 +2482,20 @@ def main():
             dest='verbose'
             )
 
-    parser.add_argument(
+    solver_options.add_argument(
             "-t", "--time-limit",
             type=float,
-            help="maximum number of seconds that solver runs for",
+            help="maximum number of seconds that the solver runs for",
             dest='time_limit'
             )
 
-    parser.add_argument(
+    solver_options.add_argument(
             "-w", "--workers",
             type=int,
             help="number of search worker threads to run in parallel (default: one worker per available CPU thread)",
             dest='workers'
             )
+
 
     args = parser.parse_args()
 
