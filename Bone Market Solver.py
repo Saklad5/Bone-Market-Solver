@@ -2458,10 +2458,8 @@ def main():
 
     parser.add_argument(
             "-v", "--verbose",
-            nargs='?',
-            const=True,
+            action='store_true',
             default=False,
-            type=bool,
             help="whether the solver should output search progress rather than showing intermediate solutions",
             dest='verbose'
             )
