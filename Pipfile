@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 ortools = "~=9.0"
+windows-curses = {platform_system = "== 'Windows'"}
 
 [dev-packages]
 
