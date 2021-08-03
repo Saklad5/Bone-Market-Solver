@@ -5,7 +5,6 @@ __author__ = "Jeremy Saklad"
 
 import argparse
 import curses
-from enum import Enum
 from functools import reduce
 from os import cpu_count
 
@@ -16,7 +15,10 @@ from data.appendages import Appendage
 from data.buyers import Buyer
 from data.costs import Cost
 from data.declarations import Declaration
+from data.diplomat_fascinations import DiplomatFascination
 from data.embellishments import Embellishment
+from data.fluctuations import Fluctuation
+from data.occasional_buyers import OccasionalBuyer
 from data.skulls import Skull
 from data.torsos import Torso
 from objects.enumaction import EnumAction
@@ -72,40 +74,6 @@ def AddGeneralMultiplicationEquality(self, target, *variables):
 
 cp_model.CpModel.AddGeneralMultiplicationEquality = AddGeneralMultiplicationEquality
 del AddGeneralMultiplicationEquality
-
-
-class Fluctuation(Enum):
-    """Which skeleton attribute is currently boosted."""
-
-    ANTIQUITY = 1
-    AMALGAMY = 2
-    MENACE = 3
-
-class OccasionalBuyer(Enum):
-    """Which of several unusual buyers are available."""
-
-    AN_ENTHUSIAST_IN_SKULLS = [Buyer.AN_ENTHUSIAST_IN_SKULLS]
-
-    A_DREARY_MIDNIGHTER = [Buyer.A_DREARY_MIDNIGHTER]
-
-    A_COLOURFUL_PHANTASIST = [
-            Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE,
-            Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL,
-            Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL,
-            ]
-
-    AN_INGENUOUS_MALACOLOGIST = [Buyer.AN_INGENUOUS_MALACOLOGIST]
-
-    AN_ENTERPRISING_BOOT_SALESMAN = [Buyer.AN_ENTERPRISING_BOOT_SALESMAN]
-
-
-DiplomatFascination = Enum(
-        'DiplomatFascination',
-        ( (diplomat.name[22:], diplomat) for diplomat in Buyer
-            if diplomat.name.startswith('THE_TRIFLING_DIPLOMAT_') ),
-        module = __name__
-        )
-DiplomatFascination.__doc__ = "The current fascination of the Trifling Diplomat."
 
 
 def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = None, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
