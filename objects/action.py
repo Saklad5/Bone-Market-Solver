@@ -1,3 +1,6 @@
+__all__ = ['Action']
+__author__ = "Jeremy Saklad"
+
 class Action:
     """An action that affects a skeleton's qualities."""
 

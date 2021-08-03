@@ -1,3 +1,6 @@
+__all__ = ['Skull']
+__author__ = "Jeremy Saklad"
+
 from enum import Enum
 
 from data.costs import Cost

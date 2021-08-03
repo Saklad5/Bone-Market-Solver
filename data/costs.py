@@ -1,3 +1,6 @@
+__all__ = ['Cost']
+__author__ = "Jeremy Saklad"
+
 from enum import Enum
 
 from ortools.sat.python import cp_model
