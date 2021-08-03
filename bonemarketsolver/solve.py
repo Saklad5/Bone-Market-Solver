@@ -1025,6 +1025,29 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
 
 
+    # The Trifling Diplomat - Amalgamy
+    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
+    model.Add(amalgamy >= 5).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
+
+    amalgamy_squared = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY.name, 'amalgamy squared'))
+    model.AddMultiplicationEquality(amalgamy_squared, [amalgamy, amalgamy])
+
+    value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY.name, 'value remainder'))
+    model.AddModuloEquality(value_remainder, value, 50)
+
+    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
+    model.Add(secondary_revenue == 50*amalgamy_squared).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
+
+    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
+
+    # The indirection is necessary for applying an enforcement literal
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY.name, 'derived exhaustion'))
+    model.AddDivisionEquality(derived_exhaustion, amalgamy_squared, 100)
+    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
+
+    del amalgamy_squared, value_remainder, derived_exhaustion
+
+
     # The Trifling Diplomat - Antiquity
     model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY])
     model.Add(antiquity >= 5).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY])

@@ -129,6 +129,11 @@ class Buyer(Enum):
             cost = Cost.ACTION.value
             )
 
+    THE_TRIFLING_DIPLOMAT_AMALGAMY = Action(
+            "Sell the Diplomat an amalgamous skeleton",
+            cost = Cost.ACTION.value
+            )
+
     THE_TRIFLING_DIPLOMAT_ANTIQUITY = Action(
             "Sell the Diplomat an antique skeleton",
             cost = Cost.ACTION.value
