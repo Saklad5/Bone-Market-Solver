@@ -34,10 +34,10 @@ Here's an example, broken into multiple lines for ease of reading:
 pipenv run bone_market_solver \
 --bone-market-fluctuations menace \
 --occasional-buyer an_enterprising_boot_salesman \
---zoological_mania insect \
---diplomat_fascination antiquity \
+--zoological-mania insect \
+--diplomat-fascination antiquity \
 --shadowy 302 \
---maximum_exhaustion 4 \
+--maximum-exhaustion 4 \
 --time-limit 300
 ```
 
