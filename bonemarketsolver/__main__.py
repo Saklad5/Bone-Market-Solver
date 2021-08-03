@@ -79,7 +79,7 @@ skeleton_parameters.add_argument(
         )
 
 skeleton_parameters.add_argument(
-        "-e", "--exhaustion", "--maximum_exhaustion",
+        "-e", "--exhaustion", "--maximum-exhaustion",
         type=int,
         help="maximum exhaustion that skeleton should generate",
         dest='maximum_exhaustion'
