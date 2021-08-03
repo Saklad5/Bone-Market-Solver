@@ -23,7 +23,7 @@ pipenv is not strictly necessary for this script, though it is highly recommende
 
 Having navigated to the directory that contains the script, you can see the options of the script using the following command:
 ```sh
-pipenv run python Bone\ Market\ Solver.py --help
+pipenv run bone_market_solver --help
 ```
 
 These options allow you to specify world qualities, skeleton parameters, and solver options.  
@@ -31,7 +31,7 @@ These options do not need to be provided in any particular order, and generally 
 
 Here's an example, broken into multiple lines for ease of reading:
 ```sh
-pipenv run python Bone\ Market\ Solver.py \
+pipenv run bone_market_solver \
 --bone-market-fluctuations menace \
 --occasional-buyer an_enterprising_boot_salesman \
 --zoological_mania insect \

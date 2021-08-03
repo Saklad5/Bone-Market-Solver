@@ -3,8 +3,8 @@ __author__ = "Jeremy Saklad"
 
 from enum import Enum
 
-from data.costs import Cost
-from objects.action import Action
+from .costs import Cost
+from ..objects.action import Action
 
 class Buyer(Enum):
     """An action that converts a skeleton into revenue."""

@@ -3,8 +3,8 @@ __author__ = "Jeremy Saklad"
 
 from enum import Enum
 
-from data.costs import Cost
-from objects.action import Action
+from .costs import Cost
+from ..objects.action import Action
 
 class Embellishment(Enum):
     """An action is taken after a declaration has been made for a skeleton."""

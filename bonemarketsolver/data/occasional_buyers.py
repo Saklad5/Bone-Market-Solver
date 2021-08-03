@@ -3,7 +3,7 @@ __author__ = "Jeremy Saklad"
 
 from enum import Enum
 
-from data.buyers import Buyer
+from .buyers import Buyer
 
 class OccasionalBuyer(Enum):
     """Which of several unusual buyers are available."""

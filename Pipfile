@@ -7,7 +7,9 @@ name = "pypi"
 ortools = "~=9.0"
 windows-curses = {platform_system = "== 'Windows'"}
 
-[dev-packages]
+[scripts]
+
+bone_market_solver = "python -m bonemarketsolver"
 
 [requires]
 python_version = "3.9"

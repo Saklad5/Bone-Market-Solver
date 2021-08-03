@@ -3,8 +3,8 @@ __author__ = "Jeremy Saklad"
 
 from enum import Enum
 
-from data.costs import Cost
-from objects.action import Action
+from .costs import Cost
+from ..objects.action import Action
 
 class Adjustment(Enum):
     """An action that is taken after all parts have been added to a skeleton."""
