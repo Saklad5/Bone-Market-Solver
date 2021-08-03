@@ -15,6 +15,7 @@ from data.adjustments import Adjustment
 from data.appendages import Appendage
 from data.costs import Cost
 from data.declarations import Declaration
+from data.embellishments import Embellishment
 from data.skulls import Skull
 from data.torsos import Torso
 from objects.action import Action
@@ -70,25 +71,6 @@ def AddGeneralMultiplicationEquality(self, target, *variables):
 
 cp_model.CpModel.AddGeneralMultiplicationEquality = AddGeneralMultiplicationEquality
 del AddGeneralMultiplicationEquality
-
-
-class Embellishment(Enum):
-    """An action is taken after a declaration has been made for a skeleton."""
-
-    MORE_PLAUSIBLE = Action(
-            "Make it seem just a bit more plausible",
-            cost = Cost.ACTION.value + Cost.REVISIONIST_NARRATIVE.value,
-            implausibility = -1
-            )
-
-    CONVINCING_HISTORY = Action(
-            "Invest great time and skill in coming up with a convincing history",
-            cost = Cost.ACTION.value + 3*Cost.REVISIONIST_NARRATIVE.value,
-            implausibility = -5
-            )
-
-    def __str__(self):
-        return str(self.value)
 
 
 class Buyer(Enum):
