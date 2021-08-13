@@ -291,7 +291,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     del add_joints_amber_cost_multiple_first_term, add_joints_amber_cost_multiple_second_term, add_joints_amber_cost_multiple_third_term, add_joints_amber_cost_multiple_fourth_term, add_joints_amber_cost_multiple_fifth_term
 
-    model.AddGeneralMultiplicationEquality(add_joints_amber_cost, add_joints, add_joints_amber_cost_multiple, Cost.WARM_AMBER.value)
+    model.AddGeneralMultiplicationEquality(add_joints_amber_cost, add_joints_amber_cost_multiple, Cost.WARM_AMBER.value)
 
     del add_joints, add_joints_amber_cost_multiple
 
