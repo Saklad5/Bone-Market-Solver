@@ -45,6 +45,15 @@ For best results, it is recommended to specify every world quality you can. Depe
 
 You do *not* need to specify buyers to use this solver. The solver will try to maximize profit margin for all available buyers if you do not specify any, which may be very useful if you have no particular objective in mind. Specifying multiple buyers will cause the solver to choose from among them.
 
+### Blacklisting
+
+If you wish to prohibit certain options, you may do so by passing their exact identifiers (e.g. "Skull.VICTIM\_SKULL") to the blacklist.
+
+You may wish to blacklist options that:
+* require a Profession, Ambition, or story you do not have
+* add Exhaustion
+* you simply don't have a good source for
+
 ## Caveats
 
 The solver aims to maximize profit margin, rather than sheer profit. This is because it may be more profitable to make many smaller skeletons than one massive skeleton.

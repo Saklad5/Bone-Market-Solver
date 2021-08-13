@@ -20,15 +20,15 @@ class Torso(Enum):
             )
 
     # Licentiate
-    # VICTIM_SKELETON = Action(
-    #        "Supply a skeleton of your own",
-    #        cost = Cost.ACTION.value,
-    #        torso_style = 10,
-    #        value = 250,
-    #        skulls_needed = 1,
-    #        arms = 2,
-    #        legs = 2
-    #        )
+    VICTIM_SKELETON = Action(
+           "Supply a skeleton of your own",
+           cost = Cost.ACTION.value,
+           torso_style = 10,
+           value = 250,
+           skulls_needed = 1,
+           arms = 2,
+           legs = 2
+           )
 
     HUMAN_RIBCAGE = Action(
             "Build on the Human Ribcage",

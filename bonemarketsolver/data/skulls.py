@@ -47,14 +47,14 @@ class Skull(Enum):
             )
 
     # Adds Exhaustion
-    # ENGRAVED_SKULL = Action(
-    #         "Affix a Custom-Engraved Skull to your (Skeleton Type)",
-    #         cost = Cost.ACTION.value + Cost.ENGRAVED_SKULL.value,
-    #         value = 10000,
-    #         skulls_needed = -1,
-    #         skulls = 1,
-    #         exhaustion = 2
-    #         )
+    ENGRAVED_SKULL = Action(
+            "Affix a Custom-Engraved Skull to your (Skeleton Type)",
+            cost = Cost.ACTION.value + Cost.ENGRAVED_SKULL.value,
+            value = 10000,
+            skulls_needed = -1,
+            skulls = 1,
+            exhaustion = 2
+            )
 
     EYELESS_SKULL = Action(
             "Affix an Eyeless Skull to your (Skeleton Type)",
@@ -76,13 +76,13 @@ class Skull(Enum):
             )
 
     # Seeking the Name of Mr. Eaten
-    # OWN_SKULL = Action(
-    #         "Duplicate your own skull and affix it here",
-    #         cost = Cost.ACTION.value + 1000*Cost.BONE_FRAGMENT.value,
-    #         value = -250,
-    #         skulls_needed = -1,
-    #         skulls = 1
-    #         )
+    OWN_SKULL = Action(
+            "Duplicate your own skull and affix it here",
+            cost = Cost.ACTION.value + 1000*Cost.BONE_FRAGMENT.value,
+            value = -250,
+            skulls_needed = -1,
+            skulls = 1
+            )
 
     PENTAGRAMMIC_SKULL = Action(
             "Affix a Pentagrammic Skull to your (Skeleton Type)",
@@ -139,13 +139,13 @@ class Skull(Enum):
             )
 
     # Licentiate
-    # VICTIM_SKULL = Action(
-    #         "Cap this with a victim’s skull",
-    #         cost = Cost.ACTION.value,
-    #         value = 250,
-    #         skulls_needed = -1,
-    #         skulls = 1
-    #         )
+    VICTIM_SKULL = Action(
+            "Cap this with a victim’s skull",
+            cost = Cost.ACTION.value,
+            value = 250,
+            skulls_needed = -1,
+            skulls = 1
+            )
 
     def __str__(self):
         return str(self.value)

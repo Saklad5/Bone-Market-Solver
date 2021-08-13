@@ -1,6 +1,7 @@
 import argparse
 import curses
 
+from .objects.blacklistaction import BlacklistAction
 from .objects.enumaction import EnumAction
 from .solve import *
 
@@ -83,6 +84,15 @@ skeleton_parameters.add_argument(
         type=int,
         help="maximum exhaustion that skeleton should generate",
         dest='maximum_exhaustion'
+        )
+
+skeleton_parameters.add_argument(
+        "--blacklist",
+        action=BlacklistAction,
+        nargs='+',
+        help="components, options, or buyers that should not be used by the solver",
+        metavar="Enum.MEMBER",
+        dest='blacklist'
         )
 
 
