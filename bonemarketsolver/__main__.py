@@ -67,7 +67,7 @@ skeleton_parameters.add_argument(
         action=EnumAction,
         nargs='+',
         type=Buyer,
-        help="specific buyer that skeleton should be designed for (if declared repeatedly, will choose from among those provided)",
+        help="specific buyer that skeleton should be designed for (if multiple are specified, will choose from among them)",
         dest='desired_buyers'
         )
 
