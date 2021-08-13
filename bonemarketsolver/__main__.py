@@ -2,12 +2,14 @@ import argparse
 import curses
 
 from .objects.blacklistaction import BlacklistAction
+from .objects.bonemarketargumentparser import BoneMarketArgumentParser
 from .objects.enumaction import EnumAction
 from .solve import *
 
-parser = argparse.ArgumentParser(
+parser = BoneMarketArgumentParser(
         prog='Bone Market Solver',
         description="Devise the optimal skeleton at the Bone Market in Fallen London.",
+        fromfile_prefix_chars="@",
         argument_default=argparse.SUPPRESS,
         )
 

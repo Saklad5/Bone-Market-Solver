@@ -54,6 +54,16 @@ You may wish to blacklist options that:
 * add Exhaustion
 * you simply don't have a good source for
 
+### Configuration Files
+
+Rather than typing out every argument each time you use the solver, you may provide a file path (prefixed with "@") to the CLI.
+
+This file should contain command-line arguments. The solver will interpret these arguments as if they were typed in place of the file path.
+
+Configuration files are read top-to-bottom. Arguments can be delimited by a single space, broken onto different lines, or any combination thereof.
+
+Any number of configuration files may be provided simultaneously.
+
 ## Caveats
 
 The solver aims to maximize profit margin, rather than sheer profit. This is because it may be more profitable to make many smaller skeletons than one massive skeleton.
