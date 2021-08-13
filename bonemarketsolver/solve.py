@@ -1,6 +1,6 @@
 """Use constraint programming to devise the optimal skeleton at the Bone Market in Fallen London."""
 
-__all__ = ['Buyer', 'Declaration', 'DiplomatFascination', 'Fluctuation', 'OccasionalBuyer', 'Solve']
+__all__ = ['Adjustment', 'Appendage', 'Buyer', 'Declaration', 'DiplomatFascination', 'Embellishment', 'Fluctuation', 'OccasionalBuyer', 'Skull', 'Solve', 'Torso']
 __author__ = "Jeremy Saklad"
 
 from functools import reduce
@@ -73,7 +73,7 @@ cp_model.CpModel.AddGeneralMultiplicationEquality = AddGeneralMultiplicationEqua
 del AddGeneralMultiplicationEquality
 
 
-def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = None, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), stdscr = None):
+def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = None, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), blacklist = [], stdscr = None):
     model = cp_model.CpModel()
 
     actions = {}
@@ -128,6 +128,9 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     # Restrict to desired buyers
     if desired_buyers:
         model.Add(cp_model.LinearExpr.Sum([actions[desired_buyer] for desired_buyer in desired_buyers]) == 1)
+
+    # Blacklist
+    model.Add(cp_model.LinearExpr.Sum([actions[forbidden] for forbidden in blacklist]) == 0)
 
 
     # One torso
