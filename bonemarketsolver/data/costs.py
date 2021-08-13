@@ -32,9 +32,6 @@ class Cost(Enum):
     # Station VIII Lab
     COLLECTION_NOTE = ACTION
 
-    # Volume of Collated Research
-    COLLATED_RESEARCH = 250
-
     # Deep-Zee Catch
     # Spear-fishing at the bottom of the Evenlode, 7 at a time
     DEEP_ZEE_CATCH = ACTION/7
@@ -85,6 +82,14 @@ class Cost(Enum):
     # Headless Skeleton
     # These are accumulated while acquiring other qualities.
     HEADLESS_SKELETON = 0
+
+    # Favours: Hell
+    # Various opportunity cards
+    HELL_FAVOURS = ACTION
+
+    # Volume of Collated Research
+    # Hurlers statue, 10 at a time
+    COLLATED_RESEARCH = (ACTION + 4*HELL_FAVOURS)/10
 
     # Hinterland Scrip
     HINTERLAND_SCRIP = 50
@@ -223,35 +228,28 @@ class Cost(Enum):
     TIME_REMAINING_IN_THE_WOODS = (ACTION + 4*COLLATED_RESEARCH)/7
 
     # Observation: Red Deer
-    # Balmoral Woods
-    DEER_OBSERVATION = 13*ACTION + 12*TIME_REMAINING_IN_THE_WOODS
+    # Balmoral Woods (TRitW rounded up to multiple of 7)
+    DEER_OBSERVATION = 13*ACTION + 14*TIME_REMAINING_IN_THE_WOODS
 
     # Mammoth Ribcage
     # Keeper of the Marigold Menagerie
     MAMMOTH_RIBCAGE = ACTION + DEER_OBSERVATION
 
     # Observation: Fox
-    # Balmoral Woods
-    FOX_OBSERVATION = 10*ACTION + 8*TIME_REMAINING_IN_THE_WOODS
+    # Balmoral Woods (TRitW rounded up to multiple of 7)
+    FOX_OBSERVATION = 10*ACTION + 14*TIME_REMAINING_IN_THE_WOODS
 
     # Doubled Skull
     # Keeper of the Marigold Menagerie
     DOUBLED_SKULL = ACTION + FOX_OBSERVATION
 
     # Observation: Grouse
-    # Balmoral Woods
-    GROUSE_OBSERVATION = 9*ACTION + 8*TIME_REMAINING_IN_THE_WOODS
+    # Balmoral Woods (TRitW rounded up to multiple of 7)
+    GROUSE_OBSERVATION = 9*ACTION + 14*TIME_REMAINING_IN_THE_WOODS
 
     # Skeleton with Seven Necks
     # Keeper of the Marigold Menagerie
     SKELETON_WITH_SEVEN_NECKS = ACTION + GROUSE_OBSERVATION
-
-    # Nodule of Trembling Amber
-    TREMBLING_AMBER = 1250
-
-    # Ribcage with a Bouquet of Eight Spines
-    # Helicon House
-    RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + SKELETON_WITH_SEVEN_NECKS + THORNED_RIBCAGE + 3*TREMBLING_AMBER
 
     # Rubbery Skull
     # Flute Street, including travel due to quality cap
@@ -302,6 +300,14 @@ class Cost(Enum):
     # Tomb-Lion's Tail
     # Ealing Gardens Butcher
     TOMB_LION_TAIL = ACTION + 200*BONE_FRAGMENT + 2*WARM_AMBER
+
+    # Nodule of Trembling Amber
+    # Slime and Amber: the Rubbery Men (minus 1 action to account for Favour)
+    TREMBLING_AMBER = 100*WARM_AMBER
+
+    # Ribcage with a Bouquet of Eight Spines
+    # Helicon House
+    RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + SKELETON_WITH_SEVEN_NECKS + THORNED_RIBCAGE + 3*TREMBLING_AMBER
 
     # Warbler Skeleton
     # Ealing Gardens Butcher
