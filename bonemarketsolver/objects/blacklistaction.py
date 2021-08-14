@@ -1,7 +1,7 @@
 __all__ = ['BlacklistAction']
 __author__ = "Jeremy Saklad"
 
-from argparse import Action
+import argparse
 
 from ..data.adjustments import Adjustment
 from ..data.appendages import Appendage
@@ -17,7 +17,7 @@ def convert_to_enum(value):
     enum = globals()[split[0]]
     return enum[split[1]]
 
-class BlacklistAction(Action):
+class BlacklistAction(argparse.Action):
     def __init__(self, **kwargs):
         nargs = kwargs.get('nargs')
 
@@ -26,7 +26,8 @@ class BlacklistAction(Action):
         self._nargs = nargs
 
     def __call__(self, parser, namespace, values, option_string=None):
-        if self._nargs is None or self._nargs == '?':
+        # Check whether this is a single value or a list of them
+        if self._nargs is None or self._nargs == argparse.OPTIONAL:
             # Convert value back into an Enum
             enum = convert_to_enum(value)
 

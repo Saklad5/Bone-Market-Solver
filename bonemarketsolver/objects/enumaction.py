@@ -1,9 +1,9 @@
 __all__ = ['EnumAction']
 __author__ = "Jeremy Saklad"
 
-from argparse import Action
+import argparse
 
-class EnumAction(Action):
+class EnumAction(argparse.Action):
     def __init__(self, **kwargs):
         # Pop off the type value
         enum = kwargs.pop('type', None)
@@ -19,7 +19,8 @@ class EnumAction(Action):
         self._nargs = nargs
 
     def __call__(self, parser, namespace, values, option_string=None):
-        if self._nargs is None or self._nargs == '?':
+        # Check whether this is a single value or a list of them
+        if self._nargs is None or self._nargs == argparse.OPTIONAL:
             # Convert value back into an Enum
             enum = self._enum[values.upper()]
 

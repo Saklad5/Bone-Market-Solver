@@ -68,7 +68,7 @@ skeleton_parameters.add_argument(
 skeleton_parameters.add_argument(
         "-b", "--buyer", "--desired-buyer",
         action=EnumAction,
-        nargs='+',
+        nargs=argparse.ONE_OR_MORE,
         type=Buyer,
         help="specific buyer that skeleton should be designed for (if multiple are specified, will choose from among them)",
         dest='desired_buyers'
@@ -91,7 +91,7 @@ skeleton_parameters.add_argument(
 skeleton_parameters.add_argument(
         "--blacklist",
         action=BlacklistAction,
-        nargs='+',
+        nargs=argparse.ONE_OR_MORE,
         help="components, options, or buyers that should not be used by the solver",
         metavar="Enum.MEMBER",
         dest='blacklist'
