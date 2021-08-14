@@ -4,6 +4,7 @@ import curses
 from .objects.blacklistaction import BlacklistAction
 from .objects.bonemarketargumentparser import BoneMarketArgumentParser
 from .objects.enumaction import EnumAction
+from .objects.listaction import ListAction
 from .solve import *
 
 parser = BoneMarketArgumentParser(
@@ -11,6 +12,16 @@ parser = BoneMarketArgumentParser(
         description="Devise the optimal skeleton at the Bone Market in Fallen London.",
         fromfile_prefix_chars="@",
         argument_default=argparse.SUPPRESS,
+        )
+
+parser.add_argument(
+        "-l", "--list",
+        action=ListAction,
+        default=ListAction.list_options,
+        choices=ListAction.list_options,
+        nargs=argparse.ZERO_OR_MORE,
+        help="list specified enumerations and their names and exit",
+        dest=argparse.SUPPRESS
         )
 
 

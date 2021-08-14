@@ -55,6 +55,12 @@ You may wish to blacklist options that:
 * add Exhaustion
 * you simply don't have a good source for
 
+To get a list of identifiers, use:
+```sh
+pipenv run bone_market_solver --list
+```
+Specific enumerations may be provided to narrow what is shown.
+
 ### Configuration Files
 
 Rather than typing out every argument each time you use the solver, you may provide a file path (prefixed with "@") to the CLI.
