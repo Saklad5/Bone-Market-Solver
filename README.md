@@ -38,7 +38,8 @@ pipenv run bone_market_solver \
 --diplomat-fascination antiquity \
 --shadowy 302 \
 --maximum-exhaustion 4 \
---time-limit 300
+--time-limit 300 \
+--blacklist Skull.VICTIM_SKULL Torso.VICTIM_TORSO
 ```
 
 For best results, it is recommended to specify every world quality you can. Depending on the speed of your computer, setting a time limit may also be helpful.
