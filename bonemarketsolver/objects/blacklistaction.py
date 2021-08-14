@@ -29,7 +29,7 @@ class BlacklistAction(argparse.Action):
         # Check whether this is a single value or a list of them
         if self._nargs is None or self._nargs == argparse.OPTIONAL:
             # Convert value back into an Enum
-            enum = convert_to_enum(value)
+            enum = convert_to_enum(values)
 
             setattr(namespace, self.dest, enum)
         else:

@@ -106,7 +106,6 @@ solver_options = parser.add_argument_group(
 solver_options.add_argument(
         "-v", "--verbose",
         action=argparse.BooleanOptionalAction,
-        default=False,
         help="whether the solver should output search progress rather than showing intermediate solutions",
         dest='verbose'
         )
@@ -130,7 +129,7 @@ args = parser.parse_args()
 
 arguments = vars(args)
 
-if not arguments.pop('verbose'):
+if not arguments.pop('verbose', False):
     def WrappedSolve(stdscr, arguments):
         # Prevents crash if window is too small to fit text
         stdscr.scrollok(True)
