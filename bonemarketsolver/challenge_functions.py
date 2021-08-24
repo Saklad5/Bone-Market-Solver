@@ -13,7 +13,9 @@ def narrow_challenge(difficulty_level: int, stat: int):
         return stat/10
 
 def broad_challenge(difficulty_level: int, stat: int):
-    chance = DIFFICULTY_SCALER*stat//difficulty_level
+    chance = DIFFICULTY_SCALER*stat/difficulty_level * 100
+    chance = chance // 1
+    chance /= 100
 
     return chance
 
