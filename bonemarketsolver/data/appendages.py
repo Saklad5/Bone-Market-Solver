@@ -5,6 +5,18 @@ from enum import Enum
 
 from .costs import Cost
 from ..objects.action import Action
+from ..read_char import *
+
+
+def _narrow_challenge_4(stat: int):
+    stat += 2
+    if stat < 8:
+        chance = stat/10
+    else:
+        chance = 1
+
+    return chance
+
 
 class Appendage(Enum):
     """An action that is taken once all skulls are added to a skeleton."""
@@ -17,6 +29,7 @@ class Appendage(Enum):
             amalgamy = 2
             )
 
+    # TODO: Difficulty is increased by 2 for each Fin or Tentacle on the skeleton
     ALBATROSS_WING = Action(
             "Put an Albatross Wing on your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.ALBATROSS_WING.value,
@@ -26,6 +39,7 @@ class Appendage(Enum):
             amalgamy = 1
             )
 
+    # TODO: Difficulty is increased by 2 for each Arm, Leg, Wing, and Tentacle that is already attached
     AMBER_FIN = Action(
             "Attach the Amber-Crusted Fin to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.AMBER_FIN.value,
@@ -36,6 +50,7 @@ class Appendage(Enum):
             menace = 1
             )
 
+    # TODO: Difficulty is increased with Fins on the skeleton
     BAT_WING = Action(
             "Add a Bat Wing to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.BAT_WING.value,
@@ -51,7 +66,7 @@ class Appendage(Enum):
             value = 50,
             tails_needed = -1,
             tails = 1,
-            menace = 2
+            menace = 2 * _narrow_challenge_4(Char.MONSTROUS_ANATOMY.value) + 1 * (1 - _narrow_challenge_4(Char.MONSTROUS_ANATOMY.value))
             )
 
     CRUSTACEAN_PINCER = Action(
