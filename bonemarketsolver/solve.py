@@ -1167,6 +1167,37 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     del non_negative_amalgamy, non_negative_menace, non_negative_antiquity, compromising_documents, value_remainder, derived_exhaustion
 
 
+    # The Trifling Diplomat - Reptile
+    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([160, 169])).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
+
+    non_negative_amalgamy = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name, 'non-negative amalgamy'))
+    model.AddMaxEquality(non_negative_amalgamy, [amalgamy, 0])
+
+    non_negative_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name, 'non-negative menace'))
+    model.AddMaxEquality(non_negative_menace, [menace, 0])
+
+    non_negative_antiquity = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name, 'non-negative antiquity'))
+    model.AddMaxEquality(non_negative_antiquity, [antiquity, 0])
+
+    compromising_documents = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name, 'compromising documents'))
+    model.AddGeneralMultiplicationEquality(compromising_documents, non_negative_amalgamy, non_negative_menace, non_negative_antiquity)
+
+    value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name, 'value remainder'))
+    model.AddModuloEquality(value_remainder, value, 50)
+
+    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
+    model.Add(secondary_revenue == 50*compromising_documents).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
+
+    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
+
+    # The indirection is necessary for applying an enforcement literal
+    derived_exhaustion = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name, 'derived exhaustion'))
+    model.AddDivisionEquality(derived_exhaustion, compromising_documents, 100)
+    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
+
+    del non_negative_amalgamy, non_negative_menace, non_negative_antiquity, compromising_documents, value_remainder, derived_exhaustion
+
+
     # The Trifling Diplomat - Skulls
     model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_SKULLS])
     model.Add(skulls >= 5).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_SKULLS])
