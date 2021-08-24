@@ -5,6 +5,21 @@ from enum import Enum
 
 from .costs import Cost
 from ..objects.action import Action
+from ..read_char import *
+from ..challenge_functions import narrow_challenge
+
+
+def _convincing_history_cost():
+    chance = narrow_challenge(6, Char.KATALEPTIC_TOXICOLOGY.value)
+
+    if chance == 1:
+        cost = 3*Cost.REVISIONIST_NARRATIVE.value + Cost.ACTION.value
+    else:
+        actions = 1 / chance
+        cost = actions * Cost.ACTION.value
+        cost += Cost.REVISIONIST_NARRATIVE.value * (3 + actions - 1)
+    return cost
+
 
 class Embellishment(Enum):
     """An action is taken after a declaration has been made for a skeleton."""
@@ -17,7 +32,7 @@ class Embellishment(Enum):
 
     CONVINCING_HISTORY = Action(
             "Invest great time and skill in coming up with a convincing history",
-            cost = Cost.ACTION.value + 3*Cost.REVISIONIST_NARRATIVE.value,
+            cost = _convincing_history_cost(),
             implausibility = -5
             )
 

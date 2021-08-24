@@ -5,6 +5,9 @@ from enum import Enum
 
 from .costs import Cost
 from ..objects.action import Action
+from ..read_char import *
+from ..challenge_functions import narrow_challenge, mean_outcome
+
 
 class Appendage(Enum):
     """An action that is taken once all skulls are added to a skeleton."""
@@ -17,6 +20,7 @@ class Appendage(Enum):
             amalgamy = 2
             )
 
+    # TODO: Difficulty is increased by 2 for each Fin or Tentacle on the skeleton
     ALBATROSS_WING = Action(
             "Put an Albatross Wing on your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.ALBATROSS_WING.value,
@@ -26,6 +30,7 @@ class Appendage(Enum):
             amalgamy = 1
             )
 
+    # TODO: Difficulty is increased by 2 for each Arm, Leg, Wing, and Tentacle that is already attached
     AMBER_FIN = Action(
             "Attach the Amber-Crusted Fin to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.AMBER_FIN.value,
@@ -36,6 +41,7 @@ class Appendage(Enum):
             menace = 1
             )
 
+    # TODO: Difficulty is increased with Fins on the skeleton
     BAT_WING = Action(
             "Add a Bat Wing to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.BAT_WING.value,
@@ -51,7 +57,7 @@ class Appendage(Enum):
             value = 50,
             tails_needed = -1,
             tails = 1,
-            menace = 2
+            menace = mean_outcome(2, 1, narrow_challenge(4, Char.MONSTROUS_ANATOMY.value))
             )
 
     CRUSTACEAN_PINCER = Action(
@@ -80,6 +86,8 @@ class Appendage(Enum):
             legs = 1
             )
 
+    # TODO: Base challenge: Narrow, Monstrous Anatomy 1
+    #       The difficulty is increased by 2 for each Arm, Leg, Wing, and Tentacle already attached to your skeleton.
     FIN_BONES = Action(
             "Put Fins on your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.FIN_BONES.value,
@@ -94,7 +102,7 @@ class Appendage(Enum):
             value = 2750,
             limbs_needed = -1,
             arms = 1,
-            antiquity = 2
+            antiquity = mean_outcome(2, 1, narrow_challenge(11, Char.MONSTROUS_ANATOMY.value))
             )
 
     HELICAL_THIGH = Action(
@@ -103,7 +111,7 @@ class Appendage(Enum):
             value = 300,
             limbs_needed = -1,
             legs = 1,
-            amalgamy = 2
+            amalgamy = mean_outcome(2, 1, narrow_challenge(6, Char.SHAPELING_ARTS.value))
             )
 
     HUMAN_ARM = Action(
