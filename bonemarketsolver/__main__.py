@@ -6,6 +6,8 @@ from .objects.bonemarketargumentparser import BoneMarketArgumentParser
 from .objects.enumaction import EnumAction
 from .objects.listaction import ListAction
 from .solve import *
+from .read_char import *
+
 
 parser = BoneMarketArgumentParser(
         prog='Bone Market Solver',
@@ -71,7 +73,7 @@ skeleton_parameters = parser.add_argument_group(
 skeleton_parameters.add_argument(
         "-s", "--shadowy",
         type=int,
-        required=True,
+        default=Char.SHADOWY.value,
         help="the effective level of Shadowy used for selling to buyers",
         dest='shadowy_level'
         )
