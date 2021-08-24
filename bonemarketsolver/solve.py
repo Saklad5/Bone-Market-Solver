@@ -27,8 +27,7 @@ ATTRIBUTE_MULTIPLIER = 10000000
 # This is the highest number of attribute to calculate fractional exponents for.
 MAXIMUM_ATTRIBUTE = 100
 
-# This is a constant used to calculate difficulty checks. You almost certainly do not need to change this.
-DIFFICULTY_SCALER = 0.6
+from .challenge_functions import DIFFICULTY_SCALER
 
 
 def NewIntermediateBoolVar(self, name, expression, domain):
