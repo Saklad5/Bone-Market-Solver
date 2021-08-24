@@ -5,8 +5,8 @@ from enum import Enum
 
 from .costs import Cost
 from ..objects.action import Action
-from ..read_char import *
-from ..challenge_functions import narrow_challenge, mean_outcome
+from ..read_char import Char
+from ..challenge_functions import narrow_challenge, broad_challenge, mean_outcome
 
 
 class Appendage(Enum):
@@ -128,7 +128,8 @@ class Appendage(Enum):
             cost = Cost.ACTION.value + Cost.IVORY_FEMUR.value,
             value = 6500,
             limbs_needed = -1,
-            legs = 1
+            legs = 1,
+            implausibility = mean_outcome(0, 4, narrow_challenge(7, Char.MONSTROUS_ANATOMY.value))
             )
 
     IVORY_HUMERUS = Action(
@@ -136,9 +137,12 @@ class Appendage(Enum):
             cost = Cost.ACTION.value + Cost.IVORY_HUMERUS.value,
             value = 1500,
             limbs_needed = -1,
-            arms = 1
+            arms = 1,
+            implausibility = mean_outcome(0, 2, narrow_challenge(6, Char.KATALEPTIC_TOXICOLOGY.value))
             )
 
+    # TODO: Base challenge: Narrow, Mithridacy 1
+    #       Difficulty increases by 2 for each Fin or Tentacle already attached to your skeleton.
     JURASSIC_THIGH = Action(
             "Apply a Jurassic Thigh Bone to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.JURASSIC_FEMUR.value,
@@ -148,6 +152,8 @@ class Appendage(Enum):
             antiquity = 1
             )
 
+    # TODO: Base challenge: Narrow, Mithridacy 6
+    #       Difficulty increases by 1 for each limb that is NOT a KNOTTED_HUMERUS
     KNOTTED_HUMERUS = Action(
             "Apply a Knotted Humerus to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.KNOTTED_HUMERUS.value,
@@ -157,6 +163,8 @@ class Appendage(Enum):
             amalgamy = 1
             )
 
+    # TODO: Base challenge: Monstrous Anatomy 4
+    #       No failure info on wiki
     OBSIDIAN_TAIL = Action(
             "Apply an Obsidian Chitin Tail to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.OBSIDIAN_TAIL.value,
@@ -172,9 +180,11 @@ class Appendage(Enum):
             value = 250,
             tails_needed = -1,
             tails = 1,
-            implausibility = 1
+            implausibility = mean_outcome(1, 4, narrow_challenge(4, Char.MITHRIDACY.value))
             )
 
+    # TODO: Base challenge: Narrow, Monstrous Anatomy 1
+    #       Difficulty increases by 2 for each Fin already attached to your skeleton.
     TERROR_BIRD_WING = Action(
             "Add the Wing of a Young Terror Bird to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.TERROR_BIRD_WING.value,
@@ -191,7 +201,7 @@ class Appendage(Enum):
             value = 250,
             tails_needed = -1,
             tails = 1,
-            antiquity = 1
+            antiquity = mean_outcome(0, 1, narrow_challenge(4, Char.MONSTROUS_ANATOMY.value))
             )
 
     UNIDENTIFIED_THIGH = Action(
@@ -202,27 +212,19 @@ class Appendage(Enum):
             legs = 1
             )
 
-    WITHERED_TAIL = Action(
-            "Apply a Withered Tentacle as a tail on your (Skeleton Type)",
-            cost = Cost.ACTION.value + Cost.WITHERED_TENTACLE.value,
-            value = 250,
-            tails_needed = -1,
-            tails = 1,
-            antiquity = -1
-            )
-
     WITHERED_TENTACLE = Action(
             "Put a Withered Tentacle on your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.WITHERED_TENTACLE.value,
             value = 250,
             limbs_needed = -1,
             tentacles = 1,
-            antiquity = -1
+            antiquity = -1,
+            implausibility = mean_outcome(0, 2, narrow_challenge(5, Char.MONSTROUS_ANATOMY.value))
             )
 
     REMOVE_TAIL = Action(
             "Remove the tail from your (Skeleton Type)",
-            cost = Cost.ACTION.value,
+            cost = Cost.ACTION.value * 1 / broad_challenge(220, Char.DANGEROUS.value),
             tails = -1
             )
 
