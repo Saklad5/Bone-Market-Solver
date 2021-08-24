@@ -87,6 +87,10 @@ class Cost(Enum):
     # Various opportunity cards
     HELL_FAVOURS = ACTION
 
+    # Infiltrating...
+    # Khan's Heart, 10 at a time
+    INFILTRATING = ACTION/10
+
     # Volume of Collated Research
     # Hurlers statue, 10 at a time
     COLLATED_RESEARCH = (ACTION + 4*HELL_FAVOURS)/10
@@ -171,7 +175,8 @@ class Cost(Enum):
     SCINTILLACK = 250
 
     # Searing Enigma
-    SEARING_ENIGMA = 6250
+    # Khan's Heart
+    SEARING_ENIGMA = 2*ACTION + 130*INFILTRATING
 
     # Carved Ball of Stygian Ivory
     STYGIAN_IVORY = 250
