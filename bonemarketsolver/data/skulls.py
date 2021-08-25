@@ -5,13 +5,15 @@ from enum import Enum
 
 from .costs import Cost
 from ..objects.action import Action
+from ..challenge_functions import narrow_challenge, mean_outcome
+from ..read_char import Char
 
 class Skull(Enum):
     """An action that is taken immediately after starting a skeleton."""
 
     BAPTIST_SKULL = Action(
             "Duplicate the skull of John the Baptist, if you can call that a skull",
-            cost = Cost.ACTION.value + 500*Cost.BONE_FRAGMENT.value + 10*Cost.PEPPERCAPS.value,
+            cost = Cost.ACTION.value * 1 / narrow_challenge(6, Char.ARTISAN_OF_RED_SCIENCE.value) + 500*Cost.BONE_FRAGMENT.value + 10*Cost.PEPPERCAPS.value,
             value = 1250,
             skulls_needed = -1,
             skulls = 1,
@@ -20,13 +22,14 @@ class Skull(Enum):
 
     BRASS_SKULL = Action(
             "Affix a Bright Brass Skull to your (Skeleton Type)",
-            cost = Cost.ACTION.value + Cost.BRASS_SKULL.value + 200*Cost.NEVERCOLD_BRASS.value,
-            value = 6500,
+            cost = Cost.ACTION.value + Cost.BRASS_SKULL.value + mean_outcome(200*Cost.NEVERCOLD_BRASS.value, 0, narrow_challenge(6, Char.MITHRIDACY.value)),
+            value = mean_outcome(6500, 6000, narrow_challenge(6, Char.MITHRIDACY.value)),
             skulls_needed = -1,
             skulls = 1,
-            implausibility = 2
+            implausibility = mean_outcome(2, 6, narrow_challenge(6, Char.MITHRIDACY.value)),
             )
 
+    # TODO
     CORAL_SKULL = Action(
             "Affix a Skull in Coral to your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.CORAL_SKULL.value + Cost.SCINTILLACK.value,
@@ -43,7 +46,7 @@ class Skull(Enum):
             skulls_needed = -1,
             skulls = 2,
             amalgamy = 1,
-            antiquity = 2
+            antiquity = mean_outcome(2, 1, narrow_challenge(4, Char.MONSTROUS_ANATOMY.value))
             )
 
     # Adds Exhaustion
@@ -53,7 +56,8 @@ class Skull(Enum):
             value = 10000,
             skulls_needed = -1,
             skulls = 1,
-            exhaustion = 2
+            exhaustion = 2,
+            implausibility = mean_outcome(0, 2, narrow_challenge(4, Char.MITHRIDACY.value)),
             )
 
     EYELESS_SKULL = Action(
@@ -72,13 +76,13 @@ class Skull(Enum):
             skulls_needed = -1,
             skulls = 1,
             antiquity = 1,
-            menace = 2
+            menace = mean_outcome(2, 1, narrow_challenge(6, Char.MONSTROUS_ANATOMY.value))
             )
 
     # Seeking the Name of Mr. Eaten
     OWN_SKULL = Action(
             "Duplicate your own skull and affix it here",
-            cost = Cost.ACTION.value + 1000*Cost.BONE_FRAGMENT.value,
+            cost = Cost.ACTION.value * 1 / narrow_challenge(6, Char.ARTISAN_OF_RED_SCIENCE.value) + 1000*Cost.BONE_FRAGMENT.value,
             value = -250,
             skulls_needed = -1,
             skulls = 1
@@ -100,7 +104,7 @@ class Skull(Enum):
             value = 2500,
             skulls_needed = -1,
             skulls = 1,
-            menace = 2
+            menace = mean_outcome(2, 1, narrow_challenge(4, Char.MONSTROUS_ANATOMY.value))
             )
 
     RUBBERY_SKULL = Action(
@@ -119,19 +123,20 @@ class Skull(Enum):
             skulls_needed = -1,
             skulls = 1,
             antiquity = 1,
-            menace = 1
+            menace = mean_outcome(1, 0, narrow_challenge(6, Char.MONSTROUS_ANATOMY.value))
             )
 
     STYGIAN_IVORY = Action(
             "Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.STYGIAN_IVORY.value,
             value = 250,
-            skulls_needed = -1
+            skulls_needed = -1,
+            implausibility = mean_outcome(0, 2, narrow_challenge(6, Char.MITHRIDACY.value))
             )
 
     VAKE_SKULL = Action(
             "Duplicate the Vake's skull and use it to decorate your (Skeleton Type)",
-            cost = Cost.ACTION.value + 6000*Cost.BONE_FRAGMENT.value,
+            cost = Cost.ACTION.value + 6000*Cost.BONE_FRAGMENT.value + mean_outcome(0, Cost.ACTION.value + 300*Cost.BONE_FRAGMENT.value, narrow_challenge(6, Char.ARTISAN_OF_RED_SCIENCE.value)),
             value = 6500,
             skulls_needed = -1,
             skulls = 1,
