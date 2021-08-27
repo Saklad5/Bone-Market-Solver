@@ -24,4 +24,4 @@ def mean_outcome(success: int, failure: int, chance: float):
     mean_failure = failure*(1-chance)
     combined_mean_outcome = mean_success + mean_failure
 
-    return combined_mean_outcome
+    return int(combined_mean_outcome)
