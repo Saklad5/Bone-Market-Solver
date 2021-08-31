@@ -91,6 +91,10 @@ class Cost(Enum):
     # Khan's Heart, 10 at a time
     INFILTRATING = ACTION/10
 
+    # Intercepted Cablegram
+    # Khan's Heart, tap a telegraph cable, 50 at a time
+    INTERCEPTED_CABLEGRAM = (2*ACTION + 130*INFILTRATING)/50
+
     # Volume of Collated Research
     # Hurlers statue, 10 at a time
     COLLATED_RESEARCH = (ACTION + 4*HELL_FAVOURS)/10
@@ -175,8 +179,8 @@ class Cost(Enum):
     SCINTILLACK = 250
 
     # Searing Enigma
-    # Khan's Heart
-    SEARING_ENIGMA = 2*ACTION + 130*INFILTRATING
+    # Khan's Heart, disgruntled academic
+    SEARING_ENIGMA = 2*ACTION + 130*INFILTRATING + 2*INTERCEPTED_CABLEGRAM
 
     # Carved Ball of Stygian Ivory
     STYGIAN_IVORY = 250
