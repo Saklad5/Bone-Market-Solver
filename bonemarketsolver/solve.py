@@ -84,7 +84,11 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # Skull
     for skull in Skull:
-        actions[skull] = model.NewIntVar(0, cp_model.INT32_MAX, skull.value.name)
+        # Interim treatment until diminishing returns are analyzed
+        if skull == Skull.VAKE_SKULL:
+            actions[skull] = model.NewBoolVar(skull.value.name)
+        else:
+            actions[skull] = model.NewIntVar(0, cp_model.INT32_MAX, skull.value.name)
 
     # Appendage
     for appendage in Appendage:
