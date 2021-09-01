@@ -232,9 +232,38 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'menace')
     model.Add(menace == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.menace for action in actions.keys()]))
 
+
     # Implausibility calculation
     implausibility = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'implausibility')
-    model.Add(implausibility == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.implausibility for action in actions.keys()]))
+
+    constant_base_implausibility = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'implausibility')
+    model.Add(constant_base_implausibility == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.implausibility for action in actions.keys()]))
+
+    # Calculate implausibility from Vake skulls
+    # This is a partial sum formula.
+    vake_skull_implausibility = model.NewIntVar(0, cp_model.INT32_MAX, 'vake skull implausibility')
+
+    vake_skull_implausibility_numerator = model.NewIntVar(0, cp_model.INT32_MAX, 'vake skull implausibility numerator')
+
+    vake_skulls = actions[Skull.VAKE_SKULL]
+
+    vake_skull_implausibility_numerator_second_term = model.NewIntVar(0, cp_model.INT32_MAX, 'vake skull implausibility numerator second term')
+    model.AddMultiplicationEquality(vake_skull_implausibility_numerator_second_term, [vake_skulls, vake_skulls])
+
+    vake_skull_implausibility_numerator_third_term = model.NewIntVar(0, 1, 'vake skull implausibility numerator third term')
+    model.AddModuloEquality(vake_skull_implausibility_numerator_third_term, vake_skulls, 2)
+
+    model.Add(vake_skull_implausibility_numerator == -2 * vake_skulls + vake_skull_implausibility_numerator_second_term + vake_skull_implausibility_numerator_third_term)
+
+    del vake_skulls, vake_skull_implausibility_numerator_second_term, vake_skull_implausibility_numerator_third_term
+
+    model.AddDivisionEquality(vake_skull_implausibility, vake_skull_implausibility_numerator, 4)
+
+    del vake_skull_implausibility_numerator
+
+    model.Add(implausibility == constant_base_implausibility + vake_skull_implausibility)
+
+    del constant_base_implausibility, vake_skull_implausibility
 
 
     # Counter-church calculation
