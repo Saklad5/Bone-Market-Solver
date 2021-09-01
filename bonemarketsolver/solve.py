@@ -148,11 +148,31 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
 
     # Value calculation
-    original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
-    model.Add(original_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
-
     value = model.NewIntVar(0, cp_model.INT32_MAX, 'value')
 
+    original_value = model.NewIntVar(0, cp_model.INT32_MAX, 'original value')
+
+    constant_base_value = model.NewIntVar(0, cp_model.INT32_MAX, 'constant base value')
+    model.Add(constant_base_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
+
+    # Calculate value from Vake skulls
+    # This is a partial sum formula.
+    vake_skull_value = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'vake skull value')
+
+    vake_skulls = actions[Skull.VAKE_SKULL]
+
+    vake_skulls_squared = model.NewIntVar(0, cp_model.INT32_MAX, 'vake skulls squared')
+    model.AddMultiplicationEquality(vake_skulls_squared, [vake_skulls, vake_skulls])
+
+    model.Add(vake_skull_value == -250 * vake_skulls_squared + 6750 * vake_skulls)
+
+    del vake_skulls, vake_skulls_squared
+
+    model.Add(original_value == constant_base_value + vake_skull_value)
+
+    del constant_base_value, vake_skull_value
+
+    # Zoological Mania
     if zoological_mania:
         multiplier = 115 if zoological_mania in [Declaration.FISH, Declaration.INSECT, Declaration.SPIDER] else 110
 
@@ -164,7 +184,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     else:
         model.Add(value == original_value)
 
-    del original_value
+    del multiplied_value, original_value
 
 
     # Torso Style calculation

@@ -129,10 +129,10 @@ class Skull(Enum):
             skulls_needed = -1
             )
 
+    # Value scales with repetition and is implemented separately
     VAKE_SKULL = Action(
             "Duplicate the Vake's skull and use it to decorate your (Skeleton Type)",
             cost = Cost.ACTION.value + 6000*Cost.BONE_FRAGMENT.value,
-            value = 6500,
             skulls_needed = -1,
             skulls = 1,
             menace = 3
