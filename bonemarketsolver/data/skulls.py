@@ -129,13 +129,13 @@ class Skull(Enum):
             skulls_needed = -1
             )
 
-    # Value and implausibility scale with repetition and are implemented separately
+    # Value, implausibility, and partially menace scale with repetition and are implemented separately
     VAKE_SKULL = Action(
             "Duplicate the Vake's skull and use it to decorate your (Skeleton Type)",
             cost = Cost.ACTION.value + 6000*Cost.BONE_FRAGMENT.value,
             skulls_needed = -1,
             skulls = 1,
-            menace = 3
+            menace = 1
             )
 
     # Licentiate

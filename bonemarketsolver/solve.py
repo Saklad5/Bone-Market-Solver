@@ -84,11 +84,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # Skull
     for skull in Skull:
-        # Interim treatment until diminishing returns are analyzed
-        if skull == Skull.VAKE_SKULL:
-            actions[skull] = model.NewBoolVar(skull.value.name)
-        else:
-            actions[skull] = model.NewIntVar(0, cp_model.INT32_MAX, skull.value.name)
+        actions[skull] = model.NewIntVar(0, cp_model.INT32_MAX, skull.value.name)
 
     # Appendage
     for appendage in Appendage:
@@ -228,9 +224,23 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     antiquity = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'antiquity')
     model.Add(antiquity == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.antiquity for action in actions.keys()]))
 
+
     # Menace calculation
     menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'menace')
-    model.Add(menace == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.menace for action in actions.keys()]))
+
+    constant_base_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, 'constant base menace')
+    model.Add(constant_base_menace == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.menace for action in actions.keys()]))
+
+    # Calculate menace from Vake skulls
+    vake_skull_bonus_menace = model.NewIntVarFromDomain(cp_model.Domain.FromValues([0, 2, 3]), 'vake skull bonus menace')
+    vake_skulls_times_two = model.NewIntVar(0, cp_model.INT32_MAX, 'vake skulls times two')
+    model.AddMultiplicationEquality(vake_skulls_times_two, [2, actions[Skull.VAKE_SKULL]])
+    model.AddMinEquality(vake_skull_bonus_menace, [vake_skulls_times_two, 3])
+    del vake_skulls_times_two
+
+    model.Add(menace == constant_base_menace + vake_skull_bonus_menace)
+
+    del constant_base_menace, vake_skull_bonus_menace
 
 
     # Implausibility calculation
