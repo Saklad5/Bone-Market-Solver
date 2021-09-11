@@ -71,6 +71,14 @@ Configuration files are read top-to-bottom. Arguments can be delimited by a sing
 
 Any number of configuration files may be provided simultaneously.
 
+## Versioning
+
+This tool follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The public API consists of the command-line interface, as well as all public Python declarations.
+
+As Fallen London is a living game, the solver may not reflect its present state. With that in mind, version tags include the last known date of relevant changes to Fallen London that are reflected by the tool. Any changes to Fallen London since that date, even if they were made before the tag or commit, should be presumed unimplemented.
+
+While all commits in the main branch are functional, unversioned commits should not be considered *accurate*. They may, for instance, partially incorporate an update to Fallen London, which results in a solver that does reflect the game at any single point in time. Pre-release versions should be considered on case-by-case basis: a pre-release may accurately reflect only a subset of the Bone Market, constraining the solver to avoid options that are no longer correctly evaluated.
+
 ## Caveats
 
 The solver aims to maximize profit margin, rather than sheer profit. This is because it may be more profitable to make many smaller skeletons than one massive skeleton.
