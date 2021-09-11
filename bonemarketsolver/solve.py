@@ -774,9 +774,12 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     final_breaths = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TENTACLED_ENTREPRENEUR.name, 'final breaths'))
     if bone_market_fluctuations == Fluctuation.AMALGAMY:
-        model.AddApproximateExponentiationEquality(final_breaths, amalgamy, 2.1, MAXIMUM_ATTRIBUTE)
+        boosted_amalgamy = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TENTACLED_ENTREPRENEUR.name, 'boosted amalgamy'))
+        model.AddApproximateExponentiationEquality(boosted_amalgamy, amalgamy, 2.1, MAXIMUM_ATTRIBUTE)
+        model.Add(final_breaths == 4*boosted_amalgamy).OnlyEnforceIf(actions[Buyer.A_TENTACLED_ENTREPRENEUR])
+        del boosted_amalgamy
     else:
-        model.Add(final_breaths == amalgamy_squared).OnlyEnforceIf(actions[Buyer.A_TENTACLED_ENTREPRENEUR])
+        model.Add(final_breaths == 4*amalgamy_squared).OnlyEnforceIf(actions[Buyer.A_TENTACLED_ENTREPRENEUR])
 
     value_remainder = model.NewIntVar(0, 49, '{}: {}'.format(Buyer.A_TENTACLED_ENTREPRENEUR.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 50)
@@ -788,7 +791,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # The indirection is necessary for applying an enforcement literal
     derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TENTACLED_ENTREPRENEUR.name, 'derived exhaustion'))
-    model.AddDivisionEquality(derived_exhaustion, amalgamy_squared, 100)
+    model.AddDivisionEquality(derived_exhaustion, amalgamy_squared, 25)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_TENTACLED_ENTREPRENEUR])
 
     del amalgamy_squared, final_breaths, value_remainder, derived_exhaustion
