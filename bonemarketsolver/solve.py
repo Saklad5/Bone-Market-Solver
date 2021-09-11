@@ -745,9 +745,12 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     feathers = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TELLER_OF_TERRORS.name, 'feathers'))
     if bone_market_fluctuations == Fluctuation.MENACE:
-        model.AddApproximateExponentiationEquality(feathers, menace, 2.1, MAXIMUM_ATTRIBUTE)
+        boosted_menace = model.NewIntVar(cp_model.INT32_MIN, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TELLER_OF_TERRORS.name, 'boosted menace'))
+        model.AddApproximateExponentiationEquality(boosted_menace, menace, 2.1, MAXIMUM_ATTRIBUTE)
+        model.Add(feathers == 4*boosted_menace).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
+        del boosted_menace
     else:
-        model.Add(feathers == menace_squared).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
+        model.Add(feathers == 4*menace_squared).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
 
     value_remainder = model.NewIntVar(0, 9, '{}: {}'.format(Buyer.A_TELLER_OF_TERRORS.name, 'value remainder'))
     model.AddModuloEquality(value_remainder, value, 10)
@@ -759,7 +762,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # The indirection is necessary for applying an enforcement literal
     derived_exhaustion = model.NewIntVar(0, cp_model.INT32_MAX, '{}: {}'.format(Buyer.A_TELLER_OF_TERRORS.name, 'derived exhaustion'))
-    model.AddDivisionEquality(derived_exhaustion, menace_squared, 100)
+    model.AddDivisionEquality(derived_exhaustion, menace_squared, 25)
     model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_TELLER_OF_TERRORS])
 
     del menace_squared, feathers, value_remainder, derived_exhaustion
