@@ -220,7 +220,7 @@ class Appendage(Enum):
 
     # This sets Skeleton: Tails Needed to 0 and is implemented separately
     SKIP_TAILS = Action(
-            "Decide your Tailless Animal needs no tail",
+            "Decide your (Skeleton Type) needs no tail",
             cost = Cost.ACTION.value
             )
 
