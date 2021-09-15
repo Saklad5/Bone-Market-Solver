@@ -33,8 +33,8 @@ class Cost(Enum):
     COLLECTION_NOTE = ACTION
 
     # Deep-Zee Catch
-    # Spear-fishing at the bottom of the Evenlode, 7 at a time
-    DEEP_ZEE_CATCH = ACTION/7
+    # Spear-fishing at the bottom of the Evenlode, 7 at a time, difficult check, available fourth of the time
+    DEEP_ZEE_CATCH = 4*(ACTION/7)
 
     # Crustacean Pincer
     # Ealing Gardens Butcher, 2 at a time
