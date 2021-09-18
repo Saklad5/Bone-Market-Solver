@@ -9,6 +9,8 @@ from ..objects.action import Action
 class Buyer(Enum):
     """An action that converts a skeleton into revenue."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES = Action(
             "Sell a complete skeleton to the Bone Hoarder",
             cost = Cost.ACTION.value

@@ -9,6 +9,8 @@ from ..objects.action import Action
 class Skull(Enum):
     """An action that is taken immediately after starting a skeleton."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     BAPTIST_SKULL = Action(
             "Duplicate the skull of John the Baptist, if you can call that a skull",
             cost = Cost.ACTION.value + 500*Cost.BONE_FRAGMENT.value + 10*Cost.PEPPERCAPS.value,

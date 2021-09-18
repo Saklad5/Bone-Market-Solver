@@ -9,6 +9,8 @@ from ..objects.action import Action
 class Embellishment(Enum):
     """An action is taken after a declaration has been made for a skeleton."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     MORE_PLAUSIBLE = Action(
             "Make it seem just a bit more plausible",
             cost = Cost.ACTION.value + Cost.REVISIONIST_NARRATIVE.value,

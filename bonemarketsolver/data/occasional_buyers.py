@@ -8,6 +8,8 @@ from .buyers import Buyer
 class OccasionalBuyer(Enum):
     """Which of several unusual buyers are available."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     AN_ENTHUSIAST_IN_SKULLS = [Buyer.AN_ENTHUSIAST_IN_SKULLS]
 
     A_DREARY_MIDNIGHTER = [Buyer.A_DREARY_MIDNIGHTER]

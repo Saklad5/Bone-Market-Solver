@@ -9,6 +9,8 @@ from ..objects.action import Action
 class Appendage(Enum):
     """An action that is taken once all skulls are added to a skeleton."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     # Cost from this scales with limbs and is partially implemented separately
     ADD_JOINTS = Action(
             "Add four more joints to your skeleton",

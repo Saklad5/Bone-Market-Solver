@@ -12,3 +12,4 @@ DiplomatFascination = Enum(
         module = __name__
         )
 DiplomatFascination.__doc__ = "The current fascination of the Trifling Diplomat."
+DiplomatFascination.__slots__ = '_value_', '_name_', '__objclass__'

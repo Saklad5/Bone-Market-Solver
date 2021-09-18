@@ -8,6 +8,8 @@ from ortools.sat.python import cp_model
 class Cost(Enum):
     """The number of pennies needed to produce a quality."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     # This is your baseline EPA: the pennies you could generate using an action for a generic grind.
     ACTION = 400
 

@@ -9,6 +9,8 @@ from ..objects.action import Action
 class Adjustment(Enum):
     """An action that is taken after all parts have been added to a skeleton."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     CARVE_AWAY_AGE = Action(
             "Carve away some evidence of age",
             cost = Cost.ACTION.value,

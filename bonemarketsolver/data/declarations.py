@@ -9,6 +9,8 @@ from ..objects.action import Action
 class Declaration(Enum):
     """An action that is taken after all adjustments have been made to a skeleton."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     AMPHIBIAN = Action(
             "Declare your (Skeleton Type) a completed Amphibian",
             cost = Cost.ACTION.value

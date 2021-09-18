@@ -9,6 +9,8 @@ from ..objects.action import Action
 class Torso(Enum):
     """An action that initiates a skeleton."""
 
+    __slots__ = '_value_', '_name_', '__objclass__'
+
     HEADLESS_HUMANOID = Action(
             "Reassemble your Headless Humanoid",
             cost = Cost.ACTION.value + Cost.HEADLESS_SKELETON.value,
