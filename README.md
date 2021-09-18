@@ -88,3 +88,7 @@ With the exception of the check for actually selling to buyers, the solver assum
 Rather than modelling the entirety of Fallen London, the solver uses a sort of context-free grammar to express the cost of every option. This has some major shortcomings: side-effects are not modelled, for instance, so designs that take such things into account could outperform the solver.
 
 If something seems off, such as the solver favoring an option you consider overly expensive or wasteful, check the costs in the script: if you disagree with them (particularly the costs with a terminal value, which are often fairly arbitrary), feel free to change them yourself. If you do so, please consider submitting a pull request so others may benefit from your improvements. Just make sure that the rationale is fairly obvious to others reading the script.
+
+## Alternative
+
+The Bone Market, Fallen London, and any StoryNexus world may be modelled _exactly_ as a [constrained](https://en.wikipedia.org/wiki/Markov_decision_process#Continuous-time_Markov_decision_process) [partially observable Markov decision process](https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process). If you truly want a perfect solver without any trade-offs, caveats, or limitations, consider looking into that.
