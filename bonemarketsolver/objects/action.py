@@ -1,68 +1,72 @@
 __all__ = ['Action']
 __author__ = "Jeremy Saklad"
 
+from dataclasses import dataclass, field
+
+@dataclass(frozen=True)
 class Action:
     """An action that affects a skeleton's qualities."""
 
-    def __init__(self, name, cost, torso_style = None, value = 0, skulls_needed = 0, limbs_needed = 0, tails_needed = 0, skulls = 0, arms = 0, legs = 0, tails = 0, wings = 0, fins = 0, tentacles = 0, amalgamy = 0, antiquity = 0, menace = 0, implausibility = 0, counter_church = 0, exhaustion = 0):
-        self.name = name
+    __slots__ = '__dict__', 'name'
 
-        # Cost in pennies of using this action, including the value of the actions spent
-        self.cost = cost
+    name: str
 
-        # Skeleton: Torso Style
-        self.torso_style = torso_style
+    # Cost in pennies of using this action, including the value of the actions spent
+    cost: float = field(metadata={'unit': 'pennies'})
 
-        # Approximate Value of Your Skeleton in Pennies
-        self.value = value
+    # Skeleton: Torso Style
+    torso_style: int = None
 
-        # Skeleton: Skulls Needed
-        self.skulls_needed = skulls_needed
+    # Approximate Value of Your Skeleton in Pennies
+    value: int = field(default=0, metadata={'unit': 'pennies'})
 
-        # Skeleton: Limbs Needed
-        self.limbs_needed = limbs_needed
+    # Skeleton: Skulls Needed
+    skulls_needed: int = 0
 
-        # Skeleton: Tails Needed
-        self.tails_needed = tails_needed
+    # Skeleton: Limbs Needed
+    limbs_needed: int = 0
 
-        # Skeleton: Skulls
-        self.skulls = skulls
+    # Skeleton: Tails Needed
+    tails_needed: int = 0
 
-        # Skeleton: Arms
-        self.arms = arms
+    # Skeleton: Skulls
+    skulls: int = 0
 
-        # Skeleton: Legs
-        self.legs = legs
+    # Skeleton: Arms
+    arms: int = 0
 
-        # Skeleton: Tails
-        self.tails = tails
+    # Skeleton: Legs
+    legs: int = 0
 
-        # Skeleton: Wings
-        self.wings = wings
+    # Skeleton: Tails
+    tails: int = 0
 
-        # Skeleton: Fins
-        self.fins = fins
+    # Skeleton: Wings
+    wings: int = 0
 
-        # Skeleton: Tentacles
-        self.tentacles = tentacles
+    # Skeleton: Fins
+    fins: int = 0
 
-        # Skeleton: Amalgamy
-        self.amalgamy = amalgamy
+    # Skeleton: Tentacles
+    tentacles: int = 0
 
-        # Skeleton: Antiquity
-        self.antiquity = antiquity
+    # Skeleton: Amalgamy
+    amalgamy: int = 0
 
-        # Skeleton: Menace
-        self.menace = menace
+    # Skeleton: Antiquity
+    antiquity: int = 0
 
-        # Skeleton: Self-Evident Implausibility
-        self.implausibility = implausibility
+    # Skeleton: Menace
+    menace: int = 0
 
-        # Skeleton: Support for a Counter-church Theology
-        self.counter_church = counter_church
+    # Skeleton: Self-Evident Implausibility
+    implausibility: int = 0
 
-        # Bone Market Exhaustion
-        self.exhaustion = exhaustion
+    # Skeleton: Support for a Counter-church Theology
+    counter_church: int = 0
+
+    # Bone Market Exhaustion
+    exhaustion: int = 0
 
     def __str__(self):
         return str(self.name)
