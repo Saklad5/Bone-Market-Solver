@@ -15,6 +15,8 @@ from ..data.torsos import Torso
 class ListAction(argparse.Action):
     """Lists enumerations referenced by provided strings then exits"""
 
+    __slots__ = '_nargs', '_default', 'option_strings', 'dest', 'nargs', 'const', 'default', 'type', 'choices', 'required', 'help', 'metavar'
+
     list_options = [enum.__name__.lower() for enum in [
                 Torso,
                 Skull,

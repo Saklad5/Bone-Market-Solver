@@ -4,6 +4,8 @@ __author__ = "Jeremy Saklad"
 import argparse
 
 class EnumAction(argparse.Action):
+    __slots__ = '_enum', '_nargs', 'option_strings', 'dest', 'nargs', 'const', 'default', 'type', 'choices', 'required', 'help', 'metavar'
+
     def __init__(self, **kwargs):
         # Pop off the type value
         enum = kwargs.pop('type', None)

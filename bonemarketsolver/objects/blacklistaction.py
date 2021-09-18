@@ -18,6 +18,8 @@ def convert_to_enum(value):
     return enum[split[1]]
 
 class BlacklistAction(argparse.Action):
+    __slots__ = '_nargs', 'option_strings', 'dest', 'nargs', 'const', 'default', 'type', 'choices', 'required', 'help', 'metavar'
+
     def __init__(self, **kwargs):
         nargs = kwargs.get('nargs')
 
