@@ -39,9 +39,11 @@ class ListAction(argparse.Action):
     @staticmethod
     def printable_list(enum):
         def printable_item(member):
-            return f"\n\t{enum.__name__}.{member.name}:\n\t\t{member}"
+            return f"""
+	{enum.__name__}.{member.name}:
+		{member}"""
 
-        return "{}:{}".format(enum.__name__, str().join([printable_item(member) for member in enum]))
+        return f"{enum.__name__}:{str().join([printable_item(member) for member in enum])}"
 
     def __call__(self, parser, namespace, values, option_string=None):
         # Check whether this is a single value or a list of them
