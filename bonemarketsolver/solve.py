@@ -1392,6 +1392,8 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     class SkeletonPrinter(cp_model.CpSolverSolutionCallback):
         """A class that prints the steps that comprise a skeleton as well as relevant attributes."""
 
+        __slots__ = 'this', '__solution_count'
+
         def __init__(self):
             cp_model.CpSolverSolutionCallback.__init__(self)
             self.__solution_count = 0
