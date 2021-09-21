@@ -320,12 +320,8 @@ class Cost(Enum):
     # Helicon House
     RIBCAGE_WITH_EIGHT_SPINES = ACTION + 3*SEARING_ENIGMA + SKELETON_WITH_SEVEN_NECKS + THORNED_RIBCAGE + 3*TREMBLING_AMBER
 
-    # Warbler Skeleton
-    # Ealing Gardens Butcher
-    WARBLER_SKELETON = ACTION + 130*BONE_FRAGMENT + 2*WARM_AMBER
-
     # Withered Tentacle
-    # Helicon House, 3 at a time
-    WITHERED_TENTACLE = (ACTION + 5*WARM_AMBER)/3
+    # Adulterine Castle, Miscounting Second Circle by 4, 4 at a time
+    WITHERED_TENTACLE = ACTION/4
 
 
