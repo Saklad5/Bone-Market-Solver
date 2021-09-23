@@ -77,7 +77,7 @@ This tool follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Th
 
 As Fallen London is a living game, the solver may not reflect its present state. With that in mind, version tags include the last known date of relevant changes to Fallen London that are reflected by the tool. Any changes to Fallen London since that date, even if they were made before the tag or commit, should be presumed unimplemented.
 
-While all commits in the main branch are functional, unversioned commits should not be considered *accurate*. They may, for instance, partially incorporate an update to Fallen London, which results in a solver that does reflect the game at any single point in time. Pre-release versions should be considered on case-by-case basis: a pre-release may accurately reflect only a subset of the Bone Market, constraining the solver to avoid options that are no longer correctly evaluated.
+While all commits in the main branch are functional, unversioned commits should not be considered *accurate*. They may, for instance, partially incorporate an update to Fallen London, which results in a solver that does not reflect the game at any single point in time. Pre-release versions should be considered on case-by-case basis: a pre-release may accurately reflect only a subset of the Bone Market, constraining the solver to avoid options that are no longer correctly evaluated.
 
 ## Caveats
 
@@ -91,4 +91,4 @@ If something seems off, such as the solver favoring an option you consider overl
 
 ## Alternative
 
-The Bone Market, Fallen London, and any StoryNexus world may be modelled _exactly_ as a [constrained](https://en.wikipedia.org/wiki/Markov_decision_process#Continuous-time_Markov_decision_process) [partially observable Markov decision process](https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process). If you truly want a perfect solver without any trade-offs, caveats, or limitations, consider looking into that.
+The Bone Market, Fallen London, and any StoryNexus world may be modelled _exactly_ as a [constrained](https://en.wikipedia.org/wiki/Markov_decision_process#Constrained_Markov_decision_processes) [partially observable Markov decision process](https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process). If you truly want a perfect solver without any trade-offs, caveats, or limitations, consider looking into that.
