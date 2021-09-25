@@ -334,103 +334,103 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     # Humanoid
     model.Add(skeleton_in_progress == 110) \
             .OnlyEnforceIf(actions[Declaration.HUMANOID]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('humanoid antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 0])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 0))
     # Ancient Humanoid (UNCERTAIN)
     model.Add(skeleton_in_progress == 111) \
             .OnlyEnforceIf(actions[Declaration.HUMANOID]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('ancient humanoid antiquity', antiquity, cp_model.Domain.FromFlatIntervals([1, 5])))
+            .OnlyEnforceIf(model.BoolExpression(cp_model.BoundedLinearExpression(antiquity, (1, 5))))
     # Neanderthal
     model.Add(skeleton_in_progress == 112) \
             .OnlyEnforceIf(actions[Declaration.HUMANOID]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('neanderthal antiquity', antiquity, cp_model.Domain.FromFlatIntervals([6, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 6))
     # Ape (UNCERTAIN)
     model.Add(skeleton_in_progress == 120) \
             .OnlyEnforceIf(actions[Declaration.APE]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('ape antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 1))
     # Primordial Ape (UNCERTAIN)
     model.Add(skeleton_in_progress == 121) \
             .OnlyEnforceIf(actions[Declaration.APE]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('primordial ape antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 2))
     # Monkey
     model.Add(skeleton_in_progress == 125) \
             .OnlyEnforceIf(actions[Declaration.MONKEY]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('monkey antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 0])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 0))
     # Catarrhine Monkey (UNCERTAIN)
     model.Add(skeleton_in_progress == 126) \
             .OnlyEnforceIf(actions[Declaration.MONKEY]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('catarrhine monkey 126 antiquity', antiquity, cp_model.Domain.FromFlatIntervals([1, 8])))
+            .OnlyEnforceIf(model.BoolExpression(cp_model.BoundedLinearExpression(antiquity, (1, 8))))
     # Catarrhine Monkey
     model.Add(skeleton_in_progress == 128) \
             .OnlyEnforceIf(actions[Declaration.MONKEY]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('catarrhine monkey 128 antiquity', antiquity, cp_model.Domain.FromFlatIntervals([9, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 9))
     # Crocodile
     model.Add(skeleton_in_progress == 160) \
             .OnlyEnforceIf(actions[Declaration.REPTILE]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('crocodile antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 1))
     # Dinosaur
     model.Add(skeleton_in_progress == 161) \
             .OnlyEnforceIf(actions[Declaration.REPTILE]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('dinosaur antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 4])))
+            .OnlyEnforceIf(model.BoolExpression(cp_model.BoundedLinearExpression(antiquity, (2, 4))))
     # Mesosaur (UNCERTAIN)
     model.Add(skeleton_in_progress == 162) \
             .OnlyEnforceIf(actions[Declaration.REPTILE]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('mesosaur antiquity', antiquity, cp_model.Domain.FromFlatIntervals([5, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 5))
     # Toad
     model.Add(skeleton_in_progress == 170) \
             .OnlyEnforceIf(actions[Declaration.AMPHIBIAN]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('toad antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 1))
     # Primordial Amphibian
     model.Add(skeleton_in_progress == 171) \
             .OnlyEnforceIf(actions[Declaration.AMPHIBIAN]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('primordial amphibian antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 4])))
+            .OnlyEnforceIf(model.BoolExpression(cp_model.BoundedLinearExpression(antiquity, (2, 4))))
     # Temnospondyl
     model.Add(skeleton_in_progress == 172) \
             .OnlyEnforceIf(actions[Declaration.AMPHIBIAN]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('temnospondyl antiquity', antiquity, cp_model.Domain.FromFlatIntervals([5, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 5))
     # Owl
     model.Add(skeleton_in_progress == 180) \
             .OnlyEnforceIf(actions[Declaration.BIRD]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('owl antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 1))
     # Archaeopteryx
     model.Add(skeleton_in_progress == 181) \
             .OnlyEnforceIf(actions[Declaration.BIRD]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('archaeopteryx antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 4])))
+            .OnlyEnforceIf(model.BoolExpression(cp_model.BoundedLinearExpression(antiquity, (2, 4))))
     # Ornithomimosaur (UNCERTAIN)
     model.Add(skeleton_in_progress == 182) \
             .OnlyEnforceIf(actions[Declaration.BIRD]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('ornithomimosaur antiquity', antiquity, cp_model.Domain.FromFlatIntervals([5, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 5))
     # Lamprey
     model.Add(skeleton_in_progress == 190) \
             .OnlyEnforceIf(actions[Declaration.FISH]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('lamprey antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 0])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 0))
     # Coelacanth (UNCERTAIN)
     model.Add(skeleton_in_progress == 191) \
             .OnlyEnforceIf(actions[Declaration.FISH]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('coelacanth antiquity', antiquity, cp_model.Domain.FromFlatIntervals([1, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 1))
     # Spider (UNCERTAIN)
     model.Add(skeleton_in_progress == 200) \
             .OnlyEnforceIf(actions[Declaration.SPIDER]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('spider antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 1))
     # Primordial Orb-Weaver (UNCERTAIN)
     model.Add(skeleton_in_progress == 201) \
             .OnlyEnforceIf(actions[Declaration.SPIDER]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('primordial orb-weaver antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 7])))
+            .OnlyEnforceIf(model.BoolExpression(cp_model.BoundedLinearExpression(antiquity, (2, 7))))
     # Trigonotarbid
     model.Add(skeleton_in_progress == 203) \
             .OnlyEnforceIf(actions[Declaration.SPIDER]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('trigonotarbid antiquity', antiquity, cp_model.Domain.FromFlatIntervals([8, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 8))
     # Beetle (UNCERTAIN)
     model.Add(skeleton_in_progress == 210) \
             .OnlyEnforceIf(actions[Declaration.INSECT]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('beetle antiquity', antiquity, cp_model.Domain.FromFlatIntervals([cp_model.INT_MIN, 1])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity <= 1))
     # Primordial Beetle (UNCERTAIN)
     model.Add(skeleton_in_progress == 211) \
             .OnlyEnforceIf(actions[Declaration.INSECT]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('primordial beetle antiquity', antiquity, cp_model.Domain.FromFlatIntervals([2, 6])))
+            .OnlyEnforceIf(model.BoolExpression(cp_model.BoundedLinearExpression(antiquity, (2, 6))))
     # Rhyniognatha
     model.Add(skeleton_in_progress == 212) \
             .OnlyEnforceIf(actions[Declaration.INSECT]) \
-            .OnlyEnforceIf(model.NewIntermediateBoolVar('rhyniognatha antiquity', antiquity, cp_model.Domain.FromFlatIntervals([7, cp_model.INT_MAX])))
+            .OnlyEnforceIf(model.BoolExpression(antiquity >= 7))
     # Curator
     model.Add(skeleton_in_progress == 300) \
             .OnlyEnforceIf(actions[Declaration.CURATOR])
@@ -702,7 +702,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     total_value_remainder = model.NewIntVar(f'{Buyer.AN_INVESTMENT_MINDED_AMBASSADOR.name}: total value remainder', lb = 0, ub = 49)
     model.AddModuloEquality(total_value_remainder, total_value, 50)
-    extra_value = model.NewIntermediateBoolVar(f'{Buyer.AN_INVESTMENT_MINDED_AMBASSADOR.name}: extra value', total_value_remainder, cp_model.Domain.FromFlatIntervals([0, cp_model.INT32_MAX]))
+    extra_value = model.BoolExpression(total_value_remainder >= 0)
 
     model.Add(primary_revenue == total_value + 50*extra_value + 250).OnlyEnforceIf(actions[Buyer.AN_INVESTMENT_MINDED_AMBASSADOR])
     model.Add(secondary_revenue == 250*tailfeathers).OnlyEnforceIf(actions[Buyer.AN_INVESTMENT_MINDED_AMBASSADOR])
@@ -1336,7 +1336,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     profit_margin = model.NewIntVar('profit margin', lb = cp_model.INT32_MIN*PROFIT_MARGIN_MULTIPLIER, ub = cp_model.INT32_MAX*PROFIT_MARGIN_MULTIPLIER)
 
-    positive_net_profit = model.NewIntermediateBoolVar('positive net profit', net_profit, cp_model.Domain.FromFlatIntervals([0, cp_model.INT32_MAX]))
+    positive_net_profit = model.BoolExpression(net_profit >= 0)
     model.Add(profit_margin == absolute_profit_margin).OnlyEnforceIf(positive_net_profit)
     model.Add(profit_margin == absolute_profit_margin*-1).OnlyEnforceIf(positive_net_profit.Not())
 

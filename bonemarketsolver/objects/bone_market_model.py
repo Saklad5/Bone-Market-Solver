@@ -1,6 +1,6 @@
 __author__ = "Jeremy Saklad"
 
-from functools import reduce
+from functools import cache, reduce
 
 from ortools.sat.python import cp_model
 
@@ -44,10 +44,13 @@ Each parameter is interpreted as a BoundedLinearExpression, and a layer of indir
         # Avoid mutating parameter directly
         return Multiply(target, variables.copy() if isinstance(variables, list) else list(variables))
 
-    def NewIntermediateBoolVar(self, name, linear_exp, domain):
+    @cache
+    def BoolExpression(self, bounded_linear_exp):
         """Add a fully-reified implication using an intermediate Boolean variable."""
 
-        intermediate = self.NewBoolVar(name)
+        intermediate = self.NewBoolVar(str(bounded_linear_exp))
+        linear_exp = bounded_linear_exp.Expression()
+        domain = cp_model.Domain(*bounded_linear_exp.Bounds())
         self.AddLinearExpressionInDomain(linear_exp, domain).OnlyEnforceIf(intermediate)
         self.AddLinearExpressionInDomain(linear_exp, domain.Complement()).OnlyEnforceIf(intermediate.Not())
         return intermediate
