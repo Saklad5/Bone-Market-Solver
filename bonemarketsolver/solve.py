@@ -436,82 +436,78 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
             .OnlyEnforceIf(actions[Declaration.CURATOR])
 
 
-    # Humanoid requirements
-    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.HUMANOID])
-    model.Add(legs == 2).OnlyEnforceIf(actions[Declaration.HUMANOID])
-    model.Add(arms == 2).OnlyEnforceIf(actions[Declaration.HUMANOID])
-    model.AddLinearExpressionInDomain(torso_style, cp_model.Domain.FromFlatIntervals([10, 20])).OnlyEnforceIf(actions[Declaration.HUMANOID])
-    for prohibited_quality in [tails, fins, wings]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.HUMANOID])
+    # Declaration requirements
 
-    # Ape requirements
-    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.APE])
-    model.Add(arms == 4).OnlyEnforceIf(actions[Declaration.APE])
-    model.AddLinearExpressionInDomain(torso_style, cp_model.Domain.FromFlatIntervals([10, 20])).OnlyEnforceIf(actions[Declaration.APE])
-    for prohibited_quality in [legs, tails, fins, wings]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.APE])
+    model.AddIf(actions[Declaration.HUMANOID],
+        (part == 0 for part in (tails, fins, wings)),
+        skulls == 1,
+        (part == 2 for part in (legs, arms)),
+        cp_model.BoundedLinearExpression(torso_style, (10, 20)),
+    )
 
-    # Monkey requirements
-    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.MONKEY])
-    model.Add(arms == 4).OnlyEnforceIf(actions[Declaration.MONKEY])
-    model.Add(tails == 1).OnlyEnforceIf(actions[Declaration.MONKEY])
-    model.AddLinearExpressionInDomain(torso_style, cp_model.Domain.FromFlatIntervals([10, 20])).OnlyEnforceIf(actions[Declaration.MONKEY])
-    for prohibited_quality in [legs, fins, wings]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.MONKEY])
+    model.AddIf(actions[Declaration.APE],
+        (part == 0 for part in (legs, tails, fins, wings)),
+        skulls == 1,
+        arms == 4,
+        cp_model.BoundedLinearExpression(torso_style, (10, 20)),
+    )
 
-    # Bird requirements
-    model.Add(legs == 2).OnlyEnforceIf(actions[Declaration.BIRD])
-    model.Add(wings == 2).OnlyEnforceIf(actions[Declaration.BIRD])
-    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.BIRD])
-    for prohibited_quality in [arms, fins]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.BIRD])
-    model.Add(tails < 2).OnlyEnforceIf(actions[Declaration.BIRD])
+    model.AddIf(actions[Declaration.MONKEY],
+        (part == 0 for part in (legs, fins, wings)),
+        (part == 1 for part in (skulls, tails)),
+        arms == 4,
+        cp_model.BoundedLinearExpression(torso_style, (10, 20)),
+    )
 
-    # Curator requirements
-    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.CURATOR])
-    model.Add(arms == 2).OnlyEnforceIf(actions[Declaration.CURATOR])
-    model.Add(legs == 2).OnlyEnforceIf(actions[Declaration.CURATOR])
-    model.Add(wings == 2).OnlyEnforceIf(actions[Declaration.CURATOR])
-    for prohibited_quality in [fins, tails]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.CURATOR])
+    model.AddIf(actions[Declaration.BIRD],
+        (part == 0 for part in (arms, fins)),
+        tails < 2,
+        (part == 2 for part in (legs, wings)),
+        torso_style >= 20,
+    )
 
-    # Reptile requirements
-    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.REPTILE])
-    model.Add(tails == 1).OnlyEnforceIf(actions[Declaration.REPTILE])
-    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.REPTILE])
-    for prohibited_quality in [fins, wings, arms]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.REPTILE])
-    model.Add(legs < 5).OnlyEnforceIf(actions[Declaration.REPTILE])
+    model.AddIf(actions[Declaration.CURATOR],
+        (part == 0 for part in (fins, tails)),
+        skulls == 1,
+        (part == 2 for part in (arms, legs, wings)),
+    )
 
-    # Amphibian requirements
-    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
-    model.Add(legs == 4).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
-    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
-    for prohibited_quality in [tails, fins, wings, arms]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.AMPHIBIAN])
+    model.AddIf(actions[Declaration.REPTILE],
+        (part == 0 for part in (fins, wings, arms)),
+        (part == 1 for part in (tails, skulls)),
+        legs < 5,
+        torso_style >= 20,
+    )
 
-    # Fish requirements
-    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.FISH])
-    model.Add(fins >= 2).OnlyEnforceIf(actions[Declaration.FISH])
-    model.Add(tails <= 1).OnlyEnforceIf(actions[Declaration.FISH])
-    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.FISH])
-    for prohibited_quality in [arms, legs, wings]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.FISH])
+    model.AddIf(actions[Declaration.AMPHIBIAN],
+        (part == 0 for part in (tails, fins, wings, arms)),
+        skulls == 1,
+        legs == 4,
+        torso_style >= 20,
+    )
 
-    # Insect requirements
-    model.Add(skulls == 1).OnlyEnforceIf(actions[Declaration.INSECT])
-    model.Add(legs == 6).OnlyEnforceIf(actions[Declaration.INSECT])
-    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.INSECT])
-    for prohibited_quality in [arms, fins, tails]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.INSECT])
-    model.Add(wings < 5).OnlyEnforceIf(actions[Declaration.INSECT])
+    model.AddIf(actions[Declaration.FISH],
+        (part == 0 for part in (arms, legs, wings)),
+        tails <= 1,
+        skulls == 1,
+        fins >= 2,
+        torso_style >= 20,
+    )
 
-    # Spider requirements
-    model.Add(legs == 8).OnlyEnforceIf(actions[Declaration.SPIDER])
-    model.Add(tails <= 1).OnlyEnforceIf(actions[Declaration.SPIDER])
-    model.Add(torso_style >= 20).OnlyEnforceIf(actions[Declaration.SPIDER])
-    for prohibited_quality in [skulls, arms, wings, fins]:
-        model.Add(prohibited_quality == 0).OnlyEnforceIf(actions[Declaration.SPIDER])
+    model.AddIf(actions[Declaration.INSECT],
+        (part == 0 for part in (arms, fins, tails)),
+        skulls == 1,
+        wings < 5,
+        legs == 6,
+        torso_style >= 20,
+    )
+
+    model.AddIf(actions[Declaration.SPIDER],
+        (part == 0 for part in (skulls, arms, wings, fins)),
+        tails <= 1,
+        legs == 8,
+        torso_style >= 20,
+    )
 
     # Skeleton must have no unfilled skulls
     model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.skulls_needed for action in actions.keys()]) == 0)
