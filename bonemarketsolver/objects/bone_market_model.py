@@ -1,6 +1,6 @@
 __author__ = "Jeremy Saklad"
 
-from functools import cache, reduce
+from functools import cache, partialmethod, reduce, singledispatch
 
 from ortools.sat.python import cp_model
 
@@ -21,6 +21,32 @@ Set `upto` to a value that is unlikely to come into play.
 
 Each parameter is interpreted as a BoundedLinearExpression, and a layer of indirection is applied such that each Constraint in the returned tuple can accept an enforcement literal."""
         return self.AddAllowedAssignments((target, var), ((int(base**exp), base) for base in range(upto + 1)))
+
+    def AddIf(self, variable, *constraints):
+        """Add constraints to the model, only enforced if the specified variable is true.
+
+Each item in `constraints` must be either a BoundedLinearExpression, a Constraint compatible with OnlyEnforceIf, a 0-arity partial method of CpModel returning a valid item, or an iterable containing valid items."""
+
+        @singledispatch
+        def Add(constraint):
+            if constraint_iterator := iter(constraint):
+                return frozenset((Add(element) for element in constraint_iterator))
+            else:
+                raise TypeError(f"Invalid constraint: {repr(constraint)}")
+
+        @Add.register
+        def _(constraint: cp_model.Constraint):
+            return constraint.OnlyEnforceIf(variable)
+
+        @Add.register
+        def _(constraint: cp_model.BoundedLinearExpression):
+            return Add(self.Add(constraint))
+
+        @Add.register
+        def _(constraint: partialmethod):
+            return Add(constraint.__get__(self)())
+
+        return frozenset((Add(constraint) for constraint in constraints))
 
     def AddMultiplicationEquality(self, target, variables):
         """Adds `target == variables[0] * .. * variables[n]`.
