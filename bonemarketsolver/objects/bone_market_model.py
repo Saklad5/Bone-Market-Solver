@@ -22,6 +22,17 @@ Set `upto` to a value that is unlikely to come into play.
 Each parameter is interpreted as a BoundedLinearExpression, and a layer of indirection is applied such that each Constraint in the returned tuple can accept an enforcement literal."""
         return self.AddAllowedAssignments((target, var), ((int(base**exp), base) for base in range(upto + 1)))
 
+    def AddDivisionEquality(self, target, num, denom):
+        """Adds `target == num // denom` (integer division rounded towards 0).
+
+Each parameter is interpreted as a BoundedLinearExpression, and a layer of indirection is applied such that each Constraint in the returned tuple can accept an enforcement literal."""
+        intermediate_target, target_constraint = self.NewIntermediateIntVar(target, f'{repr(target)} == {repr(num)} // {repr(denom)}: target')
+        intermediate_num, num_constraint = self.NewIntermediateIntVar(num, f'{repr(target)} == {repr(num)} // {repr(denom)}: num', lb = 0)
+        intermediate_denom, denom_constraint = self.NewIntermediateIntVar(denom, f'{repr(target)} == {repr(num)} // {repr(denom)}: denom', lb = 0)
+
+        super().AddDivisionEquality(intermediate_target, intermediate_num, intermediate_denom)
+        return (target_constraint, num_constraint, denom_constraint)
+
     def AddIf(self, variable, *constraints):
         """Add constraints to the model, only enforced if the specified variable is true.
 
