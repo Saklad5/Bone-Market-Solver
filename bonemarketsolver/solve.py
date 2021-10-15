@@ -174,16 +174,24 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     model.Add(tentacles == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tentacles for action in actions.keys()]))
 
     # Amalgamy calculation
-    amalgamy = model.NewIntVar('amalgamy')
-    model.Add(amalgamy == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.amalgamy for action in actions.keys()]))
+    amalgamy = model.NewIntVar('amalgamy', lb = 0)
+    unbound_amalgamy = model.NewIntVar('unbound amalgamy')
+    model.Add(unbound_amalgamy == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.amalgamy for action in actions.keys()]))
+    model.AddMaxEquality(amalgamy, (unbound_amalgamy, 0))
+    del unbound_amalgamy
 
     # Antiquity calculation
-    antiquity = model.NewIntVar('antiquity')
-    model.Add(antiquity == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.antiquity for action in actions.keys()]))
+    antiquity = model.NewIntVar('antiquity', lb = 0)
+    unbound_antiquity = model.NewIntVar('unbound antiquity')
+    model.Add(unbound_antiquity == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.antiquity for action in actions.keys()]))
+    model.AddMaxEquality(antiquity, (unbound_antiquity, 0))
+    del unbound_antiquity
 
 
     # Menace calculation
-    menace = model.NewIntVar('menace')
+    menace = model.NewIntVar('menace', lb = 0)
+
+    unbound_menace = model.NewIntVar('unbound menace')
 
     constant_base_menace = model.NewIntVar('constant base menace')
     model.Add(constant_base_menace == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.menace for action in actions.keys()]))
@@ -195,9 +203,9 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     model.AddMinEquality(vake_skull_bonus_menace, [vake_skulls_times_two, 3])
     del vake_skulls_times_two
 
-    model.Add(menace == constant_base_menace + vake_skull_bonus_menace)
-
-    del constant_base_menace, vake_skull_bonus_menace
+    model.Add(unbound_menace == constant_base_menace + vake_skull_bonus_menace)
+    model.AddMaxEquality(menace, (unbound_menace, 0))
+    del unbound_menace, constant_base_menace, vake_skull_bonus_menace
 
 
     # Implausibility calculation
@@ -241,7 +249,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     holy_relic_counter_church = model.NewIntVar('holy relic counter-church', lb = 0)
     model.AddMultiplicationEquality(holy_relic_counter_church, (holy_relic, torso_style_divided_by_ten))
 
-    counter_church = model.NewIntVar('counter-church')
+    counter_church = model.NewIntVar('counter-church', lb = 0)
     model.Add(counter_church == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.counter_church for action in actions.keys()]) + holy_relic_counter_church)
 
     del holy_relic, torso_style_divided_by_ten, holy_relic_counter_church
@@ -334,7 +342,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     # Humanoid
     model.Add(skeleton_in_progress == 110) \
             .OnlyEnforceIf(actions[Declaration.HUMANOID]) \
-            .OnlyEnforceIf(model.BoolExpression(antiquity <= 0))
+            .OnlyEnforceIf(model.BoolExpression(antiquity == 0))
     # Ancient Humanoid (UNCERTAIN)
     model.Add(skeleton_in_progress == 111) \
             .OnlyEnforceIf(actions[Declaration.HUMANOID]) \
@@ -354,7 +362,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     # Monkey
     model.Add(skeleton_in_progress == 125) \
             .OnlyEnforceIf(actions[Declaration.MONKEY]) \
-            .OnlyEnforceIf(model.BoolExpression(antiquity <= 0))
+            .OnlyEnforceIf(model.BoolExpression(antiquity == 0))
     # Catarrhine Monkey (UNCERTAIN)
     model.Add(skeleton_in_progress == 126) \
             .OnlyEnforceIf(actions[Declaration.MONKEY]) \
@@ -402,7 +410,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     # Lamprey
     model.Add(skeleton_in_progress == 190) \
             .OnlyEnforceIf(actions[Declaration.FISH]) \
-            .OnlyEnforceIf(model.BoolExpression(antiquity <= 0))
+            .OnlyEnforceIf(model.BoolExpression(antiquity == 0))
     # Coelacanth (UNCERTAIN)
     model.Add(skeleton_in_progress == 191) \
             .OnlyEnforceIf(actions[Declaration.FISH]) \
@@ -552,7 +560,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # A Familiar Bohemian Sculptress
     model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
-    model.Add(antiquity <= 0).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
+    model.Add(antiquity == 0).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
 
     total_value = model.NewIntVar(f'{Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS.name}: total value', lb = 0)
     model.Add(total_value == value + zoological_mania_bonus)
@@ -572,7 +580,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # A Pedagogically Inclined Grandmother
     model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
-    model.Add(menace <= 0).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
+    model.Add(menace == 0).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
 
     total_value = model.NewIntVar(f'{Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER.name}: total value', lb = 0)
     model.Add(total_value == value + zoological_mania_bonus)
@@ -592,7 +600,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # A Theologian of the Old School
     model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
-    model.Add(amalgamy <= 0).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
+    model.Add(amalgamy == 0).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
 
     total_value = model.NewIntVar(f'{Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL.name}: total value', lb = 0)
     model.Add(total_value == value + zoological_mania_bonus)
@@ -922,8 +930,8 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # A Dreary Midnighter
     model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 299])).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
-    model.Add(amalgamy <= 0).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
-    model.Add(counter_church <= 0).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
+    model.Add(amalgamy == 0).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
+    model.Add(counter_church == 0).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
 
     total_value = model.NewIntVar(f'{Buyer.A_DREARY_MIDNIGHTER.name}: total value', lb = 0)
     model.Add(total_value == value + zoological_mania_bonus)
@@ -1058,8 +1066,8 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
 
     # An Enterprising Boot Salesman
-    model.Add(menace <= 0).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
-    model.Add(amalgamy <= 0).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+    model.Add(menace == 0).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
+    model.Add(amalgamy == 0).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
     model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
     model.Add(legs >= 4).OnlyEnforceIf(actions[Buyer.AN_ENTERPRISING_BOOT_SALESMAN])
 
