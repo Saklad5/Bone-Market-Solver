@@ -3,6 +3,7 @@
 __all__ = ['Adjustment', 'Appendage', 'Buyer', 'Declaration', 'DiplomatFascination', 'Embellishment', 'Fluctuation', 'OccasionalBuyer', 'Skull', 'Solve', 'Torso']
 __author__ = "Jeremy Saklad"
 
+from functools import partialmethod
 from os import cpu_count
 
 from ortools.sat.python import cp_model
@@ -528,154 +529,75 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails_needed for action in actions.keys()]) > 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS])
 
 
-    # A Palaeontologist with Hoarding Propensities
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES])
+    model.AddIf(actions[Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES],
+        skeleton_in_progress >= 100,
+        primary_revenue == value + zoological_mania_bonus + 5,
+        secondary_revenue == 500,
+        difficulty_level == 40*implausibility,
+        added_exhaustion == 0,
+    )
 
-    model.Add(primary_revenue == value + zoological_mania_bonus + 5).OnlyEnforceIf(actions[Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES])
-    model.Add(secondary_revenue == 500).OnlyEnforceIf(actions[Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES])
+    model.AddIf(actions[Buyer.A_NAIVE_COLLECTOR],
+        skeleton_in_progress >= 100,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue, value + zoological_mania_bonus, 250),
+        secondary_revenue == 0,
+        difficulty_level == 25*implausibility,
+        added_exhaustion == 0,
+    )
 
-    model.Add(difficulty_level == 40*implausibility).OnlyEnforceIf(actions[Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES])
+    model.AddIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS],
+        skeleton_in_progress >= 100,
+        antiquity == 0,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 1000, value + zoological_mania_bonus, 250),
+        secondary_revenue == 250*counter_church,
+        difficulty_level == 50*implausibility,
+        added_exhaustion == 0,
+    )
 
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES])
+    model.AddIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER],
+        skeleton_in_progress >= 100,
+        menace == 0,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 1000, value + zoological_mania_bonus, 50),
+        secondary_revenue == 0,
+        difficulty_level == 50*implausibility,
+        added_exhaustion == 0,
+    )
 
+    model.AddIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL],
+        skeleton_in_progress >= 100,
+        amalgamy == 0,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 1000, value + zoological_mania_bonus, 250),
+        secondary_revenue == 0,
+        difficulty_level == 50*implausibility,
+        added_exhaustion == 0,
+    )
 
-    # A Naive Collector
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_NAIVE_COLLECTOR])
+    model.AddIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD],
+        skeleton_in_progress >= 100,
+        antiquity > 0,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue, value + zoological_mania_bonus, 50),
+        secondary_revenue == 250*(antiquity + (1 if bone_market_fluctuations == Fluctuation.ANTIQUITY else 0)),
+        difficulty_level == 45*implausibility,
+        added_exhaustion == 0,
+    )
 
-    total_value = model.NewIntVar(f'{Buyer.A_NAIVE_COLLECTOR.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
+    model.AddIf(actions[Buyer.MRS_PLENTY],
+        skeleton_in_progress >= 100,
+        menace > 0,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue, value + zoological_mania_bonus, 50),
+        secondary_revenue == 250*menace,
+        difficulty_level == 45*implausibility,
+        added_exhaustion == 0,
+    )
 
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_NAIVE_COLLECTOR.name}: total value remainder', lb = 0, ub = 249)
-    model.AddModuloEquality(total_value_remainder, total_value, 250)
-
-    model.Add(primary_revenue == total_value - total_value_remainder).OnlyEnforceIf(actions[Buyer.A_NAIVE_COLLECTOR])
-    model.Add(secondary_revenue == 0).OnlyEnforceIf(actions[Buyer.A_NAIVE_COLLECTOR])
-
-    model.Add(difficulty_level == 25*implausibility).OnlyEnforceIf(actions[Buyer.A_NAIVE_COLLECTOR])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.A_NAIVE_COLLECTOR])
-
-    del total_value, total_value_remainder
-
-
-    # A Familiar Bohemian Sculptress
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
-    model.Add(antiquity == 0).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
-
-    total_value = model.NewIntVar(f'{Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS.name}: total value remainder', lb = 0, ub = 249)
-    model.AddModuloEquality(total_value_remainder, total_value, 250)
-
-    model.Add(primary_revenue == total_value - total_value_remainder + 1000).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
-    model.Add(secondary_revenue == 250*counter_church).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
-
-    model.Add(difficulty_level == 50*implausibility).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.A_FAMILIAR_BOHEMIAN_SCULPTRESS])
-
-    del total_value, total_value_remainder
-
-
-    # A Pedagogically Inclined Grandmother
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
-    model.Add(menace == 0).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
-
-    total_value = model.NewIntVar(f'{Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER.name}: total value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(total_value_remainder, total_value, 50)
-
-    model.Add(primary_revenue == total_value - total_value_remainder + 1000).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
-    model.Add(secondary_revenue == 0).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
-
-    model.Add(difficulty_level == 50*implausibility).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER])
-
-    del total_value, total_value_remainder
-
-
-    # A Theologian of the Old School
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
-    model.Add(amalgamy == 0).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
-
-    total_value = model.NewIntVar(f'{Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL.name}: total value remainder', lb = 0, ub = 249)
-    model.AddModuloEquality(total_value_remainder, total_value, 250)
-
-    model.Add(primary_revenue == total_value - total_value_remainder + 1000).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
-    model.Add(secondary_revenue == 0).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
-
-    model.Add(difficulty_level == 50*implausibility).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.A_THEOLOGIAN_OF_THE_OLD_SCHOOL])
-
-    del total_value, total_value_remainder
-
-
-    # An Enthusiast of the Ancient World
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
-    model.Add(antiquity > 0).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
-
-    total_value = model.NewIntVar(f'{Buyer.A_PEDAGOGICALLY_INCLINED_GRANDMOTHER.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD.name}: total value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(total_value_remainder, total_value, 50)
-
-    model.Add(primary_revenue == total_value - total_value_remainder).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
-    model.Add(secondary_revenue == 250*antiquity + (250 if bone_market_fluctuations == Fluctuation.ANTIQUITY else 0)).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
-
-    model.Add(difficulty_level == 45*implausibility).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.AN_ENTHUSIAST_OF_THE_ANCIENT_WORLD])
-
-    del total_value, total_value_remainder
-
-
-    # Mrs Plenty
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.MRS_PLENTY])
-    model.Add(menace > 0).OnlyEnforceIf(actions[Buyer.MRS_PLENTY])
-
-    total_value = model.NewIntVar(f'{Buyer.MRS_PLENTY.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.MRS_PLENTY.name}: total value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(total_value_remainder, total_value, 50)
-
-    model.Add(primary_revenue == total_value - total_value_remainder).OnlyEnforceIf(actions[Buyer.MRS_PLENTY])
-    model.Add(secondary_revenue == 250*menace).OnlyEnforceIf(actions[Buyer.MRS_PLENTY])
-
-    model.Add(difficulty_level == 45*implausibility).OnlyEnforceIf(actions[Buyer.MRS_PLENTY])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.MRS_PLENTY])
-
-    del total_value, total_value_remainder
-
-
-    # A Tentacled Servant
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
-    model.Add(amalgamy > 0).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
-
-    total_value = model.NewIntVar(f'{Buyer.A_TENTACLED_SERVANT.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_TENTACLED_SERVANT.name}: total value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(total_value_remainder, total_value, 50)
-
-    model.Add(primary_revenue == total_value - total_value_remainder + 250).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
-    model.Add(secondary_revenue == 250*amalgamy + (250 if bone_market_fluctuations == Fluctuation.AMALGAMY else 0)).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
-
-    model.Add(difficulty_level == 45*implausibility).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.A_TENTACLED_SERVANT])
-
-    del total_value, total_value_remainder
+    model.AddIf(actions[Buyer.A_TENTACLED_SERVANT],
+        skeleton_in_progress >= 100,
+        amalgamy > 0,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 250, value + zoological_mania_bonus, 50),
+        secondary_revenue == 250*(amalgamy + (1 if bone_market_fluctuations == Fluctuation.AMALGAMY else 0)),
+        difficulty_level == 45*implausibility,
+        added_exhaustion == 0,
+    )
 
 
     # An Investment-Minded Ambassador
@@ -890,20 +812,13 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     del amalgamy_times_menace, amalgamy_fluctuation_bonus, menace_fluctuation_bonus, total_value, total_value_remainder, derived_exhaustion
 
 
-    # A Constable
-    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 119])).OnlyEnforceIf(actions[Buyer.A_CONSTABLE])
-
-    value_remainder = model.NewIntVar(f'{Buyer.A_CONSTABLE.name}: value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(value_remainder, value, 50)
-
-    model.Add(primary_revenue == value - value_remainder + 1000).OnlyEnforceIf(actions[Buyer.A_CONSTABLE])
-    model.Add(secondary_revenue == 0).OnlyEnforceIf(actions[Buyer.A_CONSTABLE])
-
-    model.Add(difficulty_level == 50*implausibility).OnlyEnforceIf(actions[Buyer.A_CONSTABLE])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.A_CONSTABLE])
-
-    del value_remainder
+    model.AddIf(actions[Buyer.A_CONSTABLE],
+        cp_model.BoundedLinearExpression(skeleton_in_progress, (110, 119)),
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 1000, value, 50),
+        secondary_revenue == 0,
+        difficulty_level == 50*implausibility,
+        added_exhaustion == 0,
+    )
 
 
     # An Enthusiast in Skulls
@@ -928,115 +843,31 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     del extra_skulls, vital_intelligence, derived_exhaustion
 
 
-    # A Dreary Midnighter
-    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([110, 299])).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
-    model.Add(amalgamy == 0).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
-    model.Add(counter_church == 0).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
+    model.AddIf(actions[Buyer.A_DREARY_MIDNIGHTER],
+        cp_model.BoundedLinearExpression(skeleton_in_progress, (110, 299)),
+        amalgamy == 0,
+        counter_church == 0,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 300, value + zoological_mania_bonus, 3),
+        secondary_revenue == 250,
+        difficulty_level == 100*implausibility,
+        added_exhaustion == 0,
+    )
 
-    total_value = model.NewIntVar(f'{Buyer.A_DREARY_MIDNIGHTER.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_DREARY_MIDNIGHTER.name}: total value remainder', lb = 0, ub = 2)
-    model.AddModuloEquality(total_value_remainder, total_value, 3)
-
-    model.Add(primary_revenue == total_value - total_value_remainder + 300).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
-    model.Add(secondary_revenue == 250).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
-
-    model.Add(difficulty_level == 100*implausibility).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.A_DREARY_MIDNIGHTER])
-
-    del total_value, total_value_remainder
-
-
-    # A Colourful Phantasist - Bazaarine
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
-    model.Add(implausibility >= 2).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
-    model.Add(amalgamy >= 4).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
-
-    amalgamy_times_implausibility = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name}: amalgamy times implausibility')
-    model.AddMultiplicationEquality(amalgamy_times_implausibility, (amalgamy, implausibility))
-
-    bazaarine_poetry = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name}: bazaarine poetry')
-    model.Add(bazaarine_poetry == amalgamy_times_implausibility + 1)
-
-    total_value = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name}: total value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(total_value_remainder, total_value, 50)
-
-    model.Add(primary_revenue == total_value - total_value_remainder + 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
-    model.Add(secondary_revenue == 250*bazaarine_poetry).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, bazaarine_poetry, 20)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_BAZAARINE])
-
-    del amalgamy_times_implausibility, bazaarine_poetry, total_value, total_value_remainder, derived_exhaustion
-
-
-    # A Colourful Phantasist - Nocturnal
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
-    model.Add(implausibility >= 2).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
-    model.Add(menace >= 4).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
-
-    menace_times_implausibility = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name}: menace times implausibility')
-    model.AddMultiplicationEquality(menace_times_implausibility, (menace, implausibility))
-
-    stygian_ivory = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name}: stygian ivory')
-    model.Add(stygian_ivory == menace_times_implausibility + 1)
-
-    total_value = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name}: total value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(total_value_remainder, total_value, 50)
-
-    model.Add(primary_revenue == total_value - total_value_remainder + 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
-    model.Add(secondary_revenue == 250*stygian_ivory).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, stygian_ivory, 20)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_NOCTURNAL])
-
-    del menace_times_implausibility, stygian_ivory, total_value, total_value_remainder, derived_exhaustion
-
-
-    # A Colourful Phantasist - Celestial
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
-    model.Add(implausibility >= 2).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
-    model.Add(antiquity >= 4).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
-
-    antiquity_times_implausibility = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name}: antiquity times implausibility')
-    model.AddMultiplicationEquality(antiquity_times_implausibility, (antiquity, implausibility))
-
-    knob_of_scintillack = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name}: knob of scintillack')
-    model.Add(knob_of_scintillack == antiquity_times_implausibility + 1)
-
-    total_value = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name}: total value', lb = 0)
-    model.Add(total_value == value + zoological_mania_bonus)
-
-    total_value_remainder = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name}: total value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(total_value_remainder, total_value, 50)
-
-    model.Add(primary_revenue == total_value - total_value_remainder + 100).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
-    model.Add(secondary_revenue == 250*knob_of_scintillack).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, knob_of_scintillack, 20)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.A_COLOURFUL_PHANTASIST_CELESTIAL])
-
-    del antiquity_times_implausibility, knob_of_scintillack, total_value, total_value_remainder, derived_exhaustion
+    {
+        model.AddIf(actions[getattr(Buyer, 'A_COLOURFUL_PHANTASIST_' + style)],
+            skeleton_in_progress >= 100,
+            implausibility >= 2,
+            attribute >= 4,
+            partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 100, value + zoological_mania_bonus, 50),
+            partialmethod(BoneMarketModel.AddMultiplicationEquality, secondary_revenue - 250, (250, attribute, implausibility)),
+            difficulty_level == 0,
+            partialmethod(BoneMarketModel.AddDivisionEquality, added_exhaustion, secondary_revenue, 5000),
+        ) for style, attribute in (
+                ('BAZAARINE', amalgamy),
+                ('NOCTURNAL', menace),
+                ('CELESTIAL', antiquity),
+            )
+    }
 
 
     # An Ingenuous Malacologist
@@ -1093,79 +924,37 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     del diamonds, total_value, total_value_remainder, derived_exhaustion
 
 
-    # The Dumbwaiter of Balmoral
-    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([180, 189])).OnlyEnforceIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL])
-    model.Add(value >= 250).OnlyEnforceIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL])
+    model.AddIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL],
+        cp_model.BoundedLinearExpression(skeleton_in_progress, (180, 189)),
+        value >= 250,
+        partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue, value, 250),
+        secondary_revenue == 0,
+        difficulty_level == 200,
+        added_exhaustion == 0,
+    )
 
-    value_remainder = model.NewIntVar(f'{Buyer.THE_DUMBWAITER_OF_BALMORAL.name}: value remainder', lb = 0, ub = 249)
-    model.AddModuloEquality(value_remainder, value, 250)
+    model.AddIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER],
+        skeleton_in_progress >= 100,
+        value + zoological_mania_bonus >= 30000,
+        primary_revenue == 31250,
+        secondary_revenue == 0,
+        difficulty_level == 100*implausibility,
+        added_exhaustion == 0,
+    )
 
-    model.Add(primary_revenue == value - value_remainder).OnlyEnforceIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL])
-    model.Add(secondary_revenue == 0).OnlyEnforceIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL])
-
-    model.Add(difficulty_level == 200).OnlyEnforceIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL])
-
-    del value_remainder
-
-
-    # The Carpenter's Granddaughter
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
-    model.Add(value + zoological_mania_bonus >= 30000).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
-
-    model.Add(primary_revenue == 31250).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
-    model.Add(secondary_revenue == 0).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
-
-    model.Add(difficulty_level == 100*implausibility).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
-
-    model.Add(added_exhaustion == 0).OnlyEnforceIf(actions[Buyer.THE_CARPENTERS_GRANDDAUGHTER])
-
-
-    # The Trifling Diplomat - Amalgamy
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
-    model.Add(amalgamy >= 5).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
-
-    amalgamy_squared = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY.name}: amalgamy squared', lb = 0)
-    model.AddMultiplicationEquality(amalgamy_squared, (amalgamy, amalgamy))
-
-    value_remainder = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY.name}: value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(value_remainder, value, 50)
-
-    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
-    model.Add(secondary_revenue == 50*amalgamy_squared).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, amalgamy_squared, 100)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_AMALGAMY])
-
-    del amalgamy_squared, value_remainder, derived_exhaustion
-
-
-    # The Trifling Diplomat - Antiquity
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY])
-    model.Add(antiquity >= 5).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY])
-
-    antiquity_squared = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY.name}: antiquity squared', lb = 0)
-    model.AddMultiplicationEquality(antiquity_squared, (antiquity, antiquity))
-
-    value_remainder = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY.name}: value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(value_remainder, value, 50)
-
-    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY])
-    model.Add(secondary_revenue == 50*antiquity_squared).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, antiquity_squared, 100)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_ANTIQUITY])
-
-    del antiquity_squared, value_remainder, derived_exhaustion
+    {
+        model.AddIf(actions[getattr(Buyer, 'THE_TRIFLING_DIPLOMAT_' + str(attribute).upper())],
+            skeleton_in_progress >= 100,
+            attribute >= 5,
+            partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 50, value, 50),
+            partialmethod(BoneMarketModel.AddMultiplicationEquality, secondary_revenue, (50, attribute, attribute)),
+            difficulty_level == 0,
+            partialmethod(BoneMarketModel.AddDivisionEquality, added_exhaustion, secondary_revenue, 5000),
+        ) for attribute in (
+                amalgamy,
+                antiquity,
+            )
+    }
 
 
     # The Trifling Diplomat - Bird
