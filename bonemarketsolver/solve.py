@@ -952,6 +952,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
         ) for attribute in (
                 amalgamy,
                 antiquity,
+                menace,
             )
     }
 
