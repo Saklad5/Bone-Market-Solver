@@ -941,8 +941,9 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
         added_exhaustion == 0,
     )
 
+    # The Trifling Diplomat
     {
-        model.AddIf(actions[getattr(Buyer, 'THE_TRIFLING_DIPLOMAT_' + str(attribute).upper())],
+        model.AddIf(actions[getattr(DiplomatFascination, str(attribute).upper()).value],
             skeleton_in_progress >= 100,
             attribute >= 5,
             partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 50, value, 50),
@@ -955,162 +956,25 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
                 menace,
             )
     }
-
-
-    # The Trifling Diplomat - Bird
-    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([180, 189])).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_BIRD])
-
-    non_negative_amalgamy = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_BIRD.name}: non-negative amalgamy')
-    model.AddMaxEquality(non_negative_amalgamy, [amalgamy, 0])
-
-    non_negative_menace = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_BIRD.name}: non-negative menace')
-    model.AddMaxEquality(non_negative_menace, [menace, 0])
-
-    non_negative_antiquity = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_BIRD.name}: non-negative antiquity')
-    model.AddMaxEquality(non_negative_antiquity, [antiquity, 0])
-
-    compromising_documents = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_BIRD.name}: compromising documents', lb = 0)
-    model.AddMultiplicationEquality(compromising_documents, (non_negative_amalgamy, non_negative_menace, non_negative_antiquity))
-
-    value_remainder = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_BIRD.name}: value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(value_remainder, value, 50)
-
-    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_BIRD])
-    model.Add(secondary_revenue == 50*compromising_documents).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_BIRD])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_BIRD])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_BIRD.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, compromising_documents, 100)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_BIRD])
-
-    del non_negative_amalgamy, non_negative_menace, non_negative_antiquity, compromising_documents, value_remainder, derived_exhaustion
-
-
-    # The Trifling Diplomat - Fish
-    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([190, 199])).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FISH])
-
-    non_negative_amalgamy = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_FISH.name}: non-negative amalgamy')
-    model.AddMaxEquality(non_negative_amalgamy, [amalgamy, 0])
-
-    non_negative_menace = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_FISH.name}: non-negative menace')
-    model.AddMaxEquality(non_negative_menace, [menace, 0])
-
-    non_negative_antiquity = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_FISH.name}: non-negative antiquity')
-    model.AddMaxEquality(non_negative_antiquity, [antiquity, 0])
-
-    compromising_documents = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_FISH.name}: compromising documents', lb = 0)
-    model.AddMultiplicationEquality(compromising_documents, (non_negative_amalgamy, non_negative_menace, non_negative_antiquity))
-
-    value_remainder = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_FISH.name}: value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(value_remainder, value, 50)
-
-    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FISH])
-    model.Add(secondary_revenue == 50*compromising_documents).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FISH])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FISH])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_FISH.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, compromising_documents, 100)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_FISH])
-
-    del non_negative_amalgamy, non_negative_menace, non_negative_antiquity, compromising_documents, value_remainder, derived_exhaustion
-
-
-    # The Trifling Diplomat - Insect
-    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([210, 219])).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_INSECT])
-
-    non_negative_amalgamy = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_INSECT.name}: non-negative amalgamy')
-    model.AddMaxEquality(non_negative_amalgamy, [amalgamy, 0])
-
-    non_negative_menace = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_INSECT.name}: non-negative menace')
-    model.AddMaxEquality(non_negative_menace, [menace, 0])
-
-    non_negative_antiquity = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_INSECT.name}: non-negative antiquity')
-    model.AddMaxEquality(non_negative_antiquity, [antiquity, 0])
-
-    compromising_documents = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_INSECT.name}: compromising documents', lb = 0)
-    model.AddMultiplicationEquality(compromising_documents, (non_negative_amalgamy, non_negative_menace, non_negative_antiquity))
-
-    value_remainder = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_INSECT.name}: value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(value_remainder, value, 50)
-
-    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_INSECT])
-    model.Add(secondary_revenue == 50*compromising_documents).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_INSECT])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_INSECT])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_INSECT.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, compromising_documents, 100)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_INSECT])
-
-    del non_negative_amalgamy, non_negative_menace, non_negative_antiquity, compromising_documents, value_remainder, derived_exhaustion
-
-
-    # The Trifling Diplomat - Reptile
-    model.AddLinearExpressionInDomain(skeleton_in_progress, cp_model.Domain.FromFlatIntervals([160, 169])).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
-
-    non_negative_amalgamy = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name}: non-negative amalgamy')
-    model.AddMaxEquality(non_negative_amalgamy, [amalgamy, 0])
-
-    non_negative_menace = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name}: non-negative menace')
-    model.AddMaxEquality(non_negative_menace, [menace, 0])
-
-    non_negative_antiquity = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name}: non-negative antiquity')
-    model.AddMaxEquality(non_negative_antiquity, [antiquity, 0])
-
-    compromising_documents = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name}: compromising documents', lb = 0)
-    model.AddMultiplicationEquality(compromising_documents, (non_negative_amalgamy, non_negative_menace, non_negative_antiquity))
-
-    value_remainder = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name}: value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(value_remainder, value, 50)
-
-    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
-    model.Add(secondary_revenue == 50*compromising_documents).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_REPTILE.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, compromising_documents, 100)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_REPTILE])
-
-    del non_negative_amalgamy, non_negative_menace, non_negative_antiquity, compromising_documents, value_remainder, derived_exhaustion
-
-
-    # The Trifling Diplomat - Skulls
-    model.Add(skeleton_in_progress >= 100).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_SKULLS])
-    model.Add(skulls >= 5).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_SKULLS])
-
-    non_negative_amalgamy = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_SKULLS.name}: non-negative amalgamy')
-    model.AddMaxEquality(non_negative_amalgamy, [amalgamy, 0])
-
-    non_negative_menace = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_SKULLS.name}: non-negative menace')
-    model.AddMaxEquality(non_negative_menace, [menace, 0])
-
-    non_negative_antiquity = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_SKULLS.name}: non-negative antiquity')
-    model.AddMaxEquality(non_negative_antiquity, [antiquity, 0])
-
-    compromising_documents = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_SKULLS.name}: compromising documents', lb = 0)
-    model.AddMultiplicationEquality(compromising_documents, (non_negative_amalgamy, non_negative_menace, non_negative_antiquity))
-
-    value_remainder = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_SKULLS.name}: value remainder', lb = 0, ub = 49)
-    model.AddModuloEquality(value_remainder, value, 50)
-
-    model.Add(primary_revenue == value - value_remainder + 50).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_SKULLS])
-    model.Add(secondary_revenue == 50*compromising_documents).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_SKULLS])
-
-    model.Add(difficulty_level == 0).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_SKULLS])
-
-    # The indirection is necessary for applying an enforcement literal
-    derived_exhaustion = model.NewIntVar(f'{Buyer.THE_TRIFLING_DIPLOMAT_SKULLS.name}: derived exhaustion')
-    model.AddDivisionEquality(derived_exhaustion, compromising_documents, 100)
-    model.Add(added_exhaustion == derived_exhaustion).OnlyEnforceIf(actions[Buyer.THE_TRIFLING_DIPLOMAT_SKULLS])
-
-    del non_negative_amalgamy, non_negative_menace, non_negative_antiquity, compromising_documents, value_remainder, derived_exhaustion
+    for fascination, criteria in (
+            ('BIRD', (cp_model.BoundedLinearExpression(skeleton_in_progress, (180, 189)),)),
+            ('FISH', (cp_model.BoundedLinearExpression(skeleton_in_progress, (190, 199)),)),
+            ('INSECT', (cp_model.BoundedLinearExpression(skeleton_in_progress, (210, 219)),)),
+            ('REPTILE', (cp_model.BoundedLinearExpression(skeleton_in_progress, (160, 169)),)),
+            ('SKULLS', (skeleton_in_progress >= 100, skulls >= 5)),
+        ):
+        compromising_documents = model.NewIntVar(f'{getattr(DiplomatFascination, fascination).name}: compromising documents')
+        compromising_documents_constraints = model.AddDivisionApproximateExponentiationEquality(compromising_documents, cp_model.LinearExpr.Sum((amalgamy, antiquity, menace)), 3, 2.2, MAXIMUM_ATTRIBUTE)
+        model.AddIf(actions[getattr(DiplomatFascination, fascination).value],
+            *criteria,
+            partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 50, value, 50),
+            secondary_revenue == 50*compromising_documents,
+            compromising_documents_constraints, # Applies enforcement literal to intermediate calculations
+            difficulty_level == 0,
+            partialmethod(BoneMarketModel.AddDivisionEquality, added_exhaustion, secondary_revenue, 5000),
+        )
+    else:
+        del fascination, criteria, compromising_documents, compromising_documents_constraints
 
 
     # Maximize profit margin
