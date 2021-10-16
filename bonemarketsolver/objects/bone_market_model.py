@@ -33,24 +33,6 @@ Each parameter is interpreted as a BoundedLinearExpression, and a layer of indir
         super().AddDivisionEquality(intermediate_target, intermediate_num, intermediate_denom)
         return (target_constraint, num_constraint, denom_constraint)
 
-    def AddDivisionMultiplicationEquality(self, target, num, denom, multiple = None):
-        """Adds `target == (num // denom) * multiple`.
-
-Each parameter is interpreted as a BoundedLinearExpression, and a layer of indirection is applied such that each Constraint in the returned tuple can accept an enforcement literal.
-
-`multiple` defaults to the same value as `denom` if unspecified."""
-        quotient = self.NewIntVar(f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: quotient')
-        intermediate_num, num_constraint = self.NewIntermediateIntVar(num, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: num', lb = 0)
-        intermediate_denom, denom_constraint = self.NewIntermediateIntVar(denom, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: denom', lb = 1)
-        intermediate_target, target_constraint = self.NewIntermediateIntVar(target, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: target')
-        if multiple:
-            intermediate_multiple, multiple_constraint = self.NewIntermediateIntVar(multiple, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: multiple')
-
-        super().AddDivisionEquality(quotient, intermediate_num, intermediate_denom)
-        super().AddMultiplicationEquality(intermediate_target, (quotient, intermediate_multiple if multiple else intermediate_denom))
-
-        return (num_constraint, denom_constraint, target_constraint, *((multiple_constraint,) if multiple else ()))
-
     def AddIf(self, variable, *constraints):
         """Add constraints to the model, only enforced if the specified variable is true.
 
