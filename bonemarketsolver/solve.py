@@ -956,25 +956,33 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
                 menace,
             )
     }
-    for fascination, criteria in (
-            ('BIRD', (cp_model.BoundedLinearExpression(skeleton_in_progress, (180, 189)),)),
-            ('FISH', (cp_model.BoundedLinearExpression(skeleton_in_progress, (190, 199)),)),
-            ('INSECT', (cp_model.BoundedLinearExpression(skeleton_in_progress, (210, 219)),)),
-            ('REPTILE', (cp_model.BoundedLinearExpression(skeleton_in_progress, (160, 169)),)),
-            ('SKULLS', (skeleton_in_progress >= 100, skulls >= 5)),
-        ):
-        compromising_documents = model.NewIntVar(f'{getattr(DiplomatFascination, fascination).name}: compromising documents')
-        compromising_documents_constraints = model.AddDivisionApproximateExponentiationEquality(compromising_documents, cp_model.LinearExpr.Sum((amalgamy, antiquity, menace)), 3, 2.2, MAXIMUM_ATTRIBUTE)
+    {
         model.AddIf(actions[getattr(DiplomatFascination, fascination).value],
             *criteria,
             partialmethod(BoneMarketModel.AddDivisionMultiplicationEquality, primary_revenue - 50, value, 50),
-            secondary_revenue == 50*compromising_documents,
-            compromising_documents_constraints, # Applies enforcement literal to intermediate calculations
+            partialmethod(BoneMarketModel.AddMultiplicationEquality,
+                secondary_revenue,
+                (50,
+                partialmethod(BoneMarketModel.AddApproximateExponentiationEquality,
+                    var = partialmethod(BoneMarketModel.AddDivisionEquality,
+                        num = cp_model.LinearExpr.Sum((amalgamy, antiquity, menace)),
+                        denom = 3
+                        ),
+                    exp = 2.2,
+                    upto = MAXIMUM_ATTRIBUTE
+                    )
+                )
+            ),
             difficulty_level == 0,
             partialmethod(BoneMarketModel.AddDivisionEquality, added_exhaustion, secondary_revenue, 5000),
-        )
-    else:
-        del fascination, criteria, compromising_documents, compromising_documents_constraints
+        ) for fascination, criteria in (
+                ('BIRD', (cp_model.BoundedLinearExpression(skeleton_in_progress, (180, 189)),)),
+                ('FISH', (cp_model.BoundedLinearExpression(skeleton_in_progress, (190, 199)),)),
+                ('INSECT', (cp_model.BoundedLinearExpression(skeleton_in_progress, (210, 219)),)),
+                ('REPTILE', (cp_model.BoundedLinearExpression(skeleton_in_progress, (160, 169)),)),
+                ('SKULLS', (skeleton_in_progress >= 100, skulls >= 5)),
+            )
+    }
 
 
     # Maximize profit margin

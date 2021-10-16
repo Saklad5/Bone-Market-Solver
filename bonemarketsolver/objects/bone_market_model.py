@@ -22,22 +22,6 @@ Set `upto` to a value that is unlikely to come into play.
 Each parameter is interpreted as a BoundedLinearExpression, and a layer of indirection is applied such that each Constraint in the returned tuple can accept an enforcement literal."""
         return self.AddAllowedAssignments((target, var), ((int(base**exp), base) for base in range(upto + 1)))
 
-    def AddDivisionApproximateExponentiationEquality(self, target, num, denom, exp, upto):
-        """Adds `target == (num // denom)**exp` using a lookup table.
-
-Set `upto` to a value that is unlikely to come into play.
-
-`target`, `num`, and `denom` are interpreted as a BoundedLinearExpression, and a layer of indirection is applied such that each Constraint in the returned tuple can accept an enforcement literal."""
-        quotient = self.NewIntVar(f'{repr(target)} == ({repr(num)} // {repr(denom)})**{repr(exp)}: quotient')
-        intermediate_num, num_constraint = self.NewIntermediateIntVar(num, f'{repr(target)} == ({repr(num)} // {repr(denom)})**{repr(exp)}: num', lb = 0)
-        intermediate_denom, denom_constraint = self.NewIntermediateIntVar(denom, f'{repr(target)} == ({repr(num)} // {repr(denom)})**{repr(exp)}: denom', lb = 1)
-        intermediate_target, target_constraint = self.NewIntermediateIntVar(target, f'{repr(target)} == ({repr(num)} // {repr(denom)})**{repr(exp)}: target')
-
-        super().AddDivisionEquality(quotient, intermediate_num, intermediate_denom)
-        super().AddAllowedAssignments((intermediate_target, quotient), ((int(base**exp), base) for base in range(upto + 1)))
-
-        return (num_constraint, denom_constraint, target_constraint)
-
     def AddDivisionEquality(self, target, num, denom):
         """Adds `target == num // denom` (integer division rounded towards 0).
 
