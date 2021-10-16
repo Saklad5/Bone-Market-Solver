@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-ortools = "~=9.0"
+ortools = "9.1"
 windows-curses = {platform_system = "== 'Windows'"}
 
 [scripts]

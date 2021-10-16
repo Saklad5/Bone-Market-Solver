@@ -4,7 +4,6 @@ __all__ = ['Adjustment', 'Appendage', 'Buyer', 'Declaration', 'DiplomatFascinati
 __author__ = "Jeremy Saklad"
 
 from functools import partialmethod
-from os import cpu_count
 
 from ortools.sat.python import cp_model
 
@@ -22,7 +21,7 @@ from .data.torsos import Torso
 from .objects.bone_market_model import BoneMarketModel
 
 # This multiplier is applied to the profit margin to avoid losing precision due to rounding.
-PROFIT_MARGIN_MULTIPLIER = 10000000
+PROFIT_MARGIN_MULTIPLIER = 10000
 
 # This is the highest number of attribute to calculate fractional exponents for.
 MAXIMUM_ATTRIBUTE = 100
@@ -31,7 +30,7 @@ MAXIMUM_ATTRIBUTE = 100
 DIFFICULTY_SCALER = 0.6
 
 
-def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = None, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), blacklist = [], stdscr = None):
+def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = None, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = None, blacklist = [], stdscr = None):
     model = BoneMarketModel()
 
     actions = {}
@@ -1202,7 +1201,8 @@ Exhaustion: {solver.Value(exhaustion):n}"""
     printer = SkeletonPrinter()
 
     solver = cp_model.CpSolver()
-    solver.parameters.num_search_workers = workers
+    if workers:
+        solver.parameters.num_search_workers = workers
     solver.parameters.max_time_in_seconds = time_limit
 
     # There's no window in verbose mode
@@ -1210,7 +1210,7 @@ Exhaustion: {solver.Value(exhaustion):n}"""
         solver.parameters.log_search_progress = True
         solver.Solve(model)
     else:
-        solver.SolveWithSolutionCallback(model, printer)
+        solver.Solve(model, printer)
 
     status = solver.StatusName()
 

@@ -28,7 +28,7 @@ Each parameter is interpreted as a BoundedLinearExpression, and a layer of indir
 Each parameter is interpreted as a BoundedLinearExpression, and a layer of indirection is applied such that each Constraint in the returned tuple can accept an enforcement literal."""
         intermediate_target, target_constraint = self.NewIntermediateIntVar(target, f'{repr(target)} == {repr(num)} // {repr(denom)}: target')
         intermediate_num, num_constraint = self.NewIntermediateIntVar(num, f'{repr(target)} == {repr(num)} // {repr(denom)}: num', lb = 0)
-        intermediate_denom, denom_constraint = self.NewIntermediateIntVar(denom, f'{repr(target)} == {repr(num)} // {repr(denom)}: denom', lb = 0)
+        intermediate_denom, denom_constraint = self.NewIntermediateIntVar(denom, f'{repr(target)} == {repr(num)} // {repr(denom)}: denom', lb = 1)
 
         super().AddDivisionEquality(intermediate_target, intermediate_num, intermediate_denom)
         return (target_constraint, num_constraint, denom_constraint)
@@ -41,7 +41,7 @@ Each parameter is interpreted as a BoundedLinearExpression, and a layer of indir
 `multiple` defaults to the same value as `denom` if unspecified."""
         quotient = self.NewIntVar(f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: quotient')
         intermediate_num, num_constraint = self.NewIntermediateIntVar(num, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: num', lb = 0)
-        intermediate_denom, denom_constraint = self.NewIntermediateIntVar(denom, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: denom', lb = 0)
+        intermediate_denom, denom_constraint = self.NewIntermediateIntVar(denom, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: denom', lb = 1)
         intermediate_target, target_constraint = self.NewIntermediateIntVar(target, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: target')
         if multiple:
             intermediate_multiple, multiple_constraint = self.NewIntermediateIntVar(multiple, f'{repr(target)} == ({repr(num)} // {repr(denom)}) * {repr(multiple)}: multiple')
@@ -110,7 +110,7 @@ Each parameter is interpreted as a BoundedLinearExpression, and a layer of indir
         self.AddLinearExpressionInDomain(linear_exp, domain.Complement()).OnlyEnforceIf(intermediate.Not())
         return intermediate
 
-    def NewIntermediateIntVar(self, linear_exp, name, *, lb = cp_model.INT_MIN//8, ub = cp_model.INT_MAX//8):
+    def NewIntermediateIntVar(self, linear_exp, name, *, lb = cp_model.INT32_MIN, ub = cp_model.INT32_MAX):
         """Creates an integer variable equivalent to the given expression and returns a tuple consisting of the variable and constraint for use with enforcement literals."""
 
         intermediate = super().NewIntVar(lb, ub, name)
