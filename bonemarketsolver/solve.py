@@ -49,8 +49,6 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
             actions[appendage] = model.NewBoolVar(appendage.value.name)
         else:
             actions[appendage] = model.NewIntVar(appendage.value.name, lb = 0)
-    # Avoid adding joints at first
-    model.AddHint(actions[Appendage.ADD_JOINTS], 0)
 
     # Adjustment
     for adjustment in Adjustment:
@@ -59,8 +57,6 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     # Declaration
     for declaration in Declaration:
         actions[declaration] = model.NewBoolVar(declaration.value.name)
-    # Try non-Chimera declarations first
-    model.AddHint(actions[Declaration.CHIMERA], 0)
 
     # Embellishment
     for embellishment in Embellishment:
