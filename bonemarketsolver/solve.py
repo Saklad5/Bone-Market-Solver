@@ -1002,6 +1002,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
             difficulty_level == 0,
             partialmethod(BoneMarketModel.AddDivisionEquality, added_exhaustion, secondary_revenue, 5000),
         ) for fascination, criteria in (
+                ('AMPHIBIAN', (cp_model.BoundedLinearExpression(skeleton_in_progress, (170, 179)),)),
                 ('BIRD', (cp_model.BoundedLinearExpression(skeleton_in_progress, (180, 189)),)),
                 ('FISH', (cp_model.BoundedLinearExpression(skeleton_in_progress, (190, 199)),)),
                 ('INSECT', (cp_model.BoundedLinearExpression(skeleton_in_progress, (210, 219)),)),
