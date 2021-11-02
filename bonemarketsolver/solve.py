@@ -1002,6 +1002,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
                 ('BIRD', (cp_model.BoundedLinearExpression(skeleton_in_progress, (180, 189)),)),
                 ('FISH', (cp_model.BoundedLinearExpression(skeleton_in_progress, (190, 199)),)),
                 ('INSECT', (cp_model.BoundedLinearExpression(skeleton_in_progress, (210, 219)),)),
+                ('LEGS', (skeleton_in_progress >= 100, legs >= 10)),
                 ('REPTILE', (cp_model.BoundedLinearExpression(skeleton_in_progress, (160, 169)),)),
                 ('SKULLS', (skeleton_in_progress >= 100, skulls >= 5)),
             )
