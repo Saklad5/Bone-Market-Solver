@@ -1,0 +1,7 @@
+# Doesn't work with platform differences
+Pipfile.lock
+
+# Python compilation products
+__pycache__/
+*.pyc
+*.pyo
