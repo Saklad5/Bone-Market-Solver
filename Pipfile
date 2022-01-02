@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-ortools = "9.1"
+ortools = "9.2"
 windows-curses = {platform_system = "== 'Windows'"}
 
 [scripts]
@@ -12,4 +12,4 @@ windows-curses = {platform_system = "== 'Windows'"}
 bone_market_solver = "python -m bonemarketsolver"
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"
