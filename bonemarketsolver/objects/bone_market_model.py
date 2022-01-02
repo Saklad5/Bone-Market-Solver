@@ -13,10 +13,7 @@ class BoneMarketModel(cp_model.CpModel):
     __slots__: tuple[()] = ()
 
     def AddAllowedAssignments(self, variables: Iterable[Iterable], tuples_list: Iterable[Iterable]) -> tuple:
-        # Used for variable names
-        invocation: Final[str] = repr((variables, tuples_list))
-
-        intermediate_variables, constraints = zip(*(self.NewIntermediateIntVar(variable, f'{invocation}: {variable}') for variable in variables))
+        intermediate_variables, constraints = (lambda invocation : zip(*(self.NewIntermediateIntVar(variable, f'{invocation}: {variable}') for variable in variables)))(repr((variables, tuples_list)))
         super().AddAllowedAssignments(intermediate_variables, tuples_list)
         return constraints
 
@@ -108,13 +105,11 @@ Each parameter is interpreted as a BoundedLinearExpression, and a layer of indir
         if isinstance(expression, cp_model.IntVar) and (lambda domain : domain == [lb, ub] or domain[0] == domain[1])(cp_model.IntVar.Proto(expression).domain):
             return (expression, ())
         else:
-            intermediate: Final[cp_model.IntVar] = super().NewIntVar(lb, ub, name)
-            return (intermediate, self.Add(intermediate == expression))
+            return (lambda intermediate : (intermediate, self.Add(intermediate == expression)))(super().NewIntVar(lb, ub, name))
 
     @NewIntermediateIntVar.register
     def _(self, expression: partialmethod, name: str, *, lb: Integral = cp_model.INT32_MIN, ub: Integral = cp_model.INT32_MAX) -> tuple:
-        intermediate: Final[cp_model.IntVar] = super().NewIntVar(lb, ub, name)
-        return (intermediate, expression.__get__(self)(intermediate))
+        return (lambda intermediate : (intermediate, expression.__get__(self)(intermediate)))(super().NewIntVar(lb, ub, name))
 
     @NewIntermediateIntVar.register
     def _(self, expression: Integral, *args, **kwargs) -> tuple:
