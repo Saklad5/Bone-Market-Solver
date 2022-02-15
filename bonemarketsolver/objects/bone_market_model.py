@@ -104,8 +104,8 @@ Each parameter is interpreted as a BoundedLinearExpression, and a layer of indir
 
 `equality` must be either a LinearExp or a unary partialmethod that accepts a target integer variable and returns Constraints."""
 
-        # If expression is either an integer variable with the specified bounds or an integer constant, just pass it through
-        if isinstance(expression, cp_model.IntVar) and (lambda domain : domain == [lb, ub] or domain[0] == domain[1])(cp_model.IntVar.Proto(expression).domain):
+        # If expression is an integer constant, just pass it through
+        if isinstance(expression, cp_model.IntVar) and (lambda domain : domain[0] == domain[1])(cp_model.IntVar.Proto(expression).domain):
             return (expression, ())
         else:
             intermediate: Final[cp_model.IntVar] = super().NewIntVar(lb, ub, name)
