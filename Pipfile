@@ -8,7 +8,6 @@ ortools = "9.3"
 windows-curses = {platform_system = "== 'Windows'"}
 
 [scripts]
-
 bone_market_solver = "python -m bonemarketsolver"
 
 [requires]
