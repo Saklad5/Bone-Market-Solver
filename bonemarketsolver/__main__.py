@@ -117,6 +117,7 @@ solver_options = parser.add_argument_group(
 solver_options.add_argument(
         "-v", "--verbose",
         action=argparse.BooleanOptionalAction,
+        default=False,
         help="whether the solver should output search progress rather than showing intermediate solutions",
         dest='verbose'
         )
