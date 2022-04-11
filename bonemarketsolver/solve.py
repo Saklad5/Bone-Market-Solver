@@ -100,7 +100,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     value = model.NewIntVar('value', lb = 0)
 
     base_value = model.NewIntVar('base value', lb = 0)
-    model.Add(base_value == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.value for action in actions.keys()]))
+    model.Add(base_value == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.value for action in actions.keys()]))
 
     # Calculate value from Vake skulls
     # This is a partial sum formula.
@@ -143,43 +143,43 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # Skulls calculation
     skulls = model.NewIntVar('skulls', lb = 0)
-    model.Add(skulls == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.skulls for action in actions.keys()]))
+    model.Add(skulls == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.skulls for action in actions.keys()]))
 
     # Arms calculation
     arms = model.NewIntVar('arms', lb = 0)
-    model.Add(arms == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.arms for action in actions.keys()]))
+    model.Add(arms == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.arms for action in actions.keys()]))
 
     # Legs calculation
     legs = model.NewIntVar('legs', lb = 0)
-    model.Add(legs == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.legs for action in actions.keys()]))
+    model.Add(legs == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.legs for action in actions.keys()]))
 
     # Tails calculation
     tails = model.NewIntVar('tails', lb = 0)
-    model.Add(tails == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails for action in actions.keys()]))
+    model.Add(tails == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.tails for action in actions.keys()]))
 
     # Wings calculation
     wings = model.NewIntVar('wings', lb = 0)
-    model.Add(wings == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.wings for action in actions.keys()]))
+    model.Add(wings == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.wings for action in actions.keys()]))
 
     # Fins calculation
     fins = model.NewIntVar('fins', lb = 0)
-    model.Add(fins == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.fins for action in actions.keys()]))
+    model.Add(fins == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.fins for action in actions.keys()]))
 
     # Tentacles calculation
     tentacles = model.NewIntVar('tentacles', lb = 0)
-    model.Add(tentacles == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tentacles for action in actions.keys()]))
+    model.Add(tentacles == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.tentacles for action in actions.keys()]))
 
     # Amalgamy calculation
     amalgamy = model.NewIntVar('amalgamy', lb = 0)
     unbound_amalgamy = model.NewIntVar('unbound amalgamy')
-    model.Add(unbound_amalgamy == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.amalgamy for action in actions.keys()]))
+    model.Add(unbound_amalgamy == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.amalgamy for action in actions.keys()]))
     model.AddMaxEquality(amalgamy, (unbound_amalgamy, 0))
     del unbound_amalgamy
 
     # Antiquity calculation
     antiquity = model.NewIntVar('antiquity', lb = 0)
     unbound_antiquity = model.NewIntVar('unbound antiquity')
-    model.Add(unbound_antiquity == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.antiquity for action in actions.keys()]))
+    model.Add(unbound_antiquity == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.antiquity for action in actions.keys()]))
     model.AddMaxEquality(antiquity, (unbound_antiquity, 0))
     del unbound_antiquity
 
@@ -190,7 +190,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     unbound_menace = model.NewIntVar('unbound menace')
 
     constant_base_menace = model.NewIntVar('constant base menace')
-    model.Add(constant_base_menace == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.menace for action in actions.keys()]))
+    model.Add(constant_base_menace == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.menace for action in actions.keys()]))
 
     # Calculate menace from Vake skulls
     vake_skull_bonus_menace = model.NewIntVarFromDomain(cp_model.Domain.FromValues([0, 2, 3]), 'vake skull bonus menace')
@@ -208,7 +208,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     implausibility = model.NewIntVar('implausibility')
 
     constant_base_implausibility = model.NewIntVar('implausibility')
-    model.Add(constant_base_implausibility == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.implausibility for action in actions.keys()]))
+    model.Add(constant_base_implausibility == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.implausibility for action in actions.keys()]))
 
     # Calculate implausibility from Vake skulls
     # This is a partial sum formula.
@@ -246,7 +246,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     model.AddMultiplicationEquality(holy_relic_counter_church, (holy_relic, torso_style_divided_by_ten))
 
     counter_church = model.NewIntVar('counter-church', lb = 0)
-    model.Add(counter_church == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.counter_church for action in actions.keys()]) + holy_relic_counter_church)
+    model.Add(counter_church == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.counter_church for action in actions.keys()]) + holy_relic_counter_church)
 
     del holy_relic, torso_style_divided_by_ten, holy_relic_counter_church
 
@@ -256,7 +256,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # Exhaustion added by certain buyers
     added_exhaustion = model.NewIntVar('added exhaustion', lb = 0, ub = maximum_exhaustion)
-    model.Add(exhaustion == cp_model.LinearExpr.ScalProd(actions.values(), [action.value.exhaustion for action in actions.keys()]) + added_exhaustion)
+    model.Add(exhaustion == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.exhaustion for action in actions.keys()]) + added_exhaustion)
 
 
     # Profit intermediate variables
@@ -290,7 +290,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     add_joints = actions[Appendage.ADD_JOINTS]
 
     base_joints = model.NewIntVar('base joints', lb = 0)
-    model.Add(base_joints == cp_model.LinearExpr.ScalProd([value for (key, value) in actions.items() if isinstance(key, Torso)], [torso.value.limbs_needed + torso.value.arms + torso.value.legs + torso.value.wings + torso.value.fins + torso.value.tentacles for torso in Torso]))
+    model.Add(base_joints == cp_model.LinearExpr.WeightedSum([value for (key, value) in actions.items() if isinstance(key, Torso)], [torso.value.limbs_needed + torso.value.arms + torso.value.legs + torso.value.wings + torso.value.fins + torso.value.tentacles for torso in Torso]))
 
     add_joints_amber_cost_multiple = model.NewIntVar('add joints amber cost multiple', lb = 0)
 
@@ -324,7 +324,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
 
     cost = model.NewIntVar('cost', lb = 0, ub = maximum_cost)
-    model.Add(cost == cp_model.LinearExpr.ScalProd(actions.values(), [int(action.value.cost) for action in actions.keys()]) + add_joints_amber_cost + sale_cost)
+    model.Add(cost == cp_model.LinearExpr.WeightedSum(actions.values(), [int(action.value.cost) for action in actions.keys()]) + add_joints_amber_cost + sale_cost)
 
     del sale_cost, add_joints_amber_cost
 
@@ -514,14 +514,14 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     )
 
     # Skeleton must have no unfilled skulls
-    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.skulls_needed for action in actions.keys()]) == 0)
+    model.Add(cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.skulls_needed for action in actions.keys()]) == 0)
 
     # Skeleton must have no unfilled limbs
-    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.limbs_needed for action in actions.keys()]) == 0)
+    model.Add(cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.limbs_needed for action in actions.keys()]) == 0)
 
     # Skeleton must have no unfilled tails, unless they were skipped
-    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails_needed for action in actions.keys()]) == 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS].Not())
-    model.Add(cp_model.LinearExpr.ScalProd(actions.values(), [action.value.tails_needed for action in actions.keys()]) > 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS])
+    model.Add(cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.tails_needed for action in actions.keys()]) == 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS].Not())
+    model.Add(cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.tails_needed for action in actions.keys()]) > 0).OnlyEnforceIf(actions[Appendage.SKIP_TAILS])
 
 
     model.AddIf(actions[Buyer.A_PALAEONTOLOGIST_WITH_HOARDING_PROPENSITIES],
