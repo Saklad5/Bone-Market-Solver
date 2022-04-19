@@ -4,6 +4,7 @@ __all__ = ['Adjustment', 'Appendage', 'Buyer', 'Declaration', 'DiplomatFascinati
 __author__ = "Jeremy Saklad"
 
 from functools import partialmethod
+from os import cpu_count
 
 from ortools.sat.python import cp_model
 
@@ -30,7 +31,7 @@ MAXIMUM_ATTRIBUTE = 100
 DIFFICULTY_SCALER = 0.6
 
 
-def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = None, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = None, blacklist = [], stdscr = None):
+def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = None, occasional_buyer = None, diplomat_fascination = None, desired_buyers = [], maximum_cost = cp_model.INT32_MAX, maximum_exhaustion = cp_model.INT32_MAX, time_limit = float('inf'), workers = cpu_count(), blacklist = [], stdscr = None):
     model = BoneMarketModel()
 
     actions = {}
@@ -1099,7 +1100,7 @@ Exhaustion: {solver.Value(exhaustion):n}"""
 
     solver = cp_model.CpSolver()
     if workers:
-        solver.parameters.num_search_workers = workers
+        solver.parameters.num_workers = workers
     solver.parameters.max_time_in_seconds = time_limit
 
     # There's no window in verbose mode
