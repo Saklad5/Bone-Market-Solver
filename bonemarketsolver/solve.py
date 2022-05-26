@@ -166,6 +166,10 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     fins = model.NewIntVar('fins', lb = 0)
     model.Add(fins == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.fins for action in actions.keys()]))
 
+    # Segments calculation
+    segments = model.NewIntVar('segments', lb = 0)
+    model.Add(segments == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.segments for action in actions.keys()]))
+
     # Tentacles calculation
     tentacles = model.NewIntVar('tentacles', lb = 0)
     model.Add(tentacles == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.tentacles for action in actions.keys()]))
