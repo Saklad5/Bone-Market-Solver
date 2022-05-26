@@ -4,6 +4,7 @@ __all__ = ['Adjustment', 'Appendage', 'Buyer', 'Declaration', 'DiplomatFascinati
 __author__ = "Jeremy Saklad"
 
 from functools import partialmethod
+from itertools import chain
 from os import cpu_count
 
 from ortools.sat.python import cp_model
@@ -290,8 +291,9 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     add_joints = actions[Appendage.ADD_JOINTS]
 
+    # Joints may be added once the torso and skulls are chosen, so the sum of their properties are the starting point.
     base_joints = model.NewIntVar('base joints', lb = 0)
-    model.Add(base_joints == cp_model.LinearExpr.WeightedSum([value for (key, value) in actions.items() if isinstance(key, Torso)], [torso.value.limbs_needed + torso.value.arms + torso.value.legs + torso.value.wings + torso.value.fins + torso.value.tentacles for torso in Torso]))
+    model.Add(base_joints == cp_model.LinearExpr.WeightedSum([value for (key, value) in actions.items() if isinstance(key, (Torso, Skull))], [action.value.limbs_needed + action.value.arms + action.value.legs + action.value.wings + action.value.fins + action.value.tentacles for action in chain(Torso, Skull)]))
 
     add_joints_amber_cost_multiple = model.NewIntVar('add joints amber cost multiple', lb = 0)
 
