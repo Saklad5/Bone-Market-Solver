@@ -19,6 +19,17 @@ class Appendage(Enum):
             amalgamy = 2
             )
 
+    # Cost from this scales with segments and is partially implemented separately
+    # Requires Torso Style 110
+    # Requires initial tail slot
+    SEGMENTED_RIBCAGE = Action(
+            "Extend the tail end with another Segmented Ribcage",
+            cost = Cost.ACTION.value + Cost.SEGMENTED_RIBCAGE.value,
+            value = 250,
+            limbs_needed = 2,
+            segments = 1
+            )
+
     ALBATROSS_WING = Action(
             "Put an Albatross Wing on your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.ALBATROSS_WING.value,
