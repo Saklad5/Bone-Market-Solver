@@ -184,6 +184,10 @@ class Cost(Enum):
     # Khan's Heart, disgruntled academic
     SEARING_ENIGMA = 2*ACTION + 130*INFILTRATING + 2*INTERCEPTED_CABLEGRAM
 
+    # Segmented Ribcage
+    # No consistent source
+    SEGMENTED_RIBCAGE = cp_model.INT32_MAX/4
+
     # Carved Ball of Stygian Ivory
     STYGIAN_IVORY = 250
 
