@@ -445,6 +445,12 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
             .OnlyEnforceIf(actions[Declaration.CURATOR])
 
 
+    # Skull requirements
+
+    model.Add(torso_style == 110) \
+            .OnlyEnforceIf(model.BoolExpression(actions[Skull.SEGMENTED_RIBCAGE] > 0))
+
+
     # Declaration requirements
 
     model.AddIf(actions[Declaration.HUMANOID],
