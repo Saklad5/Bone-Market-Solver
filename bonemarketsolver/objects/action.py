@@ -47,6 +47,9 @@ class Action:
     # Skeleton: Fins
     fins: int = 0
 
+    # Skeleton: Number of Segments
+    segments: int = 0
+
     # Skeleton: Tentacles
     tentacles: int = 0
 

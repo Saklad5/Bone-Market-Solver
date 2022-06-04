@@ -134,5 +134,16 @@ class Torso(Enum):
             menace = 1
             )
 
+    SEGMENTED_RIBCAGE = Action(
+            "Build on a Segmented Ribcage",
+            cost = Cost.ACTION.value + Cost.SEGMENTED_RIBCAGE.value,
+            torso_style = 110,
+            value = 250,
+            skulls_needed = 1,
+            limbs_needed = 2,
+            tails_needed = 1,
+            segments = 1,
+            )
+
     def __str__(self):
         return str(self.value)

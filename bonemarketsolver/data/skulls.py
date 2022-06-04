@@ -124,6 +124,16 @@ class Skull(Enum):
             menace = 1
             )
 
+    # Requires Torso Style 110
+    SEGMENTED_RIBCAGE = Action(
+            'Affix a Segmented Ribcage as the "skull"',
+            cost = Cost.ACTION.value + Cost.SEGMENTED_RIBCAGE.value,
+            value = 250,
+            skulls_needed = -1,
+            limbs_needed = 4,
+            segments = 1
+            )
+
     STYGIAN_IVORY = Action(
             "Use a Carved Ball of Stygian Ivory to cap off your (Skeleton Type)",
             cost = Cost.ACTION.value + Cost.STYGIAN_IVORY.value,

@@ -4,7 +4,7 @@ __all__ = ['Adjustment', 'Appendage', 'Buyer', 'Declaration', 'DiplomatFascinati
 __author__ = "Jeremy Saklad"
 
 from functools import partialmethod
-from itertools import chain
+from itertools import chain, repeat
 from os import cpu_count
 
 from ortools.sat.python import cp_model
@@ -167,6 +167,10 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     fins = model.NewIntVar('fins', lb = 0)
     model.Add(fins == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.fins for action in actions.keys()]))
 
+    # Segments calculation
+    segments = model.NewIntVar('segments', lb = 0)
+    model.Add(segments == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.segments for action in actions.keys()]))
+
     # Tentacles calculation
     tentacles = model.NewIntVar('tentacles', lb = 0)
     model.Add(tentacles == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.tentacles for action in actions.keys()]))
@@ -326,10 +330,139 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     del add_joints, add_joints_amber_cost_multiple
 
 
-    cost = model.NewIntVar('cost', lb = 0, ub = maximum_cost)
-    model.Add(cost == cp_model.LinearExpr.WeightedSum(actions.values(), [int(action.value.cost) for action in actions.keys()]) + add_joints_amber_cost + sale_cost)
+    # Calculate cost of adding segments.
+    # This is a partial sum formula.
+    add_segments_brass_cost = model.NewIntVar('add segments brass cost', lb = 0)
 
-    del sale_cost, add_joints_amber_cost
+    add_segments = actions[Appendage.SEGMENTED_RIBCAGE]
+
+    # Additional segments may be added once the torso and skulls are chosen, so the sum of their properties are the starting point.
+    base_segments = model.NewIntVar('base segments', lb = 0)
+    model.Add(base_segments == cp_model.LinearExpr.WeightedSum([value for (key, value) in actions.items() if isinstance(key, (Torso, Skull))], [action.value.segments for action in chain(Torso, Skull)]))
+
+    first_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                25,
+                *repeat(add_segments, 4),
+            )
+        ),
+        'add segments brass cost multiple first term'
+    )
+
+    second_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                100,
+                *repeat(add_segments, 3),
+                base_segments,
+            )
+        ),
+        'add segments brass cost multiple second term'
+    )
+
+    third_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                50,
+                *repeat(add_segments, 3),
+            )
+        ),
+        'add segments brass cost multiple third term'
+    )
+
+    fourth_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                150,
+                *repeat(add_segments, 2),
+                *repeat(base_segments, 2),
+            )
+        ),
+        'add segments brass cost multiple fourth term'
+    )
+
+    fifth_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                150,
+                *repeat(add_segments, 2),
+                base_segments,
+            )
+        ),
+        'add segments brass cost multiple fifth term'
+    )
+
+    sixth_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                25,
+                *repeat(add_segments, 2),
+            )
+        ),
+        'add segments brass cost multiple sixth term'
+    )
+
+    seventh_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                100,
+                add_segments,
+                *repeat(base_segments, 3),
+            )
+        ),
+        'add segments brass cost multiple seventh term'
+    )
+
+    eighth_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                150,
+                add_segments,
+                *repeat(base_segments, 2),
+            )
+        ),
+        'add segments brass cost multiple eighth term'
+    )
+
+    ninth_term, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                50,
+                add_segments,
+                base_segments,
+            )
+        ),
+        'add segments brass cost multiple ninth term'
+    )
+
+    add_segments_brass_cost_multiple, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddDivisionEquality,
+            num=first_term + second_term + third_term + fourth_term + fifth_term + sixth_term + seventh_term + eighth_term + ninth_term,
+            denom=2
+        ),
+        'add segments brass cost multiple'
+    )
+
+    del first_term, second_term, third_term, fourth_term, fifth_term, sixth_term, seventh_term, eighth_term, ninth_term
+
+    add_segments_brass_cost, *_ = model.NewIntermediateIntVar(
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            variables=(
+                add_segments_brass_cost_multiple,
+                Cost.NEVERCOLD_BRASS.value,
+            )
+        ),
+        'add segments brass cost'
+    )
+
+    del add_segments, base_segments, add_segments_brass_cost_multiple
+
+
+    cost = model.NewIntVar('cost', lb = 0, ub = maximum_cost)
+    model.Add(cost == cp_model.LinearExpr.WeightedSum(actions.values(), [int(action.value.cost) for action in actions.keys()]) + add_joints_amber_cost + add_segments_brass_cost + sale_cost)
+
+    del sale_cost, add_joints_amber_cost, add_segments_brass_cost
 
 
     # Type of skeleton
@@ -441,6 +574,20 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     # Curator
     model.Add(skeleton_in_progress == 300) \
             .OnlyEnforceIf(actions[Declaration.CURATOR])
+
+
+    # Skull requirements
+
+    model.Add(torso_style == 110) \
+            .OnlyEnforceIf(model.BoolExpression(actions[Skull.SEGMENTED_RIBCAGE] > 0))
+
+
+    # Appendage requirements
+
+    model.AddIf(model.BoolExpression(actions[Appendage.SEGMENTED_RIBCAGE] > 0),
+        torso_style == 110,
+        cp_model.LinearExpr.WeightedSum([value for (key, value) in actions.items() if isinstance(key, (Torso, Skull))], [action.value.tails_needed for action in chain(Torso, Skull)]) >= 1,
+    )
 
 
     # Declaration requirements
