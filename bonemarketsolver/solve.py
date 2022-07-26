@@ -23,7 +23,7 @@ from .data.torsos import Torso
 from .objects.bone_market_model import BoneMarketModel
 
 # This multiplier is applied to the profit margin to avoid losing precision due to rounding.
-PROFIT_MARGIN_MULTIPLIER = 10000
+PROFIT_MARGIN_MULTIPLIER = 100
 
 # This is the highest number of attribute to calculate fractional exponents for.
 MAXIMUM_ATTRIBUTE = 100
@@ -1087,6 +1087,28 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
             100,
         ),
     )
+
+    # Exhibition
+
+    exhibition_payout = model.NewIntVar('exhibition payout', lb = 0)
+
+    multiplied_exhibition_value = model.NewIntVar('multiplied exhibition value', lb = 0)
+    model.Add(multiplied_exhibition_value == 11*value)
+    model.AddDivisionEquality(exhibition_payout, multiplied_exhibition_value, 10)
+
+    model.AddIf(actions[Buyer.EXHIBITION],
+        cp_model.BoundedLinearExpression(skeleton_in_progress, (110, 212)),
+        implausibility == 0,
+        value >= 90000,
+        antiquity >= 3,
+        amalgamy == 0,
+        primary_revenue == exhibition_payout,
+        secondary_revenue == 0,
+        difficulty_level == 0,
+        added_exhaustion == 0,
+    )
+
+    del exhibition_payout, multiplied_exhibition_value
 
     model.AddIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL],
         cp_model.BoundedLinearExpression(skeleton_in_progress, (180, 189)),

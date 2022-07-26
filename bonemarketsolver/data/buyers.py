@@ -121,6 +121,10 @@ class Buyer(Enum):
             cost = Cost.ACTION.value
             )
 
+    EXHIBITION = Action(
+            "Supply a complete skeleton",
+            cost = Cost.ACTION.value
+            )
     THE_DUMBWAITER_OF_BALMORAL = Action(
             "Export the Skeleton of a Neathy Bird",
             cost = Cost.ACTION.value
