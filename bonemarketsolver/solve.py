@@ -1088,27 +1088,17 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
         ),
     )
 
-    # Exhibition
-
-    exhibition_payout = model.NewIntVar('exhibition payout', lb = 0)
-
-    multiplied_exhibition_value = model.NewIntVar('multiplied exhibition value', lb = 0)
-    model.Add(multiplied_exhibition_value == 11*value)
-    model.AddDivisionEquality(exhibition_payout, multiplied_exhibition_value, 10)
-
     model.AddIf(actions[Buyer.EXHIBITION],
         cp_model.BoundedLinearExpression(skeleton_in_progress, (110, 212)),
         implausibility == 0,
         value >= 9000,
         antiquity >= 3,
         amalgamy == 0,
-        primary_revenue == exhibition_payout,
+        primary_revenue == value + 1000,
         secondary_revenue == 0,
         difficulty_level == 0,
         added_exhaustion == 0,
     )
-
-    del exhibition_payout, multiplied_exhibition_value
 
     model.AddIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL],
         cp_model.BoundedLinearExpression(skeleton_in_progress, (180, 189)),
