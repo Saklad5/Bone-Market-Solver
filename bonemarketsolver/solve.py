@@ -1099,7 +1099,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     model.AddIf(actions[Buyer.EXHIBITION],
         cp_model.BoundedLinearExpression(skeleton_in_progress, (110, 212)),
         implausibility == 0,
-        value >= 90000,
+        value >= 9000,
         antiquity >= 3,
         amalgamy == 0,
         primary_revenue == exhibition_payout,
