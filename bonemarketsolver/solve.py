@@ -1094,10 +1094,21 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
         value >= 9000,
         antiquity >= 3,
         amalgamy == 0,
-        primary_revenue == value + 1000,
+        partialmethod(BoneMarketModel.AddMultiplicationEquality,
+            primary_revenue - value - 1000,
+            (
+                200,
+                antiquity,
+                antiquity,
+            ),
+        ),
         secondary_revenue == 0,
         difficulty_level == 0,
-        added_exhaustion == 0,
+        partialmethod(BoneMarketModel.AddDivisionEquality,
+            added_exhaustion,
+            partialmethod(BoneMarketModel.AddMultiplicationEquality, variables=(antiquity, antiquity)),
+            25,
+        ),
     )
 
     model.AddIf(actions[Buyer.THE_DUMBWAITER_OF_BALMORAL],
