@@ -104,10 +104,6 @@ class Cost(Enum):
     # Hinterland Scrip
     HINTERLAND_SCRIP = 50
 
-    # Fossilised Forelimb
-    # Anning and Daughters
-    FOSSILISED_FORELIMB = 55*HINTERLAND_SCRIP
-
     # Hedonist
     # Handsome Townhouse, 3cp at a time
     HEDONIST_CP = ACTION/3
@@ -221,6 +217,10 @@ class Cost(Enum):
     # Palaeontological Discovery
     # Plain of Thirsty Grasses
     PALAEONTOLOGICAL_DISCOVERY = (ACTION + 140*SURVEY)/6
+
+    # Fossilised Forelimb
+    # Results of Excavation, 2 at a time
+    FOSSILISED_FORELIMB = (4*PALAEONTOLOGICAL_DISCOVERY)/2
 
     # Helical Thighbone
     # Results of Excavation, 6 at a time
