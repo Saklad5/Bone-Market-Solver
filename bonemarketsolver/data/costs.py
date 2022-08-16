@@ -181,8 +181,9 @@ class Cost(Enum):
     SEARING_ENIGMA = 2*ACTION + 130*INFILTRATING + 2*INTERCEPTED_CABLEGRAM
 
     # Segmented Ribcage
-    # No consistent source
-    SEGMENTED_RIBCAGE = cp_model.INT32_MAX/4
+    # Port Cecil, tie, 3 at a time
+    # Byproducts subtracted from cost
+    SEGMENTED_RIBCAGE = (14*ACTION - 52.70)/3
 
     # Carved Ball of Stygian Ivory
     STYGIAN_IVORY = 250
