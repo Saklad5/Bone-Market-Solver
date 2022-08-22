@@ -337,8 +337,8 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
     add_segments = actions[Appendage.SEGMENTED_RIBCAGE]
 
     # Additional segments may be added once the torso and skulls are chosen, so the sum of their properties are the starting point.
-    base_segments = model.NewIntVar('base segments', lb = 0)
-    model.Add(base_segments == cp_model.LinearExpr.WeightedSum([value for (key, value) in actions.items() if isinstance(key, (Torso, Skull))], [action.value.segments for action in chain(Torso, Skull)]))
+    base_segments = model.NewIntVar('base segments', lb = -1)
+    model.Add(base_segments == cp_model.LinearExpr.WeightedSum([value for (key, value) in actions.items() if isinstance(key, (Torso, Skull))], [action.value.segments for action in chain(Torso, Skull)]) - 1)
 
     first_term, *_ = model.NewIntermediateIntVar(
         partialmethod(BoneMarketModel.AddMultiplicationEquality,
