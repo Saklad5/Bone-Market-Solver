@@ -173,6 +173,14 @@ class Cost(Enum):
     # Waswood
     REVISIONIST_NARRATIVE = ACTION + 4*EXTRAORDINARY_IMPLICATION + INCISIVE_OBSERVATION
 
+    # Favours: Rubbery Men
+    # Various opportunity cards
+    RUBBERY_FAVOURS = ACTION
+
+    # Flourishing Ribcage
+    # Jericho Locks, 2 at a time
+    FLOURISHING_RIBCAGE = (ACTION + 4*RUBBERY_FAVOURS)/2
+
     # Knob of Scintillack
     SCINTILLACK = 250
 
@@ -234,10 +242,6 @@ class Cost(Enum):
     # Thorned Ribcage
     # Iron-Toothed Terror Bird
     THORNED_RIBCAGE = 6*ACTION
-
-    # Flourishing Ribcage
-    # Helicon House
-    FLOURISHING_RIBCAGE = ACTION + HUMAN_RIBCAGE + THORNED_RIBCAGE
 
     # Time Remaining in the Woods
     # Compel Ghillie, 7 at a time
