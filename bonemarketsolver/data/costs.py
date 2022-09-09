@@ -136,10 +136,6 @@ class Cost(Enum):
     # Brawling for yourself, large Bone Market crate, 12 at a time
     JURASSIC_FEMUR = (10*ACTION)/12
 
-    # Knotted Humerus
-    # These are accumulated while acquiring other qualities.
-    KNOTTED_HUMERUS = 0
-
     # Nevercold Brass Sliver
     NEVERCOLD_BRASS = 1
 
@@ -234,6 +230,10 @@ class Cost(Enum):
     # Helical Thighbone
     # Results of Excavation, 6 at a time
     HELICAL_THIGH = (2*PALAEONTOLOGICAL_DISCOVERY)/6
+
+    # Knotted Humerus
+    # Results of Excavation, 4 at a time
+    KNOTTED_HUMERUS = (2*PALAEONTOLOGICAL_DISCOVERY)/4
 
     # Leviathan Frame
     # Results of Excavation
