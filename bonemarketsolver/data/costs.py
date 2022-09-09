@@ -240,8 +240,8 @@ class Cost(Enum):
     LEVIATHAN_FRAME = 25*PALAEONTOLOGICAL_DISCOVERY
 
     # Thorned Ribcage
-    # Iron-Toothed Terror Bird
-    THORNED_RIBCAGE = 6*ACTION
+    # Jericho Locks, 2 at a time
+    THORNED_RIBCAGE = (ACTION + 4*HELL_FAVOURS)/2
 
     # Time Remaining in the Woods
     # Compel Ghillie, 7 at a time
