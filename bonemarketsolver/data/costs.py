@@ -140,8 +140,9 @@ class Cost(Enum):
     NEVERCOLD_BRASS = 1
 
     # Obsidian Chitin Tail
-    # No consistent source
-    OBSIDIAN_TAIL = cp_model.INT32_MAX/2
+    # Heist, Osteology Wing, 5 at a time
+    # 4 actions for Casing, 6 actions for heist
+    OBSIDIAN_TAIL = (10*ACTION)/5
 
     # Parabolan Orange-apple
     # Parabolan Base-camp, electricity and hedonism, 2 at a time
