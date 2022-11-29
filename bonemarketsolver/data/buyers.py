@@ -177,6 +177,10 @@ class Buyer(Enum):
             "Sell the Diplomat a skeleton with multiple heads",
             cost = Cost.ACTION.value
             )
+    THE_TRIFLING_DIPLOMAT_SPIDER = Action(
+            "Sell the Diplomat a fossil arachnid",
+            cost = Cost.ACTION.value
+            )
 
     def __str__(self):
         return str(self.value)
