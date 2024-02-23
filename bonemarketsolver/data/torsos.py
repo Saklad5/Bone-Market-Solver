@@ -137,7 +137,7 @@ class Torso(Enum):
     SEGMENTED_RIBCAGE = Action(
             "Build on a Segmented Ribcage",
             cost = Cost.ACTION.value + Cost.SEGMENTED_RIBCAGE.value,
-            torso_style = 110,
+            torso_style = 45,
             value = 250,
             skulls_needed = 1,
             limbs_needed = 2,
