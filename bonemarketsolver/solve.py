@@ -245,16 +245,35 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
 
     # Counter-church calculation
     # Calculate amount of Counter-church from Holy Relics of the Thigh of Saint Fiacre
-    holy_relic = actions[Appendage.FIACRE_THIGH]
-    torso_style_divided_by_ten = model.NewIntVar('torso style divided by ten', lb = 0)
-    model.AddDivisionEquality(torso_style_divided_by_ten, torso_style, 10)
+
+    # The amount of Counter-church added by each Holy Relic, which is based on the Torso Style.
+    #
+    # The precise formula for this is unknown as of this writing, so it is being hard-coded as a stopgap.
+    holy_relic_counter_church_each = model.NewIntVar('holy relic counter-church each')
+    model.AddAllowedAssignments(
+            (torso_style, holy_relic_counter_church_each),
+            (
+                (10, 1), # Human
+                (15, 1), # Human
+                (20, 2), # Thorny-Breasted
+                (30, 2), # Seven-necked
+                (40, 3), # Many-limbed
+                (45, 3), # Segmented
+                (50, 4), # Mammoth
+                (60, 5), # Baroque
+                (70, 6), # Deep-water
+                (80, 6), # Prismatic
+                (100, 7) # Starved
+            )
+    )
+
     holy_relic_counter_church = model.NewIntVar('holy relic counter-church', lb = 0)
-    model.AddMultiplicationEquality(holy_relic_counter_church, (holy_relic, torso_style_divided_by_ten))
+    model.AddMultiplicationEquality(holy_relic_counter_church, (actions[Appendage.FIACRE_THIGH], holy_relic_counter_church_each))
 
     counter_church = model.NewIntVar('counter-church', lb = 0)
     model.Add(counter_church == cp_model.LinearExpr.WeightedSum(actions.values(), [action.value.counter_church for action in actions.keys()]) + holy_relic_counter_church)
 
-    del holy_relic, torso_style_divided_by_ten, holy_relic_counter_church
+    del holy_relic_counter_church_each, holy_relic_counter_church
 
 
     # Exhaustion calculation
