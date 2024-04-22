@@ -190,6 +190,13 @@ class Cost(Enum):
     # Byproducts subtracted from cost
     SEGMENTED_RIBCAGE = (14*ACTION - 52.70)/3
 
+    # Stuiver
+    STUIVER = 5
+
+    # Glim-Encrusted Carapace
+    # The Flexile Peddler
+    GLIM_ENCRUSTED_CARAPACE = 3000*STUIVER
+
     # Carved Ball of Stygian Ivory
     STYGIAN_IVORY = 250
 

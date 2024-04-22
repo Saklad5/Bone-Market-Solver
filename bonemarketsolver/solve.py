@@ -260,6 +260,7 @@ def Solve(shadowy_level, bone_market_fluctuations = None, zoological_mania = Non
                 (40, 3), # Many-limbed
                 (45, 3), # Segmented
                 (50, 4), # Mammoth
+                (55, 5), # Luminous
                 (60, 5), # Baroque
                 (70, 6), # Deep-water
                 (80, 6), # Prismatic

@@ -98,6 +98,16 @@ class Torso(Enum):
             antiquity = 2
             )
 
+    GLIM_ENCRUSTED_CARAPACE = Action(
+            "Make something of your Glim-Encrusted Carapace",
+            cost = Cost.ACTION.value + Cost.GLIM_ENCRUSTED_CARAPACE.value,
+            torso_style = 55,
+            value = 6000,
+            skulls_needed = 1,
+            limbs_needed = 8,
+            amalgamy = 1
+            )
+
     RIBCAGE_WITH_A_BOUQUET_OF_EIGHT_SPINES = Action(
             "Build on the Ribcage with the Eight Spines",
             cost = Cost.ACTION.value + Cost.RIBCAGE_WITH_EIGHT_SPINES.value,
