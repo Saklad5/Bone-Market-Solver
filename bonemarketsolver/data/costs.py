@@ -194,8 +194,9 @@ class Cost(Enum):
     STUIVER = 5
 
     # Glim-Encrusted Carapace
-    # The Flexile Peddler
-    GLIM_ENCRUSTED_CARAPACE = 3000*STUIVER
+    # The Stacks, Annal of Lost Stars
+    # Optimistic estimate of action cost, byproducts subtracted
+    GLIM_ENCRUSTED_CARAPACE = 22*ACTION - 53.50
 
     # Carved Ball of Stygian Ivory
     STYGIAN_IVORY = 250
